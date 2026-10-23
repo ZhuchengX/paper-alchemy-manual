@@ -80,10 +80,10 @@ th{background:var(--accent-soft);font-weight:600}
 <!-- ========== 这是什么 ========== -->
 <section id="what">
 <h2>这是什么<span class="tag">一句话讲清</span></h2>
-<p><strong>论文炼金 = 文献采购员 ＋ 证据抽取员 ＋ 统计审查员 ＋ 写作伙伴</strong>，由你本机的 Claude Code 主线程按本手册逐阶段调度子 agent，加上一组 Python 脚本和闸门。你的工作不是读完几百篇论文，而是定选题、在关键决策点拍板、判断最后那篇是不是真金。</p>
+<p><strong>论文炼金 = 文献采购员 ＋ 证据抽取员 ＋ 统计审查员 ＋ 写作伙伴</strong>，由你本机的 Claude Code 主线程按本手册逐阶段调度，要调 LLM 的阶段默认交 codex（gpt-6-astra，ultra 推理档）执行，加上一组 Python 脚本和闸门。你的工作不是读完几百篇论文，而是定选题、在关键决策点拍板、判断最后那篇是不是真金。</p>
 <p>它的优化目标是<strong>注意力经济</strong>：N 篇论文 → m 篇必读（m 远小于 N）。输出必须是论文形态，并且抽象出更高层的通解，不是摘要或综述（<code>CLAUDE.md</code>「必须遵守的设计原则」第 1 条）。</p>
 <div class="cards">
-  <div class="card"><h4>① 输入侧：先验矿</h4><p>输入是一大批论文，人写的或 autoresearch 产出的都行。先两轮筛选：摘要初筛给 solid 分，再按 PDF 首页印出的机构二筛；然后按共享作者分独立来源组，防止同一拨人刷屏。<span class="st plan">🔭 B9 启发池</span>：另用 ScholarCatalyst 作者理由（rationale）蒸馏出的构思动作当算子，找表面不相关、但能启发的论文，并让 13 个算子各出、多个算子组合出 idea 草稿，先把多样性做起来；单独成池，不进统计。</p></div>
+  <div class="card"><h4>① 输入侧：先验矿</h4><p>输入是一大批论文，人写的或 autoresearch 产出的都行。先两轮筛选：摘要初筛给 solid 分，再按 PDF 首页印出的机构二筛；然后按共享作者分独立来源组，防止同一拨人刷屏。<span class="st ok">已实现 · B1 验矿卡</span>：抽取后、建库前生成 <code>triage/solidity.csv</code>，逐篇报告内部不一致、代码公开和来源 ID 是否见于全文；保留命中原句供复核，不造总分、不设默认阈值，建库过滤须显式打开开关。<span class="st plan">🔭 B9 启发池</span>：另用 ScholarCatalyst 作者理由（rationale）蒸馏出的构思动作当算子，找表面不相关、但能启发的论文，并让 13 个算子各出、多个算子组合出 idea 草稿，先把多样性做起来；单独成池，不进统计。</p></div>
   <div class="card"><h4>② 中间侧：多炉并炼</h4><p>每篇论文拆成「带条件的事实 ＋ 算子程序」。3–4 个提议 agent 从不同角度并行提出候选通解，互不读对方文件；打分器和审查 agent 负责筛选。巨人镜头（制度借鉴、构思动作、棋盘法）另出候选卡。</p></div>
   <div class="card"><h4>③ 控制权在你</h4><p>选题与锁定答案、宽松机构的删减、终稿结论、出卡勾选、花钱前的配置卡，这几处都停下来等你。agent 只提议，不替你拍板。</p></div>
   <div class="card"><h4>④ 产出侧：成色可查</h4><p>金子论文（英文全文 ＋ 中文正文 PDF）、决策指南、可视化页（地图、拼盘、结果页）。每条结论都带支撑行、独立组数、稳健性；正文只许引用语料内的论文，由闸门机器拦截。</p></div>
@@ -106,7 +106,8 @@ th{background:var(--accent-soft);font-weight:600}
 <thead><tr><th>软件</th><th>用途</th><th>验证命令</th><th>必装 / 可选</th></tr></thead>
 <tbody>
 <tr><td>Python 3 + pandas / numpy</td><td>建库、打分、闸门、棋盘等全部脚本</td><td><code>python3 -c "import pandas, numpy"</code></td><td>必装</td></tr>
-<tr><td>Claude Code CLI</td><td>主线程 + 子 agent（采购、筛选、抽取、提议、审查、成文……）</td><td><code>claude --version</code></td><td>必装</td></tr>
+<tr><td>Claude Code CLI</td><td>主线程：改 pipeline、编排、核验；子 agent 只作后备</td><td><code>claude --version</code></td><td>必装</td></tr>
+<tr><td>Codex CLI（gpt-6-astra）</td><td>跑 case 时的 LLM 阶段（采购、筛选、抽取、提议、审查、成文……），经 <code>pipeline/run_agent.py</code> 调用，同时 ≤4 路</td><td><code>codex --version</code></td><td>必装（2026-10-23 起）</td></tr>
 <tr><td>poppler（<code>pdftotext</code>）</td><td>论文 PDF 转纯文本，供抽取 agent 读</td><td><code>pdftotext -v</code></td><td>必装</td></tr>
 <tr><td>pandoc + xelatex（TeX Live）</td><td><code>pipeline/pdf/make_pdf.sh</code> 把金子论文 md 渲染成中英文 PDF</td><td><code>pandoc --version</code>、<code>xelatex --version</code></td><td>可选（只要 md 不要 PDF 可不装）</td></tr>
 <tr><td>HuggingFace <code>datasets</code></td><td>下载 ScholarCatalyst 19 万篇摘要库，给构思出卡用 BM25 检索</td><td><code>python3 -c "import datasets"</code></td><td>可选（只在构思出卡时需要）</td></tr>
@@ -170,12 +171,14 @@ python3 scripts/score_candidates.py 候选.json 打分.json                     
   <li>答案文件放在运行目录之外，只有最后的评估 agent 能读。</li>
 </ul>
 
-<h3>② 逐阶段：渲染提示词 → 交给子 agent → 过闸门</h3>
+<h3>② 逐阶段：渲染提示词 → 交给 codex → 过闸门</h3>
 <pre><code># 例：抽取第 1 批（每个 agent 4–5 篇）
 python3 pipeline/make_batches.py RUN_DIR --size 5 --ids RUN_DIR/triage/core_ids.txt
 python3 pipeline/render.py RUN_DIR 02_extract IDS="2305.14325 2305.19118" BATCH=b1
 #   → 提示词同时存进 RUN_DIR/traces/prompts/02_extract_b1.md（留痕）
-#   → 主线程把整段交给子 agent（Agent 工具，model: opus）
+python3 -I pipeline/run_agent.py RUN_DIR RUN_DIR/traces/prompts/02_extract_b1.md   # codex 执行，≤4 路并发
+#   → 日志、回复、token 用量在 RUN_DIR/traces/agent_runs/02_extract_b1/
+#   （旧：主线程把整段交给子 agent（Agent 工具，model: opus），现只作后备）
 python3 pipeline/check.py RUN_DIR extract          # 全部批次抽完后过闸</code></pre>
 <p>一次只推进一个阶段，过了闸门再进下一个。阶段顺序见下一节「它怎么思考」。</p>
 
@@ -249,7 +252,7 @@ python3 pipeline/check.py RUN_DIR extract          # 全部批次抽完后过闸
 
 <!-- FLOW_START（由 python3 -I pipeline/check_stages.py --flow 生成，勿手改） -->
 <h3>全流程图 · 两层看</h3>
-<p>由 <code>pipeline/stages.json</code> 自动生成（<code>python3 -I pipeline/check_stages.py --flow</code>），和阶段契约表同源。<strong>第一层</strong>只看 6 个大模块：每个模块做什么、产出什么、有几个阶段、你在哪里介入、换领域要改几处。<strong>第二层</strong>是每个模块的拆解，点第一层的模块或下面的标题展开。全流程共 41 个阶段（33 个已能跑，8 个 🔭 规划中）、5 个人工闸。</p>
+<p>由 <code>pipeline/stages.json</code> 自动生成（<code>python3 -I pipeline/check_stages.py --flow</code>），和阶段契约表同源。<strong>第一层</strong>只看 6 个大模块：每个模块做什么、产出什么、有几个阶段、你在哪里介入、换领域要改几处。<strong>第二层</strong>是每个模块的拆解，点第一层的模块或下面的标题展开。全流程共 41 个阶段（34 个已能跑，7 个 🔭 规划中）、5 个人工闸。</p>
 <p>图例：实线框 = 已经能跑；虚线框 🔭 = 蓝图里规划、还没做；琥珀粗框 ★ = 你介入；橙线 = 回环（虚线是规划中的回环）；细图右栏写闸门、判决和上界。<strong>🧩 回答「科研大同小异」</strong>：模块和主干对任何领域都一样，带 🧩 的 15 个阶段是换领域时要换的部分（依据 <a href="https://github.com/ZhuchengX/paper-alchemy-manual/blob/main/research/pipeline泛化_20261023/coupling_audit.md">主题耦合审计</a> §1）。窄屏可左右滑动。</p>
 
 <style>.fl{width:100%;min-width:760px;height:auto;display:block;font-family:-apple-system,"PingFang SC","Noto Sans CJK SC",sans-serif}.fl-band{opacity:.55}.fl-ph{fill:var(--bg);font-size:13px;font-weight:700}.fl-box{fill:var(--panel);stroke-width:1.6}.fl-box.pl{stroke-dasharray:6 4;opacity:.8}.fl-gate{fill:var(--amber-soft);stroke:var(--amber);stroke-width:2.6}.fl-io{fill:var(--panel);stroke:var(--fg);stroke-width:1.6}.fl-nc{fill:var(--panel);stroke-width:1.6}.fl-nn{text-anchor:middle;font-size:11.5px;font-weight:700;fill:var(--fg);font-family:ui-monospace,Menlo,monospace}.fl-gc{fill:var(--amber)}.fl-gn{text-anchor:middle;font-size:14px;fill:var(--bg)}.fl-t{text-anchor:middle;font-size:15px;font-weight:700;fill:var(--fg)}.fl-b{text-anchor:middle;font-size:12px;fill:var(--muted)}.fl-ln{stroke:var(--muted);stroke-width:1.4}.fl-ah{fill:var(--muted)}.fl-el{font-size:11px;fill:var(--muted)}.fl-lp{fill:none;stroke:var(--accent);stroke-width:1.4}.fl-lp.pl{stroke-dasharray:5 4;opacity:.75}.fl-lt{text-anchor:middle;font-size:11.5px;fill:var(--accent)}.fl-lx{font-size:12px;fill:var(--accent)}.fl-g{font-size:12px;fill:var(--fg)}.fl-r{font-size:11.5px;fill:var(--muted)}.fl-pn{font-size:11.5px;fill:var(--red)}.fl-dm{font-size:12px;font-weight:700;fill:var(--red)}.fl-dm.half{fill:var(--amber)}.fl-mod{fill:var(--panel);stroke-width:2}.fl-link:hover .fl-mod{fill:var(--accent-soft)}.fl-mn{text-anchor:middle;font-size:18px;font-weight:700;fill:var(--bg)}.fl-mt{font-size:19px;font-weight:700;fill:var(--fg)}.fl-mg{font-size:14px;fill:var(--fg)}.fl-mo{font-size:13px;fill:var(--muted)}.fl-mc{font-size:13px;font-weight:600;fill:var(--accent)}.fl-more{text-anchor:end;font-size:12.5px;fill:var(--accent)}details.fl-d{border:1px solid var(--line);border-radius:10px;margin:10px 0;background:var(--panel)}details.fl-d>summary{cursor:pointer;padding:10px 14px;font-weight:600}details.fl-d>summary small{font-weight:400;color:var(--muted)}details.fl-d .tw{margin:0 8px 10px}</style>
@@ -266,7 +269,7 @@ python3 pipeline/check.py RUN_DIR extract          # 全部批次抽完后过闸
 <path d="M300,928.0 H270 V328.0 H298" class="fl-lp" marker-end="url(#fl-a)"/><text transform="translate(262,628.0) rotate(-90)" class="fl-lt">↩ ④ 跑实验得新证据 → 回证据地基，开下一轮</text>
 <rect x="300" y="24" width="700" height="62" rx="10" class="fl-io"/><text x="650" y="50" class="fl-t">输入</text><text x="650" y="70" class="fl-b">一句话主题 ⟷ 完整菜单（假设 / 坐标轴 / 镜头）+ 一池 autoresearch 论文 · 🔭 B9 起另有启发池</text>
 <a href="#fl-m1" class="fl-link"><rect x="300" y="120" width="700" height="116" rx="12" class="fl-mod" style="stroke:var(--blue)"/><rect x="300" y="120" width="10" height="116" rx="5" style="fill:var(--blue)"/><circle cx="344" cy="160" r="20" style="fill:var(--blue)"/><text x="344" y="167" class="fl-mn">1</text><text x="380" y="154" class="fl-mt">下锚</text><text x="380" y="178" class="fl-mg">定选题、中心问题、时间窗和锁定答案，跑起来后不再改</text><text x="380" y="200" class="fl-mo">产物：run.json + 菜单</text><text x="380" y="223" class="fl-mc">3 个阶段（🔭 2 个规划中）　·　★ 人工闸 ①　·　🧩 2 处换领域要改</text><text x="982" y="154" class="fl-more">看细图 ↓</text></a>
-<a href="#fl-m2" class="fl-link"><rect x="300" y="270" width="700" height="116" rx="12" class="fl-mod" style="stroke:var(--teal)"/><rect x="300" y="270" width="10" height="116" rx="5" style="fill:var(--teal)"/><circle cx="344" cy="310" r="20" style="fill:var(--teal)"/><text x="344" y="317" class="fl-mn">2</text><text x="380" y="304" class="fl-mt">证据地基</text><text x="380" y="328" class="fl-mg">把论文池筛成 solid 的核心集，逐篇抽成结构化事实，建成数据库</text><text x="380" y="350" class="fl-mo">产物：extract/*.json + db/*.csv</text><text x="380" y="373" class="fl-mc">11 个阶段（🔭 1 个规划中）　·　★ 人工闸 ②　·　🧩 7 处换领域要改</text><text x="982" y="304" class="fl-more">看细图 ↓</text></a>
+<a href="#fl-m2" class="fl-link"><rect x="300" y="270" width="700" height="116" rx="12" class="fl-mod" style="stroke:var(--teal)"/><rect x="300" y="270" width="10" height="116" rx="5" style="fill:var(--teal)"/><circle cx="344" cy="310" r="20" style="fill:var(--teal)"/><text x="344" y="317" class="fl-mn">2</text><text x="380" y="304" class="fl-mt">证据地基</text><text x="380" y="328" class="fl-mg">把论文池筛成 solid 的核心集，逐篇抽成结构化事实，建成数据库</text><text x="380" y="350" class="fl-mo">产物：extract/*.json + db/*.csv</text><text x="380" y="373" class="fl-mc">11 个阶段　·　★ 人工闸 ②　·　🧩 7 处换领域要改</text><text x="982" y="304" class="fl-more">看细图 ↓</text></a>
 <a href="#fl-m3" class="fl-link"><rect x="300" y="420" width="700" height="116" rx="12" class="fl-mod" style="stroke:var(--green)"/><rect x="300" y="420" width="10" height="116" rx="5" style="fill:var(--green)"/><circle cx="344" cy="460" r="20" style="fill:var(--green)"/><text x="344" y="467" class="fl-mn">3</text><text x="380" y="454" class="fl-mt">候选通解轮</text><text x="380" y="478" class="fl-mg">多个提议者并行提出通解，独立审查后留下终稿结论 G</text><text x="380" y="500" class="fl-mo">产物：final_candidates.json + 打分</text><text x="380" y="523" class="fl-mc">4 个阶段　·　★ 人工闸 ③　·　🧩 3 处换领域要改　·　↻ 模块内回环 2</text><text x="982" y="454" class="fl-more">看细图 ↓</text></a>
 <a href="#fl-m4" class="fl-link"><rect x="300" y="570" width="700" height="116" rx="12" class="fl-mod" style="stroke:var(--accent)"/><rect x="300" y="570" width="10" height="116" rx="5" style="fill:var(--accent)"/><circle cx="344" cy="610" r="20" style="fill:var(--accent)"/><text x="344" y="617" class="fl-mn">4</text><text x="380" y="604" class="fl-mt">试味与扩展</text><text x="380" y="628" class="fl-mg">不花钱地反复敲打每条 G：稳健性、复用、复现价值、矛盾</text><text x="380" y="650" class="fl-mo">产物：robustness / 复核结果</text><text x="380" y="673" class="fl-mc">6 个阶段（🔭 1 个规划中）　·　🧩 1 处换领域要改</text><text x="982" y="604" class="fl-more">看细图 ↓</text></a>
 <a href="#fl-m5" class="fl-link"><rect x="300" y="720" width="700" height="116" rx="12" class="fl-mod" style="stroke:var(--blue)"/><rect x="300" y="720" width="10" height="116" rx="5" style="fill:var(--blue)"/><circle cx="344" cy="760" r="20" style="fill:var(--blue)"/><text x="344" y="767" class="fl-mn">5</text><text x="380" y="754" class="fl-mt">终局成文</text><text x="380" y="778" class="fl-mg">把 G 写成论文，溯源核对，翻译，出 PDF</text><text x="380" y="800" class="fl-mo">产物：金子论文中英文 PDF</text><text x="380" y="823" class="fl-mc">9 个阶段（🔭 4 个规划中）　·　★ 人工闸 ⑤　·　↻ 模块内回环 3</text><text x="982" y="754" class="fl-more">看细图 ↓</text></a>
@@ -384,11 +387,12 @@ python3 pipeline/check.py RUN_DIR extract          # 全部批次抽完后过闸
 <text x="614.0" y="965" class="fl-b">每题 token × 单价 · 便宜多次 vs 贵一次</text>
 <text x="892" y="936" class="fl-dm">🧩 领域插件：换领域要换</text>
 <text x="892" y="951" class="fl-g">闸门 文件存在</text>
-<rect x="330" y="1006" width="540" height="60" rx="10" class="fl-box pl" style="stroke:var(--teal)"/>
-<circle cx="358" cy="1036.0" r="16" class="fl-nc" style="stroke:var(--teal)"/><text x="358" y="1040.0" class="fl-nn">🔭</text>
+<rect x="330" y="1006" width="540" height="60" rx="10" class="fl-box" style="stroke:var(--teal)"/>
+<circle cx="358" cy="1036.0" r="16" class="fl-nc" style="stroke:var(--teal)"/><text x="358" y="1040.0" class="fl-nn">09b</text>
 <text x="614.0" y="1031" class="fl-t">验矿卡</text>
-<text x="614.0" y="1051" class="fl-b">内部一致性 / 代码公开 / 引用真实 → solidity.csv</text>
-<text x="892" y="1022" class="fl-pn">🔭 规划中 · 蓝图 B1</text>
+<text x="614.0" y="1051" class="fl-b">抽取后、建库前 · 一致性 / 代码 / 来源 ID → solidity.csv</text>
+<text x="892" y="1022" class="fl-g">已实现 · B1 · 闸门 文件存在</text>
+<text x="892" y="1037" class="fl-r">只报信号，不造总分，不设默认阈值</text>
 </svg></div></details>
 <details class="fl-d" id="fl-m3"><summary>模块 3 · 候选通解轮　<small>多个提议者并行提出通解，独立审查后留下终稿结论 G（4 个阶段）</small></summary><div class="tw"><svg class="fl" viewBox="0 0 1220 498" role="img" aria-label="模块 3 候选通解轮 细图" xmlns="http://www.w3.org/2000/svg">
 <rect x="12" y="10" width="1196" height="478" rx="14" style="fill:var(--green-soft)" class="fl-band"/>
