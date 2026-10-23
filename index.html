@@ -154,6 +154,7 @@ python3 scripts/score_candidates.py 候选.json 打分.json                     
 <p>照 <code>config/menu.md</code> 的格式写一份菜单，包括：</p>
 <ul>
   <li>选题</li>
+  <li><strong>中心问题</strong>：一句话，外行一分钟能听懂，并说清什么算答上了；子问题都挂在它下面，偏题的进剩菜。审查步用它判终稿集合有没有跑题（凌杨 §4.2a、§3.7）</li>
   <li>读者与注意力预算</li>
   <li>时间窗 <code>YYYY-MM-DD .. YYYY-MM-DD</code></li>
   <li>纳入 / 排除标准</li>
@@ -181,6 +182,7 @@ python3 pipeline/check.py RUN_DIR extract          # 全部批次抽完后过闸
 <h3>三类输入怎么填 · 带范例</h3>
 <h4>① 选题与读者（菜单里必填）</h4>
 <pre><code>选题：多次便宜调用 vs 一次贵调用——多 agent、并行采样、投票 / 聚合、辩论、自适应停止、test-time scaling。
+中心问题：多花便宜模型的 token（多采样、多 agent、辩论、验证、共享、聪明地停），什么时候能追平或超过一次贵模型调用，要花多少真钱？
 读者：做 agent 系统的研究者；注意力预算：一篇 ≤ 4,500 词的正文。
 时间窗：2023-01-01 .. 2026-10-19</code></pre>
 <h4>② 纳入 / 排除（菜单里必填）</h4>
