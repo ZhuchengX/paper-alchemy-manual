@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="zh" data-theme="light" style="--rec-label: '★ 推荐'">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <title>论文炼金终态蓝图：对照 Team Paper Lite</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ============================================================
+       TOKENS
+       ============================================================ */
+    :root {
+      --bg: #FAFAF7;
+      --surface: #FFFFFF;
+      --surface-2: #F5F5F0;
+      --surface-3: #EFEEE8;
+      --text: #1A1A1A;
+      --text-muted: #4A4A45;
+      --text-subtle: #6B6B66;
+      --accent: #D97757;
+      --accent-hover: #C56843;
+      --accent-soft: #FBEEE6;
+      --accent-border: #F0D5C4;
+      --accent-strong: #A85533;
+      --border: #E5E4DC;
+      --border-strong: #CDCDC4;
+      --code-bg: #F5F2EC;
+      --code-text: #2A2A2A;
+      --info: #2563EB;
+      --info-soft: #EFF6FF;
+      --info-border: #BFDBFE;
+      --warn: #B45309;
+      --warn-soft: #FFFBEB;
+      --warn-border: #FDE68A;
+      --danger: #B91C1C;
+      --danger-soft: #FEF2F2;
+      --danger-border: #FECACA;
+      --success: #047857;
+      --success-soft: #ECFDF5;
+      --success-border: #A7F3D0;
+      --decision: #6D28D9;
+      --decision-soft: #F5F3FF;
+      --decision-border: #DDD6FE;
+      --shadow-sm: 0 1px 2px rgba(20, 14, 8, 0.04);
+      --shadow: 0 1px 2px rgba(20, 14, 8, 0.04), 0 4px 12px rgba(20, 14, 8, 0.06);
+      --shadow-lg: 0 8px 24px rgba(20, 14, 8, 0.10);
+      --radius: 12px;
+      --radius-sm: 8px;
+      --radius-lg: 16px;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans CJK JP', 'Noto Sans CJK KR', sans-serif;
+      --font-mono: 'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+      --z-progress: 200;
+      --z-topbar: 100;
+      --z-drawer: 300;
+      --z-backdrop: 250;
+    }
+
+    [data-theme="dark"] {
+      --bg: #1A1714;
+      --surface: #221E1A;
+      --surface-2: #2A2520;
+      --surface-3: #322C26;
+      --text: #F5F0E8;
+      --text-muted: #C8C0B6;
+      --text-subtle: #9A938A;
+      --accent: #E89572;
+      --accent-hover: #F2A87F;
+      --accent-soft: #3A2A22;
+      --accent-border: #5A3D2E;
+      --accent-strong: #F5B493;
+      --border: #2E2924;
+      --border-strong: #463F38;
+      --code-bg: #1E1B17;
+      --code-text: #E8E2D8;
+      --info: #93C5FD;
+      --info-soft: #1E2A3D;
+      --info-border: #2A4365;
+      --warn: #FBBF24;
+      --warn-soft: #332817;
+      --warn-border: #5C4520;
+      --danger: #FCA5A5;
+      --danger-soft: #3A1F1F;
+      --danger-border: #5C2A2A;
+      --success: #6EE7B7;
+      --success-soft: #1A3329;
+      --success-border: #1F5C45;
+      --decision: #C4B5FD;
+      --decision-soft: #2A1F40;
+      --decision-border: #4A3870;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.25);
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.25), 0 4px 12px rgba(0, 0, 0, 0.35);
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.45);
+    }
+
+    /* ============================================================
+       BASE
+       ============================================================ */
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+    body {
+      margin: 0;
+      font-family: var(--font-sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+      transition: background-color 0.2s, color 0.2s;
+    }
+    ::selection { background: var(--accent-soft); color: var(--accent-strong); }
+
+    /* Skip link */
+    .skip-link {
+      position: absolute;
+      top: -100px; left: 8px;
+      padding: 10px 16px;
+      background: var(--accent);
+      color: #fff;
+      text-decoration: none;
+      border-radius: var(--radius-sm);
+      font-weight: 500;
+      z-index: 1000;
+      transition: top 0.15s;
+    }
+    .skip-link:focus { top: 8px; }
+
+    /* SVG sprite container (hidden) */
+    .icon-sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+    .icon { display: inline-block; flex-shrink: 0; vertical-align: middle; stroke: currentColor; fill: none; }
+
+    /* Scroll progress bar */
+    .scroll-progress {
+      position: fixed;
+      top: 0; left: 0;
+      height: 2px;
+      width: 0;
+      background: var(--accent);
+      z-index: var(--z-progress);
+      transition: width 0.05s linear;
+    }
+
+    /* ============================================================
+       TOPBAR
+       ============================================================ */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: var(--z-topbar);
+      background: rgba(250, 250, 247, 0.85);
+      backdrop-filter: saturate(180%) blur(12px);
+      -webkit-backdrop-filter: saturate(180%) blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    [data-theme="dark"] .topbar { background: rgba(26, 23, 20, 0.85); }
+    .topbar-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      color: var(--text);
+      font-size: 14px;
+    }
+    .brand-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 4px var(--accent-soft);
+      animation: brand-pulse 2.8s ease-in-out infinite;
+    }
+    @keyframes brand-pulse {
+      0%, 100% { box-shadow: 0 0 0 4px var(--accent-soft); }
+      50%      { box-shadow: 0 0 0 7px transparent; }
+    }
+    .topbar-actions { display: flex; gap: 6px; align-items: center; }
+    .icon-btn {
+      width: 40px; height: 40px;
+      display: inline-flex; align-items: center; justify-content: center;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-muted);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s, background-color 0.15s;
+      padding: 0;
+    }
+    .icon-btn .icon { width: 18px; height: 18px; stroke-width: 2; }
+    .icon-btn[hidden] { display: none; }
+
+    /* ============================================================
+       LAYOUT
+       ============================================================ */
+    .layout {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 48px;
+      padding: 32px 24px 96px;
+    }
+    .content { min-width: 0; }
+
+    /* ============================================================
+       TOC (desktop + mobile drawer)
+       ============================================================ */
+    .toc {
+      position: sticky;
+      top: 80px;
+      align-self: start;
+      max-height: calc(100vh - 100px);
+      overflow-y: auto;
+      padding-right: 8px;
+    }
+    .toc::-webkit-scrollbar { width: 6px; }
+    .toc::-webkit-scrollbar-track { background: transparent; }
+    .toc::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+    .toc-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 12px 12px;
+    }
+    .toc-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-subtle);
+      margin: 0;
+    }
+    .toc-close { display: none; }
+    .toc-nav { display: flex; flex-direction: column; gap: 2px; }
+    .toc-nav a {
+      display: flex; align-items: center;
+      min-height: 36px;
+      padding: 8px 14px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13.5px;
+      border-left: 2px solid transparent;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      transition: color 0.15s, background-color 0.15s, border-color 0.15s;
+      line-height: 1.4;
+    }
+    .toc-nav a.active {
+      color: var(--accent);
+      border-left-color: var(--accent);
+      background: var(--accent-soft);
+      font-weight: 500;
+    }
+    .toc-nav a.lvl-3 { padding-left: 26px; font-size: 12.5px; }
+    .toc-backdrop {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      z-index: var(--z-backdrop);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    /* ============================================================
+       DOC HEADER
+       ============================================================ */
+    .doc-header {
+      margin-bottom: 40px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    .doc-eyebrow {
+      display: inline-flex; align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      background: var(--accent-soft);
+      color: var(--accent-strong);
+      border: 1px solid var(--accent-border);
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      margin-bottom: 16px;
+    }
+    .doc-title {
+      font-size: clamp(28px, 3vw + 16px, 40px);
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin: 0 0 12px;
+      color: var(--text);
+      text-wrap: balance;
+    }
+    .doc-subtitle {
+      font-size: clamp(15px, 0.6vw + 13px, 18px);
+      color: var(--text-muted);
+      line-height: 1.55;
+      margin: 0 0 20px;
+      max-width: 75ch;
+      text-wrap: pretty;
+    }
+    .doc-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      font-size: 13px;
+      color: var(--text-subtle);
+    }
+    .doc-meta-item { display: inline-flex; align-items: center; gap: 6px; }
+    .doc-meta .icon { width: 14px; height: 14px; stroke-width: 2; }
+
+    /* ============================================================
+       CONTENT (typography)
+       ============================================================ */
+    .content h1, .content h2, .content h3, .content h4 {
+      color: var(--text);
+      line-height: 1.3;
+      letter-spacing: -0.01em;
+      scroll-margin-top: 80px;
+      text-wrap: balance;
+    }
+    .content h2 {
+      font-size: 26px;
+      font-weight: 600;
+      margin: 56px 0 16px;
+      padding-top: 8px;
+      position: relative;
+    }
+    .content h3 {
+      font-size: 19px;
+      font-weight: 600;
+      margin: 36px 0 12px;
+      position: relative;
+    }
+    .content h4 {
+      font-size: 13px;
+      font-weight: 600;
+      margin: 24px 0 8px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .content > p,
+    .content > ul,
+    .content > ol,
+    .content > blockquote { max-width: 75ch; }
+    .content p { margin: 0 0 16px; text-wrap: pretty; overflow-wrap: anywhere; }
+    .content a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-border); }
+    .content ul, .content ol { padding-left: 24px; margin: 0 0 16px; }
+    .content li { margin: 4px 0; }
+    .content strong { color: var(--text); font-weight: 600; }
+    .content em { color: var(--text-muted); }
+    .content hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+
+    /* Anchor links injected by JS on h2/h3 with id */
+    .anchor {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 24px; height: 24px;
+      margin-left: 6px;
+      color: var(--text-subtle);
+      opacity: 0;
+      transform: translateY(-1px);
+      transition: opacity 0.15s, color 0.15s;
+      border-bottom: none !important;
+      border-radius: var(--radius-sm);
+    }
+    .anchor .icon { width: 14px; height: 14px; stroke-width: 2; }
+
+    /* Images */
+    .content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      margin: 20px 0;
+      display: block;
+    }
+    .content figure { margin: 20px 0; }
+    .content figure img { margin: 0; }
+    .content figcaption {
+      font-size: 13px;
+      color: var(--text-subtle);
+      margin-top: 8px;
+      text-align: center;
+    }
+
+    /* Task lists (- [ ] / - [x]) */
+    .content .task-list-item { list-style: none; margin-left: -22px; }
+    .content .task-list-item-checkbox {
+      margin-right: 8px;
+      vertical-align: -2px;
+      accent-color: var(--accent);
+    }
+
+    /* Footnotes */
+    .content .footnote-ref a,
+    .content sup a {
+      font-size: 0.75em;
+      vertical-align: super;
+      border-bottom: none;
+      padding: 0 2px;
+    }
+    .content .footnotes {
+      margin-top: 56px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    /* ============================================================
+       CODE
+       ============================================================ */
+    .content code {
+      font-family: var(--font-mono);
+      background: var(--code-bg);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.88em;
+      color: var(--code-text);
+      border: 1px solid var(--border);
+      overflow-wrap: anywhere;
+    }
+    .content pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      overflow-x: auto;
+      font-size: 13.5px;
+      line-height: 1.6;
+      margin: 16px 0;
+      position: relative;
+    }
+    .content pre code {
+      background: none; padding: 0; border: none;
+      color: var(--code-text);
+      font-size: inherit;
+    }
+    .copy-btn {
+      position: absolute;
+      top: 8px; right: 8px;
+      width: 32px; height: 32px;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      color: var(--text-subtle);
+      opacity: 0;
+      transition: opacity 0.15s, color 0.15s, border-color 0.15s;
+      padding: 0;
+    }
+    .copy-btn .icon { width: 14px; height: 14px; stroke-width: 2; }
+    .copy-btn.copied { color: var(--success); border-color: var(--success-border); opacity: 1; }
+
+    /* ============================================================
+       TIMELINE / STEPS
+       ============================================================ */
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin: 24px 0;
+      position: relative;
+    }
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 19px;
+      top: 20px;
+      bottom: 20px;
+      width: 2px;
+      background: linear-gradient(180deg, var(--accent-border), var(--border));
+    }
+    .step {
+      display: grid;
+      grid-template-columns: 40px 1fr;
+      gap: 16px;
+      align-items: start;
+      padding: 16px 4px;
+      position: relative;
+      border-radius: var(--radius);
+      transition: background-color 0.15s;
+    }
+    .step-num {
+      width: 40px; height: 40px;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--surface);
+      border: 2px solid var(--accent);
+      color: var(--accent);
+      border-radius: 50%;
+      font-weight: 600;
+      font-size: 14px;
+      flex-shrink: 0;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+      z-index: 1;
+      transition: background-color 0.15s, color 0.15s, transform 0.15s;
+    }
+    .step.done .step-num { background: var(--accent); color: #fff; }
+    .step-body { padding-top: 6px; min-width: 0; }
+    .step-body h3 {
+      margin: 0 0 6px;
+      font-size: 16px;
+      font-weight: 600;
+    }
+    .step-body p { margin: 0 0 8px; color: var(--text-muted); font-size: 14.5px; max-width: 75ch; }
+    .step-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .tag {
+      display: inline-block;
+      padding: 2px 8px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: 11.5px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    /* ============================================================
+       CALLOUTS
+       ============================================================ */
+    .callout {
+      display: grid;
+      grid-template-columns: 24px 1fr;
+      gap: 14px;
+      padding: 14px 18px;
+      border-radius: var(--radius);
+      border: 1px solid;
+      margin: 20px 0;
+      font-size: 14.5px;
+      line-height: 1.6;
+      max-width: 75ch;
+    }
+    .callout-icon { width: 20px; height: 20px; margin-top: 2px; stroke-width: 2; }
+    .callout-body { min-width: 0; }
+    .callout-title { font-weight: 600; margin: 0 0 4px; font-size: 14px; }
+    .callout-body p:last-child { margin-bottom: 0; }
+    .callout-body code { background: rgba(0,0,0,0.04); }
+    [data-theme="dark"] .callout-body code { background: rgba(255,255,255,0.06); }
+
+    .callout-info     { background: var(--info-soft);     border-color: var(--info-border);     color: var(--text); }
+    .callout-info     .callout-title, .callout-info     .callout-icon { color: var(--info); }
+    .callout-warn     { background: var(--warn-soft);     border-color: var(--warn-border);     color: var(--text); }
+    .callout-warn     .callout-title, .callout-warn     .callout-icon { color: var(--warn); }
+    .callout-danger   { background: var(--danger-soft);   border-color: var(--danger-border);   color: var(--text); }
+    .callout-danger   .callout-title, .callout-danger   .callout-icon { color: var(--danger); }
+    .callout-success  { background: var(--success-soft);  border-color: var(--success-border);  color: var(--text); }
+    .callout-success  .callout-title, .callout-success  .callout-icon { color: var(--success); }
+    .callout-decision { background: var(--decision-soft); border-color: var(--decision-border); color: var(--text); }
+    .callout-decision .callout-title, .callout-decision .callout-icon { color: var(--decision); }
+    .callout-tip      { background: var(--accent-soft);   border-color: var(--accent-border);   color: var(--text); }
+    .callout-tip      .callout-title, .callout-tip      .callout-icon { color: var(--accent-strong); }
+
+    /* ============================================================
+       KEY-POINT HIGHLIGHT
+       ============================================================ */
+    .highlight {
+      background: linear-gradient(135deg, var(--accent-soft), var(--surface-2));
+      border-left: 4px solid var(--accent);
+      padding: 18px 22px;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      margin: 24px 0;
+      font-size: 16px;
+      line-height: 1.65;
+      max-width: 75ch;
+    }
+    .highlight-label {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent-strong);
+      margin-bottom: 6px;
+    }
+
+    /* ============================================================
+       MERMAID
+       ============================================================ */
+    .diagram {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin: 24px 0;
+      box-shadow: var(--shadow-sm);
+      overflow-x: auto;
+    }
+    .diagram-caption {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px dashed var(--border);
+      font-size: 13px;
+      color: var(--text-subtle);
+      text-align: center;
+    }
+    .mermaid { text-align: center; min-height: 80px; }
+    .mermaid svg { max-width: 100%; height: auto; }
+    .mermaid:not([data-processed]) {
+      opacity: 0.4;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-subtle);
+      white-space: pre-wrap;
+      text-align: left;
+    }
+
+    /* ============================================================
+       PROS / CONS
+       ============================================================ */
+    .proscons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 24px 0;
+    }
+    .proscons-col {
+      padding: 16px 20px;
+      border-radius: var(--radius);
+      border: 1px solid;
+    }
+    .proscons-col h4 {
+      margin: 0 0 12px;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .proscons-col ul { margin: 0; padding-left: 18px; }
+    .proscons-col li { margin: 6px 0; }
+    .pros { background: var(--success-soft); border-color: var(--success-border); }
+    .pros h4 { color: var(--success); }
+    .cons { background: var(--danger-soft); border-color: var(--danger-border); }
+    .cons h4 { color: var(--danger); }
+
+    /* ============================================================
+       COMPARISON CARDS
+       ============================================================ */
+    .compare {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin: 24px 0;
+    }
+    .compare-card {
+      padding: 18px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      transition: border-color 0.18s, box-shadow 0.18s;
+      position: relative;
+    }
+    .compare-card.recommended { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+    .compare-card.recommended::before {
+      content: var(--rec-label, "★ Recommended");
+      position: absolute; top: -10px; right: 14px;
+      background: var(--accent); color: #fff;
+      padding: 2px 10px; border-radius: 999px;
+      font-size: 11px; font-weight: 600;
+    }
+    .compare-card h4 { margin: 0 0 8px; font-size: 15px; color: var(--text); text-transform: none; letter-spacing: normal; }
+    .compare-card p { margin: 0; color: var(--text-muted); font-size: 14px; }
+
+    /* ============================================================
+       COLLAPSIBLE
+       ============================================================ */
+    details.collapsible {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin: 16px 0;
+      background: var(--surface);
+      overflow: hidden;
+    }
+    details.collapsible[open] { box-shadow: var(--shadow-sm); }
+    details.collapsible > summary {
+      cursor: pointer;
+      padding: 14px 18px;
+      font-weight: 500;
+      color: var(--text);
+      list-style: none;
+      display: flex; align-items: center; gap: 10px;
+      user-select: none;
+      transition: background 0.15s;
+      min-height: 44px;
+    }
+    details.collapsible > summary::-webkit-details-marker { display: none; }
+    details.collapsible > summary::before {
+      content: "›";
+      display: inline-block;
+      transition: transform 0.18s;
+      color: var(--accent);
+      font-size: 18px;
+      font-weight: 700;
+    }
+    details.collapsible[open] > summary::before { transform: rotate(90deg); }
+    .collapsible-body { padding: 4px 18px 18px; border-top: 1px solid var(--border); }
+    .collapsible-body > *:first-child { margin-top: 12px; }
+
+    /* ============================================================
+       TABLES (wrapped via .table-wrap or naturally responsive)
+       ============================================================ */
+    .table-wrap {
+      overflow-x: auto;
+      margin: 20px 0;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      max-width: 100%;
+    }
+    .content table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      background: var(--surface);
+      margin: 0;
+    }
+    /* Standalone tables (not inside .table-wrap) keep visual border */
+    .content > table {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin: 20px 0;
+      display: block;
+      overflow-x: auto;
+    }
+    .content th {
+      background: var(--surface-2);
+      color: var(--text);
+      font-weight: 600;
+      text-align: left;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+    .content td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-muted);
+      vertical-align: top;
+    }
+    .content tr:last-child td { border-bottom: none; }
+
+    /* ============================================================
+       BLOCKQUOTE
+       ============================================================ */
+    .content blockquote {
+      margin: 20px 0;
+      padding: 4px 20px;
+      border-left: 3px solid var(--accent-border);
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    /* ============================================================
+       FOOTER
+       ============================================================ */
+    .doc-footer {
+      margin-top: 80px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--text-subtle);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .doc-footer a { color: var(--accent); text-decoration: none; }
+
+    /* ============================================================
+       FOCUS-VISIBLE (a11y)
+       ============================================================ */
+    *:focus { outline: none; }
+    *:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+      border-radius: var(--radius-sm);
+    }
+    .toc-nav a:focus-visible { outline-offset: -2px; }
+    .icon-btn:focus-visible { outline-offset: 2px; }
+    .anchor:focus-visible { opacity: 1; outline-offset: 2px; }
+    details.collapsible > summary:focus-visible { outline-offset: -2px; }
+
+    /* ============================================================
+       HOVER (only on hover-capable devices to avoid sticky-tap on mobile)
+       ============================================================ */
+    @media (hover: hover) {
+      .icon-btn:hover { color: var(--accent); border-color: var(--accent-border); background: var(--accent-soft); }
+      .toc-nav a:hover { color: var(--accent); background: var(--accent-soft); }
+      .content a:hover { color: var(--accent-hover); border-bottom-color: var(--accent); }
+      .compare-card:hover { border-color: var(--accent-border); box-shadow: var(--shadow); }
+      .compare-card.recommended:hover { border-color: var(--accent); }
+      .content tr:hover td { background: var(--surface-2); }
+      details.collapsible > summary:hover { background: var(--surface-2); }
+      .step:hover { background: var(--surface-2); }
+      .step:hover .step-num { transform: scale(1.05); }
+      .anchor:hover { color: var(--accent); }
+      .content h2:hover .anchor,
+      .content h3:hover .anchor { opacity: 1; }
+      .copy-btn:hover { color: var(--accent); border-color: var(--accent-border); }
+      .content pre:hover .copy-btn { opacity: 1; }
+    }
+    /* On touch devices, copy-btn is always visible at low opacity */
+    @media (hover: none) {
+      .copy-btn { opacity: 0.6; }
+      .anchor { opacity: 0.4; }
+    }
+
+    /* ============================================================
+       MOBILE (≤900px) — TOC becomes off-canvas drawer
+       ============================================================ */
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        padding: 20px 16px 80px;
+      }
+      .topbar-inner { padding: 8px 12px; }
+      .doc-header { margin-bottom: 28px; padding-bottom: 20px; }
+
+      .toc-mobile-trigger { display: inline-flex !important; }
+
+      .toc {
+        position: fixed;
+        top: 0; left: 0;
+        width: min(300px, 82vw);
+        height: 100dvh;
+        max-height: 100dvh;
+        background: var(--surface);
+        z-index: var(--z-drawer);
+        padding: 16px 8px 24px 16px;
+        box-shadow: var(--shadow-lg);
+        transform: translateX(-105%);
+        transition: transform 0.25s ease;
+      }
+      .toc-head { padding: 4px 4px 12px 8px; }
+      .toc-close {
+        display: inline-flex !important;
+        width: 36px; height: 36px;
+        align-items: center; justify-content: center;
+        background: transparent;
+        border: 1px solid transparent;
+        border-radius: var(--radius-sm);
+        color: var(--text-muted);
+        cursor: pointer;
+        padding: 0;
+      }
+      .toc-close .icon { width: 18px; height: 18px; stroke-width: 2; }
+      body.toc-open .toc { transform: translateX(0); }
+      body.toc-open .toc-backdrop {
+        display: block;
+        opacity: 1;
+      }
+      .toc-backdrop {
+        display: block;
+        opacity: 0;
+        pointer-events: none;
+      }
+      body.toc-open .toc-backdrop { pointer-events: auto; }
+      body.toc-open { overflow: hidden; }
+    }
+    @media (min-width: 901px) {
+      .toc-mobile-trigger { display: none !important; }
+    }
+
+    /* ============================================================
+       REDUCED MOTION (a11y)
+       ============================================================ */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+      html { scroll-behavior: auto; }
+      .brand-dot { animation: none; box-shadow: 0 0 0 4px var(--accent-soft); }
+    }
+
+    /* ============================================================
+       PRINT
+       ============================================================ */
+    @media print {
+      .topbar, .toc, .toc-backdrop, .icon-btn, .copy-btn, .anchor, .scroll-progress { display: none !important; }
+      .layout { grid-template-columns: 1fr; padding: 0; max-width: 100%; }
+      body { background: #fff; color: #000; }
+      a { color: #000; }
+      .content pre, .callout, .compare-card, .step, .diagram { break-inside: avoid; }
+      .doc-footer { break-before: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Skip link for keyboard users -->
+  <a href="#main" class="skip-link">跳到正文</a>
+
+  <!-- Scroll progress -->
+  <div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
+
+  <!-- SVG icon sprite (Lucide-style) -->
+  <svg class="icon-sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="i-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></symbol>
+    <symbol id="i-warn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></symbol>
+    <symbol id="i-danger" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></symbol>
+    <symbol id="i-success" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></symbol>
+    <symbol id="i-decision" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol>
+    <symbol id="i-tip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14a5 5 0 1 0-6.18 0 4 4 0 0 1 1.59 2h2.99a4 4 0 0 1 1.6-2Z"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+    <symbol id="i-printer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></symbol>
+  </svg>
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <button class="icon-btn toc-mobile-trigger" id="toc-toggle" onclick="openToc()" aria-label="目录" title="目录">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-menu"/></svg>
+        </button>
+        <span class="brand-dot" aria-hidden="true"></span>
+        <span>系统设计</span>
+      </div>
+      <div class="topbar-actions">
+        <button class="icon-btn" onclick="window.print()" title="打印 / 保存 PDF" aria-label="打印 / 保存 PDF">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-printer"/></svg>
+        </button>
+        <button class="icon-btn" id="theme-toggle" onclick="toggleTheme()" title="切换主题" aria-label="切换主题">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use id="theme-icon-use" href="#i-moon"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- TOC drawer backdrop (mobile) -->
+  <div class="toc-backdrop" onclick="closeToc()" aria-hidden="true"></div>
+
+  <div class="layout">
+    <aside class="toc" id="toc" aria-label="目录">
+      <div class="toc-head">
+        <p class="toc-title">目录</p>
+        <button class="toc-close" onclick="closeToc()" aria-label="关闭">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-x"/></svg>
+        </button>
+      </div>
+      <nav class="toc-nav" id="toc-nav">
+        <a href="#tldr" class="lvl-2">TL;DR</a>
+<a href="#story" class="lvl-2">1. 大白话：两家工厂</a>
+<a href="#map" class="lvl-2">2. 逐项对照：TPL 的机制 vs 我们现在</a>
+<a href="#ours" class="lvl-2">3. 我们独有、TPL 没有的：巨人镜头层</a>
+<a href="#input" class="lvl-2">4. 输入侧：怎么把 autoresearch 论文筛成 solid</a>
+<a href="#specific" class="lvl-2">5. TPL 具体在哪：五个细节习惯</a>
+<a href="#tasks" class="lvl-2">6. 小任务清单（按价值 / 成本排序，一次落一个）</a>
+<a href="#decide" class="lvl-2">7. 等你定的</a>
+
+      </nav>
+    </aside>
+
+    <main class="content" id="main">
+      <header class="doc-header">
+        <span class="doc-eyebrow">SYSTEM DESIGN</span>
+        <h1 class="doc-title">论文炼金终态蓝图：对照 Team Paper Lite</h1>
+        <p class="doc-subtitle">N 篇 autoresearch 论文 → 1 篇有含金量的 insight 论文：流程借 TPL，洞见靠巨人镜头</p>
+        <div class="doc-meta">
+          <span class="doc-meta-item">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-file"/></svg>
+            api.oldphd.xyz/docs/team-paper-lite
+          </span>
+          <span class="doc-meta-item">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-calendar"/></svg>
+            2026-10-23
+          </span>
+          <span class="doc-meta-item">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-clock"/></svg>
+            ~11 分钟阅读
+          </span>
+        </div>
+      </header>
+
+      <!-- CONTENT_START -->
+<h2 id="tldr">TL;DR</h2>
+<div class="highlight">
+  <span class="highlight-label">要点</span>
+  <p>Team Paper Lite（下称 TPL）把「<strong>一个研究想法 → 一篇实证论文</strong>」做成了一条有闸门、能续跑、数字可追溯的流水线。我们要做的是它的镜像：「<strong>N 篇 autoresearch 论文 → 1 篇有含金量的 insight 论文</strong>」。TPL 的流程骨架值得整套借鉴；我们自己的长处在<strong>洞见来源</strong>，也就是巨人肩膀镜头：汪浩然的制度借鉴、ScholarCatalyst 的构思动作、凌杨的棋盘法。</p>
+</div>
+<ul>
+  <li><strong>对照结果</strong>：TPL 的 16 个机制里，我们已有 5 个、做了一半的 6 个、完全没有的 5 个。差距最大的在<strong>终局成文</strong>（架构师三棱镜、全文数字机核、5 角色新眼审稿）和<strong>编排</strong>（一键续跑、统一的人工闸门）。</li>
+  <li><strong>和泛化方案的关系</strong>：泛化方案（packs）解决「能吃哪些领域的论文」，这份蓝图解决「每一轮怎么炼得更深、更可靠」。两件事互不阻塞，可以交替推进。</li>
+  <li><strong>落地</strong>：按 R5 拆成小任务 B0–B8，一次只落一个，每个都配验收。</li>
+</ul>
+<aside class="callout callout-tip">
+  <svg class="callout-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-tip"/></svg>
+  <div class="callout-body">
+    <p class="callout-title">user 标红的两条核心（2026-10-23）</p>
+    <p><strong>① 输入侧足够宽：让有信息量的想法尽量都冒出来。</strong>TPL 什么都能吃，从一句话想法到完整研究方案都行。方案写得越完整，它越按你写明的方向去实施；写得越模糊，它越去探索更多候选。路线数也跟着变：详细方案 3 条，中等 4–5 条，模糊 6 条（说明书「输入侧足够宽」）。对到我们：现在 <code>config/menu.md</code> 只有一种写法，提议角度固定为 R1–R4（<code>angles.json</code>）。要改成按菜单写得多细来决定提议路数：只给主题就多开角度去探索，给了假设和坐标轴就收拢到这几个方向。见下表第 0 行。</p>
+    <p><strong>② 中间侧足够深：想法定了以后，让它的贡献尽量做大。</strong>TPL 先拟 3–6 条平行候选，全部跑完，挑最强的一条；再给这条准备约 7 张扩展卡（稳健性 / 异质 / 机制 / 描述），最后才动笔（说明书「中间侧足够深」）。对到我们：下表第 3–5 行，小任务 B2（逐候选质检、选冠军）和 B6（冠军 G 的扩展牌组）。</p>
+  </div>
+</aside>
+<aside class="callout callout-warn">
+  <svg class="callout-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-warn"/></svg>
+  <div class="callout-body">
+    <p class="callout-title">只借思路，不碰代码</p>
+    <p>TPL 是商业闭源软件，使用承诺写明「不得二次开发 / 改编 / 反编译」。我们只借它<strong>公开说明书里写明的设计思想</strong>，下文每条都标了说明书的章节，不接触、不复刻它的代码和提示词。</p>
+  </div>
+</aside>
+
+<h2 id="story">1. 大白话：两家工厂</h2>
+<ul>
+  <li><strong>TPL 是一家「从种子到果树」的苗圃</strong>：你给一颗种子（研究想法 + 数据），它先把要种什么<strong>钉死</strong>（锚），同时育 3–6 棵苗（候选发现）让它们互相比，挑最壮的那棵；再给它嫁接 7 根枝（稳健性、机制……）；最后修剪、拍照、出图册（论文 PDF + 复现包）。每一步都有质检员，关键节点停下来问你。</li>
+  <li><strong>我们是一家「从矿石到金条」的炼金坊</strong>：输入是一大堆矿石（autoresearch 论文，真假混杂），要先<strong>验矿</strong>（筛出 solid 的），再<strong>碎矿</strong>（抽取成带条件的事实），然后用不同的<strong>炉子</strong>去炼。炉子就是巨人肩膀镜头：有的照中国社会制度去找答案（汪浩然），有的照「作者当年怎么被前人启发」去找（ScholarCatalyst），有的把矿摆进棋盘找空格（凌杨）。炼出几块候选金子后互相比，挑真金，再反复敲打验证，最后铸成一块有成色证书的金条（金子论文 + 证据包）。</li>
+</ul>
+<p>两家的<strong>车间流程几乎同构</strong>：锚 → 地基 → 多条候选并行竞争 → 独立质检 → 选冠军 → 围绕冠军加深 → 终局成文 → 人工闸门。区别只在输入（一份数据 vs 一堆论文）和洞见来源（回归 vs 巨人镜头）。</p>
+<figure class="diagram">
+  <pre class="mermaid">
+flowchart LR
+  A[锚<br/>菜单+回显] --> B[验矿<br/>solid 筛选]
+  B --> C[碎矿<br/>抽取+建库]
+  C --> D{巨人镜头<br/>并行出候选}
+  D --> E[独立质检<br/>三态判决]
+  E --> F[选冠军 G]
+  F --> G[扩展卡<br/>敲打验证]
+  G --> H[终局成文<br/>三棱镜+机核+新眼审]
+  H --> I[金条<br/>论文+证据包]
+  </pre>
+  <figcaption class="diagram-caption">目标形态：TPL 的六个相位，换上我们的输入（论文堆）和洞见来源（巨人镜头）。</figcaption>
+</figure>
+
+<h2 id="map">2. 逐项对照：TPL 的机制 vs 我们现在</h2>
+<p>来源一栏：TPL 写说明书里的章节名；我们写 file 或 file:line。✅ = 已有，🟡 = 有一半，❌ = 没有。</p>
+<div class="table-wrap"><table>
+<thead><tr><th>#</th><th>TPL 机制（说明书章节）</th><th>我们现在</th><th>状态</th></tr></thead>
+<tbody>
+<tr><td>0</td><td><strong>输入侧足够宽</strong>：一句话想法到完整方案都能喂；越完整越偏实施，越模糊越偏探索，路线数按详略分 3 / 4–5 / 6（「输入侧足够宽」）</td><td>菜单只有一种写法；提议角度固定 R1–R4（<code>pipeline/angles.json</code>），不随菜单详略变化</td><td>❌</td></tr>
+<tr><td>1</td><td><strong>锚一次设定即固定</strong>：主题 / 论断 / 识别 / 数据四分量，回显确认后不再改（「核心 idea ①」；向导「⑥ 想法确认」）</td><td><code>config/menu.md</code> + <code>run.json</code>，有选题、时间窗、锁定答案；但没有回显确认这一步，也没有「锚不可改」的硬约束</td><td>🟡</td></tr>
+<tr><td>2</td><td><strong>可行性闸 + KILL 出口</strong>：结构性不可检验就诚实止损，写 kill memo（Stage 5；「关于 KILL 出口」）</td><td>没有。语料撑不起通解时，只能靠审查把结论收窄，没有「这一轮不出金子」的正式出口</td><td>❌</td></tr>
+<tr><td>3</td><td><strong>3–6 条平行候选互相竞争</strong>，选 1 条冠军；被弃的留档并「禁止在引言里复活」（「核心 idea ②」；<code>dropped_routes.md</code>）</td><td>提议 P1–P3 / R1–R4 并行，互不读对方文件（RUNBOOK §2 第 3 条），审查选出终稿 G；被弃候选留在 <code>synthesis/</code>，但没有「禁止复活」的规约</td><td>🟡</td></tr>
+<tr><td>4</td><td><strong>每条候选一个独立 critic</strong>，写审分离，三态判决 VALIDATED / REVISE / DROP，REVISE 有界重跑（<code>findings_critic</code>）</td><td><code>04_review.md</code> 是<strong>一个</strong>审查 agent 看全部候选；没有逐条三态判决，也没有「打回重炼」的环</td><td>🟡</td></tr>
+<tr><td>5</td><td><strong>围绕冠军的 ~7 张扩展卡</strong>：识别加强 / 稳健 / 异质 / 机制 / 描述，默认全保留由人砍（「核心 idea ③」）</td><td>零调用复核已经很多（<code>robustness.py</code>、<code>synthesis/chef/</code>、pubbias、condorcet、cost_metric），但按需临时做，没有「每个 G 一副固定牌组」</td><td>🟡</td></tr>
+<tr><td>6</td><td><strong>5 个人工闸</strong>（计划① 结果① 计划② 结果② 发表），interactive / auto 两种模式（「用户在哪些点介入」）</td><td>有零散的人审点：棋盘 F6 勾选页 <code>build_decision_page.py</code>、F7 跑前配置卡 <code>13_preapproval.md</code>；没有贯穿全流程的统一闸门和 auto 模式</td><td>🟡</td></tr>
+<tr><td>7</td><td><strong>架构师三棱镜</strong>：novelty / narrative / impact 三个 fresh agent 各写一份「这是一篇怎样的论文」，decider 选骨架，auditor 审（<code>architecture/</code>，v1.0.4）</td><td>没有。<code>05_write.md</code> 直接按 G 顺序成文</td><td>❌</td></tr>
+<tr><td>8</td><td><strong>全文数字机核</strong>：论文里每个数字对日志逐条核对，漂移即拦（Stage 13 <code>number_check_report.md</code>）</td><td><code>06_provenance.md</code> 由 agent 抽查论断与出处，记错误率；<code>check.py paper</code> 拦截语料外引用；但没有「正文每个数字 ↔ 打分 json」的机器逐条核对</td><td>🟡</td></tr>
+<tr><td>9</td><td><strong>5 角色新眼审稿</strong>：不读作者侧 brief，更接近真实匿评；再修订、终审（<code>constructive_review</code>）</td><td>写作守则里有审稿人自检 RC1–RC8（<code>writing_guide/lingyang_writing_review.md</code>），但那是作者自查；对成稿没有独立审稿面板</td><td>❌</td></tr>
+<tr><td>10</td><td><strong>claim 标定</strong>：允许 / 禁止的论断清单，防过度宣称（<code>claim_calibration.md</code>）</td><td>G 都写了 level 和边界条件，审查规则里有「I² ≥ 75% 只能说平均」（RUNBOOK §2 第 7 条）；但没有一份给写作 agent 的「禁说清单」</td><td>🟡</td></tr>
+<tr><td>11</td><td><strong>引文联网核验</strong>：假引用就地替换（<code>citation_verify</code>）</td><td>更严：正文只许引语料内论文，<code>check.py paper</code> 机器拦截</td><td>✅</td></tr>
+<tr><td>12</td><td><strong>摘要由 fresh reader 回写</strong>，摘要不出现具体数字（<code>abstract_writeback</code>）</td><td>没有，摘要由写作 agent 自己写</td><td>❌</td></tr>
+<tr><td>13</td><td><strong>去 AI 化 + 术语锁翻译</strong>（<code>derobotify</code>、Stage 15）</td><td><code>writing_guide/zh_style.md</code>（有效写作 + humanizer）、<code>07_translate.md</code> + <code>check_translation.py</code>；去 AI 化只管中文稿</td><td>✅</td></tr>
+<tr><td>14</td><td><strong>控制层 / 工作层 / 交付层三层分开</strong>；<code>state.yaml</code> 是唯一真相；漂流账本、问题账本（「输出目录详解」）</td><td>运行目录隔离、<code>traces/</code> 留痕、漏斗台账 <code>funnel.py</code>、case 反馈台账 <code>docs/09_*</code>；没有机器可读的阶段状态，也没有交付包</td><td>🟡 → 偏 ✅</td></tr>
+<tr><td>15</td><td><strong>一键续跑 + 内容寻址缓存</strong>：<code>team-paper-lite run</code> 选 resume，指纹没变的层整层跳过</td><td>RUNBOOK §3 写明「编排目前由主线程按本手册逐阶段调用 agent，还没有一键脚本」</td><td>❌</td></tr>
+<tr><td>16</td><td><strong>离线烟雾测试</strong>：<code>--fake-agent --auto-gates</code> 不调真模型跑通全流程（「常见问题」）</td><td>各脚本有 selftest，闸门 <code>check.py</code> 齐全；没有全流程的假 agent 演练</td><td>✅ 局部</td></tr>
+</tbody></table></div>
+
+<h2 id="ours">3. 我们独有、TPL 没有的：巨人镜头层</h2>
+<p>TPL 的洞见来源基本只有「回归跑出来是什么」。我们的输入是一堆论文，洞见要从<strong>别处借来的眼光</strong>里来。这正是你说的「中间过程需要非常多巨人肩膀」。建议把它们统一成一个可插拔的<strong>镜头注册表</strong>：每个镜头是一个模板，输入统一（db + 棋盘 + G 草稿），输出统一（候选卡，带出处和信心来源），所有镜头的卡走同一条质检流程。</p>
+<div class="table-wrap"><table>
+<thead><tr><th>镜头</th><th>它问什么</th><th>现在在哪</th></tr></thead>
+<tbody>
+<tr><td>汪浩然 · 制度借鉴</td><td>人类社会、中国古代制度是怎么解决同一个协作问题的？（如科举的锁院回避、御史监察）</td><td><code>pipeline/templates/10_institution_catalyst.md</code>；case 在 run3 <code>synthesis/institution_run/</code></td></tr>
+<tr><td>汪浩然 · 升维</td><td>升维看问题、低维出工具（P31）</td><td><code>15_problem_lift.md</code></td></tr>
+<tr><td>ScholarCatalyst · 构思动作</td><td>作者当年从哪篇前作拿了什么、挪到了哪里？（M2 换挂点、M4 现象升格……）</td><td><code>14_catalyst_ideation.md</code> + skill <code>catalyst-ideation</code></td></tr>
+<tr><td>凌杨 · 棋盘法</td><td>研究问题 × 方法族的棋盘上，哪些格子是空的、薄的、互相矛盾的？</td><td><code>scripts/chessboard*.py</code>，<code>docs/10</code></td></tr>
+<tr><td>统计 · 荟萃 / 发表偏倚</td><td>效应在独立组之间稳不稳？作者自报和他人重跑差多少？</td><td><code>scripts/meta_analysis.py</code>、<code>pubbias_regression.py</code></td></tr>
+<tr><td>（可加）TPL · 三棱镜</td><td>新在哪 / 故事是否自洽 / 为什么有人在乎</td><td>见 B5</td></tr>
+</tbody></table></div>
+<p>以后再找到新的巨人，比如你提到的「去中国社会制度找答案」的其他思路，就只需<strong>写一个镜头模板</strong>登记进去，不用动流水线。</p>
+
+<h2 id="input">4. 输入侧：怎么把 autoresearch 论文筛成 solid</h2>
+<p>TPL 的输入是用户给的可信数据，它只需判「能不能检验」（可行性闸）。我们的输入是 AI 生成的论文，真假混杂，难度更高。现有手段和建议补的：</p>
+<ul>
+  <li><strong>已有</strong>：筛选打 solid_score、看会议档次与机构（<code>01b_triage.md</code>、<code>01c_affiliation.md</code>）；独立来源组，防同一作者群刷屏（<code>independence_graph.py</code>）；发表偏倚回归。</li>
+  <li><strong>可以直接用的新信号</strong>：这次重抽里，抽取 agent 已经在逐篇记录「论文内部数字对不上」，例如 FORD 同一格在 Table 2 与 Table 7 写成 83.74 / 84.74，LEVER 的 Table 6 与 Table 8 也不一致。把它们汇总成每篇一个<strong>内部一致性分</strong>，进 solid 判定。</li>
+  <li><strong>RUNBOOK 自己承认的缺口</strong>：autoresearch 论文要加强「去重去污」，即思想重复、幻觉引用、互相引用（RUNBOOK §3）。</li>
+  <li><strong>建议</strong>：每篇论文出一张「<strong>验矿卡</strong>」（代码 / 日志是否公开、内部一致性、是否可从公开日志复算、引用是否真实、与已有论文的思想重复度），作为 TPL「可行性闸」在我们这边的对应物。</li>
+</ul>
+
+<h2 id="specific">5. TPL 具体在哪：五个细节习惯</h2>
+<p>TPL 之所以显得针对性强，不只是阶段多，而是<strong>每一步都写死了可核对的细节</strong>。这五个习惯我们目前大多只做到一半：</p>
+<div class="table-wrap"><table>
+<thead><tr><th>习惯</th><th>TPL 的写法（说明书原样）</th><th>我们现在</th></tr></thead>
+<tbody>
+<tr><td>每阶段都有<strong>具名产物文件</strong></td><td>Stage 8 → <code>findings_decision.md</code>（含 STAR_ROUTE 编号）；Stage 13 → <code>number_check_report.md</code></td><td>RUNBOOK 阶段表有模板和闸门，但不少阶段的产物文件名只写在模板正文里，没有一张总表</td></tr>
+<tr><td>判决是<strong>封闭枚举</strong></td><td>VALIDATED / REVISE / DROP；PASS / PASS_DESCRIPTIVE_ONLY / KILL；full_paper / short_note</td><td>闸门只有 PASS / FAIL，审查结论是自由文本</td></tr>
+<tr><td>数量和回环都<strong>有上界</strong></td><td>3–6 条路线（按方案详略分 3 / 4–5 / 6）、约 7 张扩展卡、正文 6000–10000 词、≥3 表 + ≥3 图、审计 FAIL 最多重跑 2 次</td><td>部分有：每个 agent 抽 4–5 篇、终稿 G 最多 6 条（<code>MAX_FINAL=6</code>）；回环没有上界</td></tr>
+<tr><td>每个失败都有<strong>名字和修法</strong></td><td>「常见问题」表：报错原文 → 原因 → 一行修法</td><td>经验散落在台账 <code>docs/09_*</code> 和 memory 里，没有给跑的人看的一张排障表</td></tr>
+<tr><td><strong>给人看的决策点只问一件事</strong></td><td>计划闸只看卡片标题 + 一两行，回车放行；结果闸只决定继续 / 改选 / 返回</td><td>F6 勾选页做到了；其他人审点要读整份 md 才能判断</td></tr>
+</tbody></table></div>
+<p>所以新增 <strong>B0：阶段契约表</strong>，排在所有任务之前。它也是 B7 编排器的直接输入。</p>
+
+<h2 id="tasks">6. 小任务清单（按价值 / 成本排序，一次落一个）</h2>
+<div class="timeline">
+  <article class="step"><div class="step-num">B0</div><div class="step-body">
+    <h3>阶段契约表：每阶段一行，全部写死</h3>
+    <p>新文件 <code>pipeline/STAGES.yaml</code>（RUNBOOK 同步生成一张表）。每个阶段一行，写明：输入文件、产物文件名、判决枚举、机器闸门条件、数量上下界、回环上界、人工闸要回答的那一个问题、常见失败及修法。</p>
+    <p><strong>验收</strong>：脚本校验 run3 的实际文件与契约逐项吻合，列出所有不吻合项；不吻合的要么改契约，要么记入台账。</p>
+  </div></article>
+  <article class="step"><div class="step-num">B1</div><div class="step-body">
+    <h3>验矿卡：内部一致性分 + 验矿闸</h3>
+    <p>从抽取的 <code>extractor_notes</code> 和 <code>extraction_confidence</code> 汇总出每篇论文的内部矛盾数，加上代码公开、引用真实性，写成 <code>triage/solidity.csv</code>；建库时允许按它过滤。</p>
+    <p><strong>验收</strong>：在已抽的 50 篇上跑通，FORD、LEVER 这类被标出矛盾的论文分数下降；run3 默认口径的库逐字节不变。</p>
+  </div></article>
+  <article class="step"><div class="step-num">B2</div><div class="step-body">
+    <h3>每个候选一个独立质检员，三态判决</h3>
+    <p><code>04_review</code> 拆成「逐候选 critic（VALIDATED / REVISE / DROP）+ 一个 judge 选冠军」，REVISE 最多打回提议者重炼 2 次。</p>
+    <p><strong>验收</strong>：在 run3 的候选上重跑，每个候选都有一份 critique 文件；DROP 的不进终稿；与原 G1–G10 的差异逐条列表交你看。</p>
+  </div></article>
+  <article class="step"><div class="step-num">B3</div><div class="step-body">
+    <h3>全文数字机核</h3>
+    <p>新脚本把金子论文里每个数字对到 <code>final_scores*.json</code> / db 的出处，对不上就 FAIL（可设容差）。</p>
+    <p><strong>验收</strong>：在 v3.6 正文上跑，输出逐数字对照表；故意改一个数，闸门判 FAIL。</p>
+  </div></article>
+  <article class="step"><div class="step-num">B4</div><div class="step-body">
+    <h3>成稿的 5 角色新眼审稿</h3>
+    <p>新模板：方法学家、领域专家、怀疑者、实践者、写作编辑，五人只读成稿和语料，不读 synthesis 与作者侧材料；修订后再终审。</p>
+    <p><strong>验收</strong>：v3.6 拿到 5 份意见，每条意见指到段落；修订稿 diff 只动被指出的段落。</p>
+  </div></article>
+  <article class="step"><div class="step-num">B5</div><div class="step-body">
+    <h3>架构师三棱镜 + 禁说清单</h3>
+    <p>成文前，novelty / narrative / impact 三个 agent 各出一份论文骨架，decider 选一份；同时生成 <code>claim_calibration.md</code>，即允许 / 禁止的论断清单，交给写作 agent。</p>
+    <p><strong>验收</strong>：三份骨架并排给你选；写作稿里不出现清单禁止的说法（脚本检查）。</p>
+  </div></article>
+  <article class="step"><div class="step-num">B6</div><div class="step-body">
+    <h3>KILL 出口 + 每个 G 的扩展牌组</h3>
+    <p>可行性闸：语料撑不起通解时，输出 null memo，诚实地写「这一轮不出金子，原因是……」。冠军 G 默认配一副扩展牌组：留一组覆盖率、按格异质、机制、反例、发表偏倚、成本口径、闭卷对照，由你砍。</p>
+    <p><strong>验收</strong>：用一个故意很小的语料触发 KILL；run3 的 G4 自动生成 7 张卡。</p>
+  </div></article>
+  <article class="step"><div class="step-num">B7</div><div class="step-body">
+    <h3>编排器：state + 续跑 + 统一闸门</h3>
+    <p><code>pipeline/orchestrate.py</code>：读 RUNBOOK 阶段表，写 <code>state.yaml</code>，按阶段渲染提示词、等闸门；interactive 模式在 5 个闸停下，auto 模式直接放行；用文件指纹跳过没变的阶段。</p>
+    <p><strong>验收</strong>：<code>--fake-agent</code> 模式在一个 3 篇的小语料上从头跑到成文，中途 kill 掉进程，再续跑能接上。</p>
+  </div></article>
+  <article class="step"><div class="step-num">B8</div><div class="step-body">
+    <h3>交付包 + 摘要回写</h3>
+    <p>最后一步打包：论文 PDF、证据包（db 子集、打分脚本、逐数字对照表）、最终报告。摘要由没参与写作的 reader 重写，且不含具体数字。</p>
+    <p><strong>验收</strong>：解压交付包，在一台干净机器上能复算出正文全部数字。</p>
+  </div></article>
+</div>
+<aside class="callout callout-tip">
+  <svg class="callout-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-tip"/></svg>
+  <div class="callout-body">
+    <p class="callout-title">建议顺序</p>
+    <p>B0 → B1 → B3 → B2 → B4 → B5 → B6 → B7 → B8。B1 和 B3 是零调用的纯脚本，最快能让金子更可信；B2、B4 需要调 agent，但用的是订阅额度；B7 是最大的一块，放在流程定型之后再做，避免反复改编排器。</p>
+  </div>
+</aside>
+
+<h2 id="decide">7. 等你定的</h2>
+<ul>
+  <li>蓝图的方向对不对：是否认同「流程照 TPL，洞见靠镜头注册表」。</li>
+  <li>先做哪一组：蓝图 B0–B8，还是泛化 T0–T6，还是交替推进。</li>
+  <li>输入侧的验矿卡（B1）要不要加你自己的 solid 标准，比如只认主会、必须开源代码。</li>
+  <li>「输入侧足够宽」（上表第 0 行）要不要单独立一个小任务，比如菜单分详略三档、提议路数随档位变化。目前还没排进 B0–B8。</li>
+</ul>
+
+<!-- CONTENT_END -->
+
+      <footer class="doc-footer">
+        <span>Generated by <a href="#">md2html</a></span>
+        <span>来源: Team Paper Lite 公开说明书 + paper_alchemy 仓库</span>
+      </footer>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script>
+    // ---------- Theme ----------
+    const STORAGE_KEY = "md2html-theme";
+    function currentTheme() { return document.documentElement.dataset.theme || "light"; }
+    function applyThemeIcon() {
+      const use = document.getElementById("theme-icon-use");
+      if (use) use.setAttribute("href", currentTheme() === "dark" ? "#i-sun" : "#i-moon");
+    }
+    (function restoreTheme() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) document.documentElement.dataset.theme = saved;
+    })();
+
+    // ---------- Mermaid ----------
+    const diagramSources = new Map();
+    function initMermaid() {
+      const isDark = currentTheme() === "dark";
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: isDark ? "dark" : "default",
+        themeVariables: {
+          primaryColor: isDark ? "#3A2A22" : "#FBEEE6",
+          primaryTextColor: isDark ? "#F5F0E8" : "#1A1A1A",
+          primaryBorderColor: isDark ? "#E89572" : "#D97757",
+          lineColor: isDark ? "#9A938A" : "#6B6B66",
+          secondaryColor: isDark ? "#2A2520" : "#F5F5F0",
+          tertiaryColor: isDark ? "#221E1A" : "#FFFFFF",
+          fontFamily: "Inter, system-ui, sans-serif",
+        },
+      });
+    }
+    async function renderMermaid() {
+      initMermaid();
+      const els = document.querySelectorAll(".mermaid");
+      els.forEach(el => {
+        if (!diagramSources.has(el)) diagramSources.set(el, el.textContent.trim());
+        el.textContent = diagramSources.get(el);
+        el.removeAttribute("data-processed");
+      });
+      try { await mermaid.run({ nodes: els }); } catch (e) { console.error(e); }
+    }
+    function toggleTheme() {
+      const next = currentTheme() === "light" ? "dark" : "light";
+      document.documentElement.dataset.theme = next;
+      localStorage.setItem(STORAGE_KEY, next);
+      applyThemeIcon();
+      renderMermaid();
+    }
+
+    // ---------- TOC drawer (mobile) ----------
+    function openToc()  { document.body.classList.add("toc-open"); }
+    function closeToc() { document.body.classList.remove("toc-open"); }
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape" && document.body.classList.contains("toc-open")) closeToc();
+    });
+
+    // ---------- TOC scrollspy ----------
+    function setupTocSpy() {
+      const links = document.querySelectorAll("#toc-nav a[href^='#']");
+      if (!links.length) {
+        const toc = document.getElementById("toc");
+        if (toc) toc.style.display = "none";
+        return;
+      }
+      const map = new Map();
+      links.forEach(a => {
+        const id = a.getAttribute("href").slice(1);
+        const el = document.getElementById(id);
+        if (el) map.set(el, a);
+        a.addEventListener("click", () => {
+          if (window.matchMedia("(max-width: 900px)").matches) closeToc();
+        });
+      });
+      const obs = new IntersectionObserver((entries) => {
+        entries.forEach(en => {
+          const link = map.get(en.target);
+          if (!link) return;
+          if (en.isIntersecting) {
+            links.forEach(l => l.classList.remove("active"));
+            link.classList.add("active");
+          }
+        });
+      }, { rootMargin: "-80px 0px -70% 0px", threshold: 0 });
+      map.forEach((_, el) => obs.observe(el));
+    }
+
+    // ---------- Anchor links on h2/h3 ----------
+    function injectAnchors() {
+      document.querySelectorAll(".content h2[id], .content h3[id]").forEach(h => {
+        if (h.querySelector(".anchor")) return;
+        const a = document.createElement("a");
+        a.className = "anchor";
+        a.href = "#" + h.id;
+        a.setAttribute("aria-label", "Permalink");
+        a.innerHTML = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-link"/></svg>';
+        h.appendChild(a);
+      });
+    }
+
+    // ---------- Copy-to-clipboard on <pre> ----------
+    function injectCopyButtons() {
+      document.querySelectorAll(".content pre").forEach(pre => {
+        if (pre.classList.contains("mermaid")) return;
+        if (pre.querySelector(".copy-btn")) return;
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "copy-btn";
+        btn.setAttribute("aria-label", "Copy code");
+        btn.innerHTML = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-copy"/></svg>';
+        btn.addEventListener("click", async () => {
+          const code = pre.querySelector("code")?.textContent ?? pre.textContent;
+          try {
+            await navigator.clipboard.writeText(code);
+            btn.classList.add("copied");
+            btn.innerHTML = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-check"/></svg>';
+            setTimeout(() => {
+              btn.classList.remove("copied");
+              btn.innerHTML = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-copy"/></svg>';
+            }, 1500);
+          } catch (e) { console.error(e); }
+        });
+        pre.appendChild(btn);
+      });
+    }
+
+    // ---------- Scroll progress ----------
+    function setupScrollProgress() {
+      const bar = document.getElementById("scroll-progress");
+      if (!bar) return;
+      const onScroll = () => {
+        const h = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const p = h > 0 ? (document.documentElement.scrollTop / h * 100) : 0;
+        bar.style.width = p + "%";
+      };
+      window.addEventListener("scroll", onScroll, { passive: true });
+      onScroll();
+    }
+
+    // ---------- Boot ----------
+    document.addEventListener("DOMContentLoaded", () => {
+      applyThemeIcon();
+      injectAnchors();
+      injectCopyButtons();
+      renderMermaid();
+      setupTocSpy();
+      setupScrollProgress();
+    });
+  </script>
+</body>
+</html>
