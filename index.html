@@ -83,7 +83,7 @@ th{background:var(--accent-soft);font-weight:600}
 <p><strong>论文炼金 = 文献采购员 ＋ 证据抽取员 ＋ 统计审查员 ＋ 写作伙伴</strong>，由你本机的 Claude Code 主线程按本手册逐阶段调度子 agent，加上一组 Python 脚本和闸门。你的工作不是读完几百篇论文，而是定选题、在关键决策点拍板、判断最后那篇是不是真金。</p>
 <p>它的优化目标是<strong>注意力经济</strong>：N 篇论文 → m 篇必读（m 远小于 N）。输出必须是论文形态，并且抽象出更高层的通解，不是摘要或综述（<code>CLAUDE.md</code>「必须遵守的设计原则」第 1 条）。</p>
 <div class="cards">
-  <div class="card"><h4>① 输入侧：先验矿</h4><p>输入是一大批论文，人写的或 autoresearch 产出的都行。先两轮筛选：摘要初筛给 solid 分，再按 PDF 首页印出的机构二筛；然后按共享作者分独立来源组，防止同一拨人刷屏。<span class="st plan">🔭 B9 启发池</span>：另用 ScholarCatalyst 作者理由（rationale）当检索算子，找表面不相关、但能启发的论文，单独成池，不进统计。</p></div>
+  <div class="card"><h4>① 输入侧：先验矿</h4><p>输入是一大批论文，人写的或 autoresearch 产出的都行。先两轮筛选：摘要初筛给 solid 分，再按 PDF 首页印出的机构二筛；然后按共享作者分独立来源组，防止同一拨人刷屏。<span class="st plan">🔭 B9 启发池</span>：另用 ScholarCatalyst 作者理由（rationale）蒸馏出的构思动作当算子，找表面不相关、但能启发的论文，并让 13 个算子各出、多个算子组合出 idea 草稿，先把多样性做起来；单独成池，不进统计。</p></div>
   <div class="card"><h4>② 中间侧：多炉并炼</h4><p>每篇论文拆成「带条件的事实 ＋ 算子程序」。3–4 个提议 agent 从不同角度并行提出候选通解，互不读对方文件；打分器和审查 agent 负责筛选。巨人镜头（制度借鉴、构思动作、棋盘法）另出候选卡。</p></div>
   <div class="card"><h4>③ 控制权在你</h4><p>选题与锁定答案、宽松机构的删减、终稿结论、出卡勾选、花钱前的配置卡，这几处都停下来等你。agent 只提议，不替你拍板。</p></div>
   <div class="card"><h4>④ 产出侧：成色可查</h4><p>金子论文（英文全文 ＋ 中文正文 PDF）、决策指南、可视化页（地图、拼盘、结果页）。每条结论都带支撑行、独立组数、稳健性；正文只许引用语料内的论文，由闸门机器拦截。</p></div>
@@ -195,7 +195,15 @@ python3 pipeline/check.py RUN_DIR extract          # 全部批次抽完后过闸
   <li><strong>算子从哪来</strong>：ScholarCatalyst 里 184 位作者亲笔写的 1,348 条「我当初为什么受这篇启发」的理由（rationale）。每条理由拆成三槽：前作做出了什么 / 我拿走什么、搬到哪 / 凭什么相信会成。661 条 core 理由逐条标成 13 种构思动作（M1–M9、M13–M16）或 8 种不出卡的引用角色（C1–C8），构思动作例如 M1 跨域移植、M2 换挂点、M4 解释现象、M13 问题重述（skill <code>catalyst-ideation/SKILL.md</code> §0、§5；范例库 <code>references/moves_bank_v1.md</code>）。</li>
   <li><strong>怎么当算子用</strong>：每个动作配一条真实理由当范例，把中心问题改写成一组检索词，去找<strong>表面不直接相关</strong>的论文。例：问题「聚合器读 K 条轨迹为什么丢掉正确证据」，按 M1 改写成「弱监督里多个标注源的相关误差」，找到 2603.00039；按关键词搜原题找不到它（<code>SKILL.md</code> §8，core 469）。</li>
   <li><strong>为什么要做</strong>：作者实际用到的催化剂论文，49.5% 来自本领域之外（ScholarCatalyst 论文 §5）。</li>
-  <li><strong>放在哪</strong>：单独的 <code>RUN_DIR/inspire/</code>，每篇记下是哪个算子、哪条检索词找到的。<strong>不进抽取和数据库</strong>，金子论文的统计数字只来自主题论文；启发池只交给提议者（S12）和构思出卡（S25）当镜头。</li>
+  <li><strong>算子还出 idea 草稿（2026-10-23 与师兄讨论后定）</strong>：
+    <ul>
+      <li><strong>单算子</strong>：13 个算子轮流上，每个都按中心问题出一份 idea 草稿。</li>
+      <li><strong>算子组合</strong>：agent 按中心问题挑几组算子组合，每组出一份草稿，并写明先用哪个、后用哪个、为什么这样组合。最多 13 组（上限可调），不穷举全部 78 种两两组合。组合的是两个动作；M9「组合互补」组合的是两篇论文，不是一回事。</li>
+      <li><strong>多投入调用，先发散</strong>：这一步用订阅额度并行多个 agent。验收看多样性：草稿去重后剩几份、覆盖了几个算子。</li>
+      <li><strong>草稿不是正式卡</strong>：只用来启发。流程末尾的构思出卡（S25）照旧，正式卡仍要过撞车检查和信心打分。</li>
+    </ul></li>
+  <li><strong>放在哪</strong>：单独的 <code>RUN_DIR/inspire/</code>：<code>papers.jsonl</code> 放启发论文，每篇记下是哪个算子、哪条检索词找到的；<code>drafts/</code> 放 idea 草稿，每份记下用了哪个或哪组算子。<strong>不进抽取和数据库</strong>，金子论文的统计数字只来自主题论文；启发池只交给提议者（S12）和构思出卡（S25）当镜头。</li>
+  <li><strong>别和「算子 DSL」混</strong>：这里的「构思算子」指 ScholarCatalyst 的构思动作；开头「② 中间侧」卡片和下文「它怎么思考」里的「算子程序 / 算子 DSL」（Gen / Comm / Agg…）是描述方法结构的记法，两者无关。</li>
 </ul>
 
 <h3>③ 跟跑 · 离开 · 回来取成果</h3>
@@ -235,7 +243,7 @@ python3 pipeline/check.py RUN_DIR extract          # 全部批次抽完后过闸
   <li>凌杨：棋盘法找空格，见 <code>scripts/chessboard.py</code> 和 <code>docs/10</code>。</li>
 </ul>
 <p>构思和查重分开做，构思 agent 不判自己的卡（RUNBOOK §2 第 6 条）。</p>
-<p>现在这些镜头都在最后一个模块「构思与评估」里，金子论文炼完才用；出的卡经回环 ④ 变成下一轮的选题。<span class="st plan">🔭 B9</span> 会把 ScholarCatalyst 镜头再往前放一份：在输入侧用作者理由当检索算子建启发池（见上文「三类输入」④），让提议者一开始就能看到领域外的启发。</p>
+<p>现在这些镜头都在最后一个模块「构思与评估」里，金子论文炼完才用；出的卡经回环 ④ 变成下一轮的选题。<span class="st plan">🔭 B9</span> 会把 ScholarCatalyst 镜头再往前放一份：在输入侧用构思算子建启发池（见上文「三类输入」④）：一是找领域外的启发论文，二是每个算子、几组算子组合各出 idea 草稿，让提议者一开始就能看到领域外的启发和发散开的想法。草稿只用来启发，正式卡仍在这里出。</p>
 
 <!-- FLOW_START（由 python3 -I pipeline/check_stages.py --flow 生成，勿手改） -->
 <h3>全流程图 · 两层看</h3>
@@ -278,7 +286,7 @@ python3 pipeline/check.py RUN_DIR extract          # 全部批次抽完后过闸
 <rect x="330" y="150" width="540" height="60" rx="10" class="fl-box pl" style="stroke:var(--blue)"/>
 <circle cx="358" cy="180.0" r="16" class="fl-nc" style="stroke:var(--blue)"/><text x="358" y="184.0" class="fl-nn">🔭</text>
 <text x="614.0" y="175" class="fl-t">输入放宽：启发池</text>
-<text x="614.0" y="195" class="fl-b">ScholarCatalyst 作者理由当检索算子，找表面不相关但能启发的论文 · 菜单分详略三档</text>
+<text x="614.0" y="195" class="fl-b">构思算子找表面不相关的启发论文 + 逐个 / 组合出 idea 草稿 · 菜单分详略三档</text>
 <text x="892" y="166" class="fl-dm half">🧩 半通用：部分要换</text>
 <text x="892" y="181" class="fl-pn">🔭 规划中 · 蓝图 B9</text>
 <rect x="330" y="236" width="540" height="60" rx="10" class="fl-box" style="stroke:var(--blue)"/>
@@ -631,7 +639,9 @@ python3 pipeline/check.py RUN_DIR extract          # 全部批次抽完后过闸
 ├─ config/                        schema.md、db_guide.md、menu.md、model_prices*（价格表与来源）
 ├─ scripts/                       init_run 时冻结的脚本快照
 ├─ corpus/                        9,630 篇候选 → corpus.json（2,237 篇）
-├─ inspire/                       🔭 B9 启发池：算子找来的启发论文 + 每条检索词（run3 没有，不进统计）
+├─ inspire/                       🔭 B9 启发池（run3 没有，不进统计）
+│  ├─ papers.jsonl                  构思算子找来的启发论文 + 每条检索词
+│  └─ drafts/                       单算子 ×13 + 算子组合 ≤13 的 idea 草稿（只启发，不是正式卡）
 ├─ triage/
 │  ├─ b00…b14.jsonl               摘要初筛逐批结果
 │  ├─ core_ids.txt                ★ 进抽取的核心论文
