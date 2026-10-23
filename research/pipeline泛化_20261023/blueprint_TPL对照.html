@@ -1047,7 +1047,7 @@ flowchart LR
 <div class="table-wrap"><table>
 <thead><tr><th>#</th><th>TPL 机制（说明书章节）</th><th>我们现在</th><th>状态</th></tr></thead>
 <tbody>
-<tr><td>0</td><td><strong>输入侧足够宽</strong>：一句话想法到完整方案都能喂；越完整越偏实施，越模糊越偏探索，路线数按详略分 3 / 4–5 / 6（「输入侧足够宽」）</td><td>菜单只有一种写法；提议角度固定 R1–R4（<code>pipeline/angles.json</code>），不随菜单详略变化</td><td>❌</td></tr>
+<tr><td>0</td><td><strong>输入侧足够宽</strong>：一句话想法到完整方案都能喂；越完整越偏实施，越模糊越偏探索，路线数按详略分 3 / 4–5 / 6（「输入侧足够宽」）</td><td>菜单只有一种写法；提议角度固定 R1–R4（<code>pipeline/angles.json</code>），不随菜单详略变化</td><td>🔭 B9</td></tr>
 <tr><td>1</td><td><strong>锚一次设定即固定</strong>：主题 / 论断 / 识别 / 数据四分量，回显确认后不再改（「核心 idea ①」；向导「⑥ 想法确认」）</td><td><code>config/menu.md</code> + <code>run.json</code>，有选题、时间窗、锁定答案；但没有回显确认这一步，也没有「锚不可改」的硬约束</td><td>🟡</td></tr>
 <tr><td>2</td><td><strong>可行性闸 + KILL 出口</strong>：结构性不可检验就诚实止损，写 kill memo（Stage 5；「关于 KILL 出口」）</td><td>没有。语料撑不起通解时，只能靠审查把结论收窄，没有「这一轮不出金子」的正式出口</td><td>❌</td></tr>
 <tr><td>3</td><td><strong>3–6 条平行候选互相竞争</strong>，选 1 条冠军；被弃的留档并「禁止在引言里复活」（「核心 idea ②」；<code>dropped_routes.md</code>）</td><td>提议 P1–P3 / R1–R4 并行，互不读对方文件（RUNBOOK §2 第 3 条），审查选出终稿 G；被弃候选留在 <code>synthesis/</code>，但没有「禁止复活」的规约</td><td>🟡</td></tr>
@@ -1149,6 +1149,11 @@ flowchart LR
     <p>最后一步打包：论文 PDF、证据包（db 子集、打分脚本、逐数字对照表）、最终报告。摘要由没参与写作的 reader 重写，且不含具体数字。</p>
     <p><strong>验收</strong>：解压交付包，在一台干净机器上能复算出正文全部数字。</p>
   </div></article>
+  <article class="step"><div class="step-num">B9</div><div class="step-body">
+    <h3>输入侧足够宽（2026-10-23 user 定：立，排在 B1 之后）</h3>
+    <p>菜单分详略三档：一句话想法 / 中等 / 完整方案。越完整越偏实施、越模糊越偏探索；提议路数随档位变（对照 TPL：3 / 4–5 / 6 条），不再固定 R1–R4（<code>pipeline/angles.json</code>）。</p>
+    <p><strong>验收</strong>：同一主题分别写三档菜单各跑一遍提议，路数分别符合档位，模糊档的候选覆盖面比完整档宽。</p>
+  </div></article>
 </div>
 <aside class="callout callout-tip">
   <svg class="callout-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-tip"/></svg>
@@ -1163,7 +1168,7 @@ flowchart LR
   <li>蓝图的方向对不对：是否认同「流程照 TPL，洞见靠镜头注册表」。</li>
   <li>先做哪一组：蓝图 B0–B8，还是泛化 T0–T6，还是交替推进。</li>
   <li>输入侧的验矿卡（B1）要不要加你自己的 solid 标准，比如只认主会、必须开源代码。</li>
-  <li>「输入侧足够宽」（上表第 0 行）要不要单独立一个小任务，比如菜单分详略三档、提议路数随档位变化。目前还没排进 B0–B8。</li>
+  <li>✅ 已定（2026-10-23）：「输入侧足够宽」立为 B9，排在 B1 之后；重抽完成后先做 B1。</li>
 </ul>
 
 <!-- CONTENT_END -->
