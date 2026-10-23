@@ -83,7 +83,7 @@ th{background:var(--accent-soft);font-weight:600}
 <p><strong>论文炼金 = 文献采购员 ＋ 证据抽取员 ＋ 统计审查员 ＋ 写作伙伴</strong>，由你本机的 Claude Code 主线程按本手册逐阶段调度子 agent，加上一组 Python 脚本和闸门。你的工作不是读完几百篇论文，而是定选题、在关键决策点拍板、判断最后那篇是不是真金。</p>
 <p>它的优化目标是<strong>注意力经济</strong>：N 篇论文 → m 篇必读（m 远小于 N）。输出必须是论文形态，并且抽象出更高层的通解，不是摘要或综述（<code>CLAUDE.md</code>「必须遵守的设计原则」第 1 条）。</p>
 <div class="cards">
-  <div class="card"><h4>① 输入侧：先验矿</h4><p>输入是一大批论文，人写的或 autoresearch 产出的都行。先两轮筛选：摘要初筛给 solid 分，再按 PDF 首页印出的机构二筛；然后按共享作者分独立来源组，防止同一拨人刷屏。</p></div>
+  <div class="card"><h4>① 输入侧：先验矿</h4><p>输入是一大批论文，人写的或 autoresearch 产出的都行。先两轮筛选：摘要初筛给 solid 分，再按 PDF 首页印出的机构二筛；然后按共享作者分独立来源组，防止同一拨人刷屏。<span class="st plan">🔭 B9 启发池</span>：另用 ScholarCatalyst 作者理由（rationale）当检索算子，找表面不相关、但能启发的论文，单独成池，不进统计。</p></div>
   <div class="card"><h4>② 中间侧：多炉并炼</h4><p>每篇论文拆成「带条件的事实 ＋ 算子程序」。3–4 个提议 agent 从不同角度并行提出候选通解，互不读对方文件；打分器和审查 agent 负责筛选。巨人镜头（制度借鉴、构思动作、棋盘法）另出候选卡。</p></div>
   <div class="card"><h4>③ 控制权在你</h4><p>选题与锁定答案、宽松机构的删减、终稿结论、出卡勾选、花钱前的配置卡，这几处都停下来等你。agent 只提议，不替你拍板。</p></div>
   <div class="card"><h4>④ 产出侧：成色可查</h4><p>金子论文（英文全文 ＋ 中文正文 PDF）、决策指南、可视化页（地图、拼盘、结果页）。每条结论都带支撑行、独立组数、稳健性；正文只许引用语料内的论文，由闸门机器拦截。</p></div>
@@ -189,6 +189,14 @@ python3 pipeline/check.py RUN_DIR extract          # 全部批次抽完后过闸
 <p>以上两段改写自 run3 的菜单口径（<code>docs/07_第三轮运行记录_run3.md</code>）。筛选模板 <code>01b_triage.md:24-25</code> 目前写死了其中一部分，<span class="st plan">🔭 泛化 T2</span> 会改成从菜单读。</p>
 <h4>③ 锁定答案（菜单里必填）</h4>
 <p>挑几篇「人类后来公认的结论」论文，编号写进 reserved for evaluation。它们不进语料，也不让任何 agent 读到，最后用来检验金子论文有没有独立炼出同样的结论（<code>CLAUDE.md</code> 设计原则第 10 条）。</p>
+<h4>④ 启发池（不用你填） <span class="st plan">🔭 B9，规划中，排在 B1 之后</span></h4>
+<p>菜单定下中心问题后，流水线自己建一个启发池（流程图模块 1 的 S00a），用来让有信息量的想法尽量都冒出来：</p>
+<ul>
+  <li><strong>算子从哪来</strong>：ScholarCatalyst 里 184 位作者亲笔写的 1,348 条「我当初为什么受这篇启发」的理由（rationale）。每条理由拆成三槽：前作做出了什么 / 我拿走什么、搬到哪 / 凭什么相信会成。661 条 core 理由逐条标成 13 种构思动作（M1–M9、M13–M16）或 8 种不出卡的引用角色（C1–C8），构思动作例如 M1 跨域移植、M2 换挂点、M4 解释现象、M13 问题重述（skill <code>catalyst-ideation/SKILL.md</code> §0、§5；范例库 <code>references/moves_bank_v1.md</code>）。</li>
+  <li><strong>怎么当算子用</strong>：每个动作配一条真实理由当范例，把中心问题改写成一组检索词，去找<strong>表面不直接相关</strong>的论文。例：问题「聚合器读 K 条轨迹为什么丢掉正确证据」，按 M1 改写成「弱监督里多个标注源的相关误差」，找到 2603.00039；按关键词搜原题找不到它（<code>SKILL.md</code> §8，core 469）。</li>
+  <li><strong>为什么要做</strong>：作者实际用到的催化剂论文，49.5% 来自本领域之外（ScholarCatalyst 论文 §5）。</li>
+  <li><strong>放在哪</strong>：单独的 <code>RUN_DIR/inspire/</code>，每篇记下是哪个算子、哪条检索词找到的。<strong>不进抽取和数据库</strong>，金子论文的统计数字只来自主题论文；启发池只交给提议者（S12）和构思出卡（S25）当镜头。</li>
+</ul>
 
 <h3>③ 跟跑 · 离开 · 回来取成果</h3>
 <ul>
@@ -227,6 +235,7 @@ python3 pipeline/check.py RUN_DIR extract          # 全部批次抽完后过闸
   <li>凌杨：棋盘法找空格，见 <code>scripts/chessboard.py</code> 和 <code>docs/10</code>。</li>
 </ul>
 <p>构思和查重分开做，构思 agent 不判自己的卡（RUNBOOK §2 第 6 条）。</p>
+<p>现在这些镜头都在最后一个模块「构思与评估」里，金子论文炼完才用；出的卡经回环 ④ 变成下一轮的选题。<span class="st plan">🔭 B9</span> 会把 ScholarCatalyst 镜头再往前放一份：在输入侧用作者理由当检索算子建启发池（见上文「三类输入」④），让提议者一开始就能看到领域外的启发。</p>
 
 <!-- FLOW_START（由 python3 -I pipeline/check_stages.py --flow 生成，勿手改） -->
 <h3>全流程图 · 两层看</h3>
@@ -245,7 +254,7 @@ python3 pipeline/check.py RUN_DIR extract          # 全部批次抽完后过闸
 <line x1="650" y1="836" x2="650" y2="869" class="fl-ln" marker-end="url(#fl-a)"/>
 <line x1="650" y1="986" x2="650" y2="1019" class="fl-ln" marker-end="url(#fl-a)"/>
 <path d="M300,928.0 H270 V328.0 H298" class="fl-lp" marker-end="url(#fl-a)"/><text transform="translate(262,628.0) rotate(-90)" class="fl-lt">↩ ④ 跑实验得新证据 → 回证据地基，开下一轮</text>
-<rect x="300" y="24" width="700" height="62" rx="10" class="fl-io"/><text x="650" y="50" class="fl-t">输入</text><text x="650" y="70" class="fl-b">一句话主题 ⟷ 完整菜单（假设 / 坐标轴 / 镜头）+ 一池 autoresearch 论文</text>
+<rect x="300" y="24" width="700" height="62" rx="10" class="fl-io"/><text x="650" y="50" class="fl-t">输入</text><text x="650" y="70" class="fl-b">一句话主题 ⟷ 完整菜单（假设 / 坐标轴 / 镜头）+ 一池 autoresearch 论文 · 🔭 B9 起另有启发池</text>
 <a href="#fl-m1" class="fl-link"><rect x="300" y="120" width="700" height="116" rx="12" class="fl-mod" style="stroke:var(--blue)"/><rect x="300" y="120" width="10" height="116" rx="5" style="fill:var(--blue)"/><circle cx="344" cy="160" r="20" style="fill:var(--blue)"/><text x="344" y="167" class="fl-mn">1</text><text x="380" y="154" class="fl-mt">下锚</text><text x="380" y="178" class="fl-mg">定选题、中心问题、时间窗和锁定答案，跑起来后不再改</text><text x="380" y="200" class="fl-mo">产物：run.json + 菜单</text><text x="380" y="223" class="fl-mc">3 个阶段（🔭 2 个规划中）　·　★ 人工闸 ①　·　🧩 2 处换领域要改</text><text x="982" y="154" class="fl-more">看细图 ↓</text></a>
 <a href="#fl-m2" class="fl-link"><rect x="300" y="270" width="700" height="116" rx="12" class="fl-mod" style="stroke:var(--teal)"/><rect x="300" y="270" width="10" height="116" rx="5" style="fill:var(--teal)"/><circle cx="344" cy="310" r="20" style="fill:var(--teal)"/><text x="344" y="317" class="fl-mn">2</text><text x="380" y="304" class="fl-mt">证据地基</text><text x="380" y="328" class="fl-mg">把论文池筛成 solid 的核心集，逐篇抽成结构化事实，建成数据库</text><text x="380" y="350" class="fl-mo">产物：extract/*.json + db/*.csv</text><text x="380" y="373" class="fl-mc">11 个阶段（🔭 1 个规划中）　·　★ 人工闸 ②　·　🧩 7 处换领域要改</text><text x="982" y="304" class="fl-more">看细图 ↓</text></a>
 <a href="#fl-m3" class="fl-link"><rect x="300" y="420" width="700" height="116" rx="12" class="fl-mod" style="stroke:var(--green)"/><rect x="300" y="420" width="10" height="116" rx="5" style="fill:var(--green)"/><circle cx="344" cy="460" r="20" style="fill:var(--green)"/><text x="344" y="467" class="fl-mn">3</text><text x="380" y="454" class="fl-mt">候选通解轮</text><text x="380" y="478" class="fl-mg">多个提议者并行提出通解，独立审查后留下终稿结论 G</text><text x="380" y="500" class="fl-mo">产物：final_candidates.json + 打分</text><text x="380" y="523" class="fl-mc">4 个阶段　·　★ 人工闸 ③　·　🧩 3 处换领域要改　·　↻ 模块内回环 2</text><text x="982" y="454" class="fl-more">看细图 ↓</text></a>
@@ -265,11 +274,11 @@ python3 pipeline/check.py RUN_DIR extract          # 全部批次抽完后过闸
 <text x="612" y="395" class="fl-el">确认 → 继续</text>
 <rect x="330" y="64" width="540" height="60" rx="10" class="fl-io"/>
 <text x="614.0" y="89" class="fl-t">输入 · 一句话主题 ⟷ 完整菜单（假设 / 坐标轴 / 镜头）</text>
-<text x="614.0" y="109" class="fl-b">+ 一池 autoresearch 论文（时间窗、锁定答案写进菜单）</text>
+<text x="614.0" y="109" class="fl-b">+ 一池 autoresearch 论文（时间窗、锁定答案写进菜单）· 🔭 B9 起另有启发池</text>
 <rect x="330" y="150" width="540" height="60" rx="10" class="fl-box pl" style="stroke:var(--blue)"/>
 <circle cx="358" cy="180.0" r="16" class="fl-nc" style="stroke:var(--blue)"/><text x="358" y="184.0" class="fl-nn">🔭</text>
 <text x="614.0" y="175" class="fl-t">输入放宽：启发池</text>
-<text x="614.0" y="195" class="fl-b">构思动作当检索算子，找表面不相关但能启发的论文 · 菜单分详略三档</text>
+<text x="614.0" y="195" class="fl-b">ScholarCatalyst 作者理由当检索算子，找表面不相关但能启发的论文 · 菜单分详略三档</text>
 <text x="892" y="166" class="fl-dm half">🧩 半通用：部分要换</text>
 <text x="892" y="181" class="fl-pn">🔭 规划中 · 蓝图 B9</text>
 <rect x="330" y="236" width="540" height="60" rx="10" class="fl-box" style="stroke:var(--blue)"/>
@@ -622,6 +631,7 @@ python3 pipeline/check.py RUN_DIR extract          # 全部批次抽完后过闸
 ├─ config/                        schema.md、db_guide.md、menu.md、model_prices*（价格表与来源）
 ├─ scripts/                       init_run 时冻结的脚本快照
 ├─ corpus/                        9,630 篇候选 → corpus.json（2,237 篇）
+├─ inspire/                       🔭 B9 启发池：算子找来的启发论文 + 每条检索词（run3 没有，不进统计）
 ├─ triage/
 │  ├─ b00…b14.jsonl               摘要初筛逐批结果
 │  ├─ core_ids.txt                ★ 进抽取的核心论文

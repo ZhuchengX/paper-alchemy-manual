@@ -1152,7 +1152,7 @@ flowchart LR
   <article class="step"><div class="step-num">B9</div><div class="step-body">
     <h3>输入侧足够宽（2026-10-23 user 定：立，排在 B1 之后）</h3>
     <p>菜单分详略三档：一句话想法 / 中等 / 完整方案。越完整越偏实施、越模糊越偏探索；提议路数随档位变（对照 TPL：3 / 4–5 / 6 条），不再固定 R1–R4（<code>pipeline/angles.json</code>）。</p>
-    <p><strong>启发池（2026-10-23 user 补充，并入 B9）</strong>：在输入和菜单之间加一步（流程图 S00a）。把 ScholarCatalyst 蒸馏出的构思动作（M1 跨域移植、M2 换挂点、M4 解释现象、M13 问题重述等，见 skill <code>catalyst-ideation/SKILL.md</code> §5）当检索算子，各把中心问题改写成一组检索词，去找表面不相关、但可能带来启发的论文。例：问题「聚合器读 K 条轨迹为什么丢掉正确证据」，用 M1 改写成「弱监督多标注源的相关误差」，就能找到 2603.00039（SKILL.md §8，core 469）。依据：作者用到的催化剂论文有 49.5% 在本领域之外（ScholarCatalyst §5）。</p>
+    <p><strong>启发池（2026-10-23 user 补充，并入 B9）</strong>：在输入和菜单之间加一步（流程图 S00a）。以 ScholarCatalyst 作者亲笔理由（rationale，1,348 条；每条 = 前作做出了什么 / 拿走什么、搬到哪 / 凭什么相信会成）为算子：用由它们蒸馏出的 13 种构思动作（M1 跨域移植、M2 换挂点、M4 解释现象、M13 问题重述等，skill <code>catalyst-ideation/SKILL.md</code> §5），每个动作配一条真实理由当范例（<code>references/moves_bank_v1.md</code>），把中心问题改写成一组检索词，去找表面不相关、但可能带来启发的论文。例：问题「聚合器读 K 条轨迹为什么丢掉正确证据」，用 M1 改写成「弱监督多标注源的相关误差」，就能找到 2603.00039（SKILL.md §8，core 469）。依据：作者用到的催化剂论文有 49.5% 在本领域之外（ScholarCatalyst §5）。</p>
     <p><strong>去向（user 定）</strong>：单独放进启发池 <code>{RUN_DIR}/inspire/</code>，不进抽取和数据库，所以金子论文的统计数字只来自主题论文。启发池交给提议者（S12）和构思出卡（S25）当镜头。</p>
     <p><strong>验收</strong>：同一主题分别写三档菜单，各跑一遍提议，路数要符合各自档位，模糊档的候选要比完整档覆盖得宽。启发池里每篇论文都要记下由哪个算子、哪条检索词找到；抽查 20 篇，表面上与主题无关但能说清启发点的应占多数。</p>
   </div></article>
