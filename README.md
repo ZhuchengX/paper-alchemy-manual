@@ -6,6 +6,13 @@
 
 ## 更新记录（新的在上）
 
+### 2026-10-24 16:28 · B7 编排器：一条命令跑全流程
+
+- [跑第一轮](https://zhuchengx.github.io/paper-alchemy-manual/#first)「②」：新增 `orchestrate.py` 用法。它按阶段表逐个执行，每阶段过闸才往下；改了哪个模板或脚本，只重跑用到它的阶段。
+- [跑第一轮](https://zhuchengx.github.io/paper-alchemy-manual/#first)「③ 跟跑」：中途离开后，再跑同一条命令接着来，被中断的阶段重跑。
+- [你在哪些点介入](https://zhuchengx.github.io/paper-alchemy-manual/#gates)：7 个闸统一由编排器停下提问，用 `--answer` 回答；auto 模式直接放行，记为 auto-approved。
+- [它怎么思考](https://zhuchengx.github.io/paper-alchemy-manual/#think) 流程图说明：新增「谁沿着这张图跑」，说明编排器按图上从左到右执行、停在每个 ★ 闸。
+
 ### 2026-10-24 16:05 · B6 可行性闸 + 扩展牌组
 
 - [它怎么思考](https://zhuchengx.github.io/paper-alchemy-manual/#think)：新增「架构师之前」一段。先判这一轮撑不撑得起金子：撑不起判 KILL，写 null memo，不成文；只撑得起边界则只写描述性论文。再给每条 G 发 7 张扩展卡，每张判 holds / narrows / descriptive_only / n_a / needs_call。
