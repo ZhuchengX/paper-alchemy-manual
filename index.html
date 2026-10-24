@@ -60,7 +60,7 @@ th{background:var(--accent-soft);font-weight:600}
 <div class="layout">
 <nav class="side" aria-label="目录">
   <div class="brand">论文炼金 · Paper Alchemy</div>
-  <div class="ver">使用说明书 · 更新于 2026-10-24 15:40</div>
+  <div class="ver">使用说明书 · 更新于 2026-10-24 16:05</div>
   <a href="#news">更新记录</a>
   <a href="#what">这是什么</a>
   <a href="#install">安装与准备</a>
@@ -83,10 +83,10 @@ th{background:var(--accent-soft);font-weight:600}
 <section id="news">
 <h2>更新记录<span class="tag">每次发布改了哪里，新的在上</span></h2>
 <div class="news">
+<h4>2026-10-24 16:05 · B6 可行性闸 + 扩展牌组</h4><ul><li><a href="#think">它怎么思考</a>：新增「架构师之前」一段。先判这一轮撑不撑得起金子：撑不起判 KILL，写 null memo，不成文；只撑得起边界则只写描述性论文。再给每条 G 发 7 张扩展卡，每张判 holds / narrows / descriptive_only / n_a / needs_call。</li><li><a href="#gates">你在哪些点介入</a>：闸由 6 个增为 7 个。新增闸⑦「哪几张扩展卡进论文？」。</li><li><a href="#output">输出目录详解</a>：目录树新增 <code>deck/</code>。</li><li><a href="#fl-m4">流程图模块 4</a>：S18b 由规划中改为已实现。</li></ul>
 <h4>2026-10-24 15:40 · 新增更新记录</h4><ul><li><a href="#news">更新记录</a>：说明书最前面新增本节，列出每次发布改了哪里，新的在上，最新 3 条展开。侧栏日期改为最近一次更新时间。网页仓库 README 同步这份记录。</li></ul>
 <h4>2026-10-24 14:45 · B5 架构师三棱镜 + 禁说清单</h4><ul><li><a href="#think">它怎么思考</a>：新增「成文之前」一段。先零调用从打分生成禁说清单，再由 novelty / narrative / impact 三个架构师各出一份骨架，decider 选一份；成稿由脚本逐条核对禁说。</li><li><a href="#gates">你在哪些点介入</a>：闸由 5 个增为 6 个。新增闸⑥「用哪份骨架写？」，时间上在闸⑤之前。</li><li><a href="#output">输出目录详解</a>：目录树新增 <code>architecture/</code>。</li><li><a href="#fl-m5">流程图模块 5</a>：S19b 由规划中改为已实现。</li></ul>
-<h4>2026-10-24 10:32 · B4 五角色新眼审稿</h4><ul><li><a href="#think">它怎么思考</a>：新增「成稿之后」一段。五个角色只读成稿和语料，修订只许改被点名的段落，终审判 ACCEPT 或 REOPEN，REOPEN 由你决定是否回成文。</li><li><a href="#fl-m5">流程图模块 5</a>：S21b 由规划中改为已实现。</li></ul>
-<details><summary>更早的 8 次</summary><h4>2026-10-23 20:31 · B2 逐候选审查、B3 全文数字机核</h4><ul><li><a href="#think">它怎么思考</a>：审查改为两层。每个候选一个 critic，判 VALIDATED / REVISE / DROP；REVISE 最多改写 2 轮；judge 只从 VALIDATED 里选。</li><li><a href="#output">输出目录详解</a>「常见疑问」：「数字从哪来」一问补上 S20b 数字机核。正文每个数字都要有来源指针，对不上即 FAIL。</li><li><a href="#fl-m3">流程图模块 3</a>、<a href="#fl-m5">模块 5</a>：B2、B3 对应阶段由规划中改为已实现。</li></ul><h4>2026-10-23 19:47 · LLM 阶段改由 codex 执行，B1 验矿卡</h4><ul><li><a href="#what">这是什么</a>、<a href="#install">安装与准备</a>：跑 case 的 LLM 阶段（采购到成文）改由 Codex CLI（gpt-6-astra）经 <code>pipeline/run_agent.py</code> 执行，Claude Code 主线程只改 pipeline、编排、核验。安装表新增 Codex CLI。</li><li><a href="#first">跑第一轮</a>：第 ② 步改为「渲染提示词 → 交给 codex → 过闸门」，并给出留痕位置 <code>traces/agent_runs/</code>。</li><li><a href="#fl-m2">流程图模块 2</a>：B1 验矿卡（<code>scripts/solidity.py</code>）由规划中改为已实现。</li></ul><h4>2026-10-23 17:04 · 中心问题</h4><ul><li><a href="#what">这是什么</a>：菜单新增「中心问题」：一句话，外行一分钟能听懂，并说清什么算答上了。审查用它判终稿是否跑题。附 run3 的中心问题作例子。</li></ul><h4>2026-10-23 16:47 · 启发池出 idea 草稿</h4><ul><li><a href="#what">这是什么</a>「④ 启发池」：新增构思算子出草稿。13 个算子各出一份，另有不超过 13 份算子组合，写明先后顺序和理由。草稿只用来启发，不是正式卡。</li></ul><h4>2026-10-23 16:06 · 启发池（B9）写进正文</h4><ul><li><a href="#what">这是什么</a>：新增「④ 启发池」卡片，写明算子从哪来、怎么用、为什么做、放在哪。输入侧、镜头、目录树同步加上 <code>inspire/</code>。</li></ul><h4>2026-10-23 15:51 · 流程图加启发池</h4><ul><li><a href="#fl-m1">流程图模块 1</a>：新增规划中阶段 S00a 启发池。</li></ul><h4>2026-10-23 15:43 · 蓝图加 B9</h4><ul><li>蓝图（<a href="#what">这是什么</a> 末尾链接的 TPL 对照页）新增 B9「输入广度」。说明书正文不变。</li></ul><h4>2026-10-23 15:35 · 首次发布</h4><ul><li>8 章：这是什么、安装与准备、跑第一轮、它怎么思考、你在哪些点介入、输出目录详解、规则与红线、常见问题。章节结构对照 Team Paper Lite 公开说明书。</li><li><a href="#think">它怎么思考</a>：两层流程图，由 <code>pipeline/stages.json</code> 自动生成。第一层 6 个模块，第二层每个模块折叠展开。</li><li><a href="#gates">你在哪些点介入</a>：5 个闸，每个只问一个问题。</li></ul></details>
+<details><summary>更早的 9 次</summary><h4>2026-10-24 10:32 · B4 五角色新眼审稿</h4><ul><li><a href="#think">它怎么思考</a>：新增「成稿之后」一段。五个角色只读成稿和语料，修订只许改被点名的段落，终审判 ACCEPT 或 REOPEN，REOPEN 由你决定是否回成文。</li><li><a href="#fl-m5">流程图模块 5</a>：S21b 由规划中改为已实现。</li></ul><h4>2026-10-23 20:31 · B2 逐候选审查、B3 全文数字机核</h4><ul><li><a href="#think">它怎么思考</a>：审查改为两层。每个候选一个 critic，判 VALIDATED / REVISE / DROP；REVISE 最多改写 2 轮；judge 只从 VALIDATED 里选。</li><li><a href="#output">输出目录详解</a>「常见疑问」：「数字从哪来」一问补上 S20b 数字机核。正文每个数字都要有来源指针，对不上即 FAIL。</li><li><a href="#fl-m3">流程图模块 3</a>、<a href="#fl-m5">模块 5</a>：B2、B3 对应阶段由规划中改为已实现。</li></ul><h4>2026-10-23 19:47 · LLM 阶段改由 codex 执行，B1 验矿卡</h4><ul><li><a href="#what">这是什么</a>、<a href="#install">安装与准备</a>：跑 case 的 LLM 阶段（采购到成文）改由 Codex CLI（gpt-6-astra）经 <code>pipeline/run_agent.py</code> 执行，Claude Code 主线程只改 pipeline、编排、核验。安装表新增 Codex CLI。</li><li><a href="#first">跑第一轮</a>：第 ② 步改为「渲染提示词 → 交给 codex → 过闸门」，并给出留痕位置 <code>traces/agent_runs/</code>。</li><li><a href="#fl-m2">流程图模块 2</a>：B1 验矿卡（<code>scripts/solidity.py</code>）由规划中改为已实现。</li></ul><h4>2026-10-23 17:04 · 中心问题</h4><ul><li><a href="#what">这是什么</a>：菜单新增「中心问题」：一句话，外行一分钟能听懂，并说清什么算答上了。审查用它判终稿是否跑题。附 run3 的中心问题作例子。</li></ul><h4>2026-10-23 16:47 · 启发池出 idea 草稿</h4><ul><li><a href="#what">这是什么</a>「④ 启发池」：新增构思算子出草稿。13 个算子各出一份，另有不超过 13 份算子组合，写明先后顺序和理由。草稿只用来启发，不是正式卡。</li></ul><h4>2026-10-23 16:06 · 启发池（B9）写进正文</h4><ul><li><a href="#what">这是什么</a>：新增「④ 启发池」卡片，写明算子从哪来、怎么用、为什么做、放在哪。输入侧、镜头、目录树同步加上 <code>inspire/</code>。</li></ul><h4>2026-10-23 15:51 · 流程图加启发池</h4><ul><li><a href="#fl-m1">流程图模块 1</a>：新增规划中阶段 S00a 启发池。</li></ul><h4>2026-10-23 15:43 · 蓝图加 B9</h4><ul><li>蓝图（<a href="#what">这是什么</a> 末尾链接的 TPL 对照页）新增 B9「输入广度」。说明书正文不变。</li></ul><h4>2026-10-23 15:35 · 首次发布</h4><ul><li>8 章：这是什么、安装与准备、跑第一轮、它怎么思考、你在哪些点介入、输出目录详解、规则与红线、常见问题。章节结构对照 Team Paper Lite 公开说明书。</li><li><a href="#think">它怎么思考</a>：两层流程图，由 <code>pipeline/stages.json</code> 自动生成。第一层 6 个模块，第二层每个模块折叠展开。</li><li><a href="#gates">你在哪些点介入</a>：5 个闸，每个只问一个问题。</li></ul></details>
 </div>
 </section>
 <!-- NEWS_END -->
@@ -244,6 +244,7 @@ python3 pipeline/check.py RUN_DIR extract          # 全部批次抽完后过闸
 <h3>核心 idea ② · 多个提议者并行，互不读对方，裁判另请</h3>
 <p>提议 agent 按角度 P1–P3、R1–R4 并行出候选通解，互不读对方文件；审查 agent 不提新想法，最多补一条（RUNBOOK §2 第 3 条）。打分用 MDL 思路：通解要短，用它解释事实也要短，并在时间更晚的留出论文上有预测力（设计原则第 4 条）。终稿条数上限由 <code>04_review</code> 的 <code>MAX_FINAL</code> 设定（RUNBOOK 示例值 6；run3 v2 放到了 10 条）。</p>
 <p>2026-10-23 起（蓝图 B2）审查拆成两层：<code>pipeline/review_loop.py</code> 给每个候选单独派一个 critic（只看这一条，判 VALIDATED / REVISE / DROP），REVISE 的交一个新 agent 按 critic 列的改动改写，最多 2 轮，第 2 轮后仍 REVISE 就记 DROP，写进 <code>dropped_routes.md</code>；最后一个 judge 只从 VALIDATED 里聚类、排序、选终稿，不能把被淘汰的捞回来。旧的单 agent <code>04_review</code> 留作后备。</p>
+<p>架构师之前（2026-10-24 起，蓝图 B6）先过可行性闸和扩展牌组：<code>pipeline/expand_deck.py</code> 不花钱，先判这一轮撑不撑得起金子。没有一条 G 有至少 2 个独立组的计数支撑，就判 KILL，写 <code>deck/null_memo.md</code>「这一轮不出金子，原因是……」，不再成文；撑得起的 G 全是边界，就判 PASS_DESCRIPTIVE_ONLY，只写描述性论文。然后给每条 G 发 7 张扩展卡：留一组覆盖率、按格异质、机制、反例、发表偏倚、成本口径、闭卷对照。每张卡判 holds（不变）/ narrows（要加边界）/ descriptive_only / n_a / needs_call，判据只看结论会不会翻到 0.5 的另一侧，且子集里要有至少 2 个独立组。闭卷卡要花一次调用，只先渲染好提示词。你在 <code>deck/deck.md</code> 砍卡（闸⑦），留下的卡交给写作：narrows 写进该 G 的边界，其余进局限与开放问题。思路借自 TPL 的约 7 张扩展卡与 KILL 出口。</p>
 <p>成文之前（2026-10-24 起，蓝图 B5）先过「架构师三棱镜」：<code>pipeline/architect_loop.py</code> 先不花钱，从 <code>final_scores.json</code> 生成禁说清单（边界结论不许写成机制或定律、猜想必须写成猜想、指路测试的数字不许引用、作者自家方法一去掉覆盖率就变的必须点明）；再请 novelty / narrative / impact 三个架构师各出一份论文骨架，它们只改顺序和讲法，不增删结论；一个 decider 选一份、补几条措辞规则。三份骨架并排在 <code>architecture/maps.html</code> 里交你选（闸⑥）。写作 agent 按选中的骨架写，写完 <code>check.py paper</code> 用 <code>check_claims.py</code> 逐条核对，出现禁说即 FAIL。思路借自 TPL 的 argument_architect / argument_select 与 claim_calibration.md；TPL 的论证审计员（argument_audit）这里没做，留给 B6/B7。</p>
 <p>成稿之后（2026-10-24 起，蓝图 B4）还有一道新眼审稿：<code>pipeline/review5_loop.py</code> 请方法学家、领域专家、怀疑者、实践者、写作编辑五个角色，只读成稿和语料、不看任何作者侧材料，每条意见都要指到编号段落；一个修订 agent 只能改被指出的段落，脚本逐段比对，越界即判 FAIL；最后五个角色各自终审，判 ACCEPT 或 REOPEN，REOPEN 交你决定是否回成文。</p>
 
@@ -269,7 +270,7 @@ python3 pipeline/check.py RUN_DIR extract          # 全部批次抽完后过闸
 
 <!-- FLOW_START（由 python3 -I pipeline/check_stages.py --flow 生成，勿手改） -->
 <h3>全流程图 · 两层看</h3>
-<p>由 <code>pipeline/stages.json</code> 自动生成（<code>python3 -I pipeline/check_stages.py --flow</code>），和阶段契约表同源。<strong>第一层</strong>只看 6 个大模块：每个模块做什么、产出什么、有几个阶段、你在哪里介入、换领域要改几处。<strong>第二层</strong>是每个模块的拆解，点第一层的模块或下面的标题展开。全流程共 41 个阶段（37 个已能跑，4 个 🔭 规划中）、6 个人工闸。</p>
+<p>由 <code>pipeline/stages.json</code> 自动生成（<code>python3 -I pipeline/check_stages.py --flow</code>），和阶段契约表同源。<strong>第一层</strong>只看 6 个大模块：每个模块做什么、产出什么、有几个阶段、你在哪里介入、换领域要改几处。<strong>第二层</strong>是每个模块的拆解，点第一层的模块或下面的标题展开。全流程共 41 个阶段（38 个已能跑，3 个 🔭 规划中）、7 个人工闸。</p>
 <p>图例：实线框 = 已经能跑；虚线框 🔭 = 蓝图里规划、还没做；琥珀粗框 ★ = 你介入；橙线 = 回环（虚线是规划中的回环）；细图右栏写闸门、判决和上界。<strong>🧩 回答「科研大同小异」</strong>：模块和主干对任何领域都一样，带 🧩 的 15 个阶段是换领域时要换的部分（依据 <a href="https://github.com/ZhuchengX/paper-alchemy-manual/blob/main/research/pipeline泛化_20261023/coupling_audit.md">主题耦合审计</a> §1）。窄屏可左右滑动。</p>
 
 <style>.fl{width:100%;min-width:760px;height:auto;display:block;font-family:-apple-system,"PingFang SC","Noto Sans CJK SC",sans-serif}.fl-band{opacity:.55}.fl-ph{fill:var(--bg);font-size:13px;font-weight:700}.fl-box{fill:var(--panel);stroke-width:1.6}.fl-box.pl{stroke-dasharray:6 4;opacity:.8}.fl-gate{fill:var(--amber-soft);stroke:var(--amber);stroke-width:2.6}.fl-io{fill:var(--panel);stroke:var(--fg);stroke-width:1.6}.fl-nc{fill:var(--panel);stroke-width:1.6}.fl-nn{text-anchor:middle;font-size:11.5px;font-weight:700;fill:var(--fg);font-family:ui-monospace,Menlo,monospace}.fl-gc{fill:var(--amber)}.fl-gn{text-anchor:middle;font-size:14px;fill:var(--bg)}.fl-t{text-anchor:middle;font-size:15px;font-weight:700;fill:var(--fg)}.fl-b{text-anchor:middle;font-size:12px;fill:var(--muted)}.fl-ln{stroke:var(--muted);stroke-width:1.4}.fl-ah{fill:var(--muted)}.fl-el{font-size:11px;fill:var(--muted)}.fl-lp{fill:none;stroke:var(--accent);stroke-width:1.4}.fl-lp.pl{stroke-dasharray:5 4;opacity:.75}.fl-lt{text-anchor:middle;font-size:11.5px;fill:var(--accent)}.fl-lx{font-size:12px;fill:var(--accent)}.fl-g{font-size:12px;fill:var(--fg)}.fl-r{font-size:11.5px;fill:var(--muted)}.fl-pn{font-size:11.5px;fill:var(--red)}.fl-dm{font-size:12px;font-weight:700;fill:var(--red)}.fl-dm.half{fill:var(--amber)}.fl-mod{fill:var(--panel);stroke-width:2}.fl-link:hover .fl-mod{fill:var(--accent-soft)}.fl-mn{text-anchor:middle;font-size:18px;font-weight:700;fill:var(--bg)}.fl-mt{font-size:19px;font-weight:700;fill:var(--fg)}.fl-mg{font-size:14px;fill:var(--fg)}.fl-mo{font-size:13px;fill:var(--muted)}.fl-mc{font-size:13px;font-weight:600;fill:var(--accent)}.fl-more{text-anchor:end;font-size:12.5px;fill:var(--accent)}details.fl-d{border:1px solid var(--line);border-radius:10px;margin:10px 0;background:var(--panel)}details.fl-d>summary{cursor:pointer;padding:10px 14px;font-weight:600}details.fl-d>summary small{font-weight:400;color:var(--muted)}details.fl-d .tw{margin:0 8px 10px}</style>
@@ -283,12 +284,13 @@ python3 pipeline/check.py RUN_DIR extract          # 全部批次抽完后过闸
 <line x1="650" y1="686" x2="650" y2="719" class="fl-ln" marker-end="url(#fl-a)"/>
 <line x1="650" y1="836" x2="650" y2="869" class="fl-ln" marker-end="url(#fl-a)"/>
 <line x1="650" y1="986" x2="650" y2="1019" class="fl-ln" marker-end="url(#fl-a)"/>
-<path d="M300,928.0 H270 V328.0 H298" class="fl-lp" marker-end="url(#fl-a)"/><text transform="translate(262,628.0) rotate(-90)" class="fl-lt">↩ ④ 跑实验得新证据 → 回证据地基，开下一轮</text>
+<path d="M300,628.0 H270 V478.0 H298" class="fl-lp" marker-end="url(#fl-a)"/><text transform="translate(262,553.0) rotate(-90)" class="fl-lt">↩ KILL → 扩语料或改菜单后重新提议</text>
+<path d="M300,928.0 H230 V328.0 H298" class="fl-lp" marker-end="url(#fl-a)"/><text transform="translate(222,628.0) rotate(-90)" class="fl-lt">↩ ④ 跑实验得新证据 → 回证据地基，开下一轮</text>
 <rect x="300" y="24" width="700" height="62" rx="10" class="fl-io"/><text x="650" y="50" class="fl-t">输入</text><text x="650" y="70" class="fl-b">一句话主题 ⟷ 完整菜单（假设 / 坐标轴 / 镜头）+ 一池 autoresearch 论文 · 🔭 B9 起另有启发池</text>
 <a href="#fl-m1" class="fl-link"><rect x="300" y="120" width="700" height="116" rx="12" class="fl-mod" style="stroke:var(--blue)"/><rect x="300" y="120" width="10" height="116" rx="5" style="fill:var(--blue)"/><circle cx="344" cy="160" r="20" style="fill:var(--blue)"/><text x="344" y="167" class="fl-mn">1</text><text x="380" y="154" class="fl-mt">下锚</text><text x="380" y="178" class="fl-mg">定选题、中心问题、时间窗和锁定答案，跑起来后不再改</text><text x="380" y="200" class="fl-mo">产物：run.json + 菜单</text><text x="380" y="223" class="fl-mc">3 个阶段（🔭 2 个规划中）　·　★ 人工闸 ①　·　🧩 2 处换领域要改</text><text x="982" y="154" class="fl-more">看细图 ↓</text></a>
 <a href="#fl-m2" class="fl-link"><rect x="300" y="270" width="700" height="116" rx="12" class="fl-mod" style="stroke:var(--teal)"/><rect x="300" y="270" width="10" height="116" rx="5" style="fill:var(--teal)"/><circle cx="344" cy="310" r="20" style="fill:var(--teal)"/><text x="344" y="317" class="fl-mn">2</text><text x="380" y="304" class="fl-mt">证据地基</text><text x="380" y="328" class="fl-mg">把论文池筛成 solid 的核心集，逐篇抽成结构化事实，建成数据库</text><text x="380" y="350" class="fl-mo">产物：extract/*.json + db/*.csv</text><text x="380" y="373" class="fl-mc">11 个阶段　·　★ 人工闸 ②　·　🧩 7 处换领域要改</text><text x="982" y="304" class="fl-more">看细图 ↓</text></a>
 <a href="#fl-m3" class="fl-link"><rect x="300" y="420" width="700" height="116" rx="12" class="fl-mod" style="stroke:var(--green)"/><rect x="300" y="420" width="10" height="116" rx="5" style="fill:var(--green)"/><circle cx="344" cy="460" r="20" style="fill:var(--green)"/><text x="344" y="467" class="fl-mn">3</text><text x="380" y="454" class="fl-mt">候选通解轮</text><text x="380" y="478" class="fl-mg">多个提议者并行提出通解，独立审查后留下终稿结论 G</text><text x="380" y="500" class="fl-mo">产物：final_candidates.json + 打分</text><text x="380" y="523" class="fl-mc">4 个阶段　·　★ 人工闸 ③　·　🧩 3 处换领域要改　·　↻ 模块内回环 2</text><text x="982" y="454" class="fl-more">看细图 ↓</text></a>
-<a href="#fl-m4" class="fl-link"><rect x="300" y="570" width="700" height="116" rx="12" class="fl-mod" style="stroke:var(--accent)"/><rect x="300" y="570" width="10" height="116" rx="5" style="fill:var(--accent)"/><circle cx="344" cy="610" r="20" style="fill:var(--accent)"/><text x="344" y="617" class="fl-mn">4</text><text x="380" y="604" class="fl-mt">试味与扩展</text><text x="380" y="628" class="fl-mg">不花钱地反复敲打每条 G：稳健性、复用、复现价值、矛盾</text><text x="380" y="650" class="fl-mo">产物：robustness / 复核结果</text><text x="380" y="673" class="fl-mc">6 个阶段（🔭 1 个规划中）　·　🧩 1 处换领域要改</text><text x="982" y="604" class="fl-more">看细图 ↓</text></a>
+<a href="#fl-m4" class="fl-link"><rect x="300" y="570" width="700" height="116" rx="12" class="fl-mod" style="stroke:var(--accent)"/><rect x="300" y="570" width="10" height="116" rx="5" style="fill:var(--accent)"/><circle cx="344" cy="610" r="20" style="fill:var(--accent)"/><text x="344" y="617" class="fl-mn">4</text><text x="380" y="604" class="fl-mt">试味与扩展</text><text x="380" y="628" class="fl-mg">不花钱地反复敲打每条 G：稳健性、复用、复现价值、矛盾</text><text x="380" y="650" class="fl-mo">产物：robustness / 复核结果</text><text x="380" y="673" class="fl-mc">6 个阶段　·　★ 人工闸 ⑦　·　🧩 1 处换领域要改</text><text x="982" y="604" class="fl-more">看细图 ↓</text></a>
 <a href="#fl-m5" class="fl-link"><rect x="300" y="720" width="700" height="116" rx="12" class="fl-mod" style="stroke:var(--blue)"/><rect x="300" y="720" width="10" height="116" rx="5" style="fill:var(--blue)"/><circle cx="344" cy="760" r="20" style="fill:var(--blue)"/><text x="344" y="767" class="fl-mn">5</text><text x="380" y="754" class="fl-mt">终局成文</text><text x="380" y="778" class="fl-mg">把 G 写成论文，溯源核对，翻译，出 PDF</text><text x="380" y="800" class="fl-mo">产物：金子论文中英文 PDF</text><text x="380" y="823" class="fl-mc">9 个阶段（🔭 1 个规划中）　·　★ 人工闸 ⑥ ⑤　·　↻ 模块内回环 4</text><text x="982" y="754" class="fl-more">看细图 ↓</text></a>
 <a href="#fl-m6" class="fl-link"><rect x="300" y="870" width="700" height="116" rx="12" class="fl-mod" style="stroke:var(--teal)"/><rect x="300" y="870" width="10" height="116" rx="5" style="fill:var(--teal)"/><circle cx="344" cy="910" r="20" style="fill:var(--teal)"/><text x="344" y="917" class="fl-mn">6</text><text x="380" y="904" class="fl-mt">构思与评估</text><text x="380" y="928" class="fl-mg">用巨人镜头出新设想卡，查重、勾选花钱；最后对照锁定答案评估</text><text x="380" y="950" class="fl-mo">产物：设想卡 + decisions.json + 评估</text><text x="380" y="973" class="fl-mc">8 个阶段　·　★ 人工闸 ④　·　🧩 2 处换领域要改</text><text x="982" y="904" class="fl-more">看细图 ↓</text></a>
 <rect x="300" y="1020" width="700" height="62" rx="10" class="fl-io"/><text x="650" y="1046" class="fl-t">交付物</text><text x="650" y="1066" class="fl-b">金子论文中英文 PDF + 决策指南 + 打分与稳健性证据 + 下一轮的卡</text>
@@ -422,6 +424,7 @@ python3 pipeline/check.py RUN_DIR extract          # 全部批次抽完后过闸
 <text transform="translate(293,351.0) rotate(-90)" class="fl-lt">↩ ③ 不认 → 再提议一轮（菜单不动）</text>
 <path d="M330,352.0 H266 V266.0 H328" class="fl-lp" marker-end="url(#fl-a)"/>
 <text transform="translate(259,309.0) rotate(-90)" class="fl-lt">↩ REVISE 重炼 ≤2 次（B2，03b_revise）</text>
+<path d="M40,266.0 H328" class="fl-lp" marker-end="url(#fl-a)"/><text x="48" y="259.0" class="fl-lx">↪ 从模块 4 回来</text><text x="48" y="283.0" class="fl-lx">KILL → 扩语料或改菜单后重新提议</text>
 <rect x="330" y="64" width="540" height="60" rx="10" class="fl-box" style="stroke:var(--green)"/>
 <circle cx="358" cy="94.0" r="16" class="fl-nc" style="stroke:var(--green)"/><text x="358" y="98.0" class="fl-nn">10</text>
 <text x="614.0" y="89" class="fl-t">归并</text>
@@ -453,14 +456,16 @@ python3 pipeline/check.py RUN_DIR extract          # 全部批次抽完后过闸
 <text x="614.0" y="433" class="fl-t">【人工闸 ③】审查</text>
 <text x="614.0" y="453" class="fl-b">只回答一个问题：「每条 G 的边界你认不认？」</text>
 </svg></div></details>
-<details class="fl-d" id="fl-m4"><summary>模块 4 · 试味与扩展　<small>不花钱地反复敲打每条 G：稳健性、复用、复现价值、矛盾（6 个阶段）</small></summary><div class="tw"><svg class="fl" viewBox="0 0 1220 588" role="img" aria-label="模块 4 试味与扩展 细图" xmlns="http://www.w3.org/2000/svg">
-<rect x="12" y="10" width="1196" height="568" rx="14" style="fill:var(--accent-soft)" class="fl-band"/>
+<details class="fl-d" id="fl-m4"><summary>模块 4 · 试味与扩展　<small>不花钱地反复敲打每条 G：稳健性、复用、复现价值、矛盾（6 个阶段）</small></summary><div class="tw"><svg class="fl" viewBox="0 0 1220 670" role="img" aria-label="模块 4 试味与扩展 细图" xmlns="http://www.w3.org/2000/svg">
+<rect x="12" y="10" width="1196" height="650" rx="14" style="fill:var(--accent-soft)" class="fl-band"/>
 <rect x="24" y="20" width="140" height="26" rx="13" style="fill:var(--accent)"/><text x="38" y="38" class="fl-ph">模块 4 · 试味与扩展</text>
 <line x1="600" y1="124" x2="600" y2="149" class="fl-ln" marker-end="url(#fl-a)"/>
 <line x1="600" y1="210" x2="600" y2="235" class="fl-ln" marker-end="url(#fl-a)"/>
 <line x1="600" y1="296" x2="600" y2="321" class="fl-ln" marker-end="url(#fl-a)"/>
 <line x1="600" y1="382" x2="600" y2="407" class="fl-ln" marker-end="url(#fl-a)"/>
 <line x1="600" y1="468" x2="600" y2="493" class="fl-ln" marker-end="url(#fl-a)"/>
+<line x1="600" y1="554" x2="600" y2="579" class="fl-ln" marker-end="url(#fl-a)"/>
+<path d="M330,524.0 H40" class="fl-lp" marker-end="url(#fl-a)"/><text x="48" y="517.0" class="fl-lx">↩ KILL → 扩语料或改菜单后重新提议</text><text x="48" y="541.0" class="fl-lx">→ 去模块 3 · 候选通解轮</text>
 <rect x="330" y="64" width="540" height="60" rx="10" class="fl-box" style="stroke:var(--accent)"/>
 <circle cx="358" cy="94.0" r="16" class="fl-nc" style="stroke:var(--accent)"/><text x="358" y="98.0" class="fl-nn">14</text>
 <text x="614.0" y="89" class="fl-t">留一组稳健性</text>
@@ -488,11 +493,16 @@ python3 pipeline/check.py RUN_DIR extract          # 全部批次抽完后过闸
 <text x="614.0" y="453" class="fl-b">调用阶梯 / 矛盾对 / 测试重合度</text>
 <text x="892" y="424" class="fl-dm half">🧩 半通用：部分要换</text>
 <text x="892" y="439" class="fl-g">闸门 只报告，不设阈值</text>
-<rect x="330" y="494" width="540" height="60" rx="10" class="fl-box pl" style="stroke:var(--accent)"/>
-<circle cx="358" cy="524.0" r="16" class="fl-nc" style="stroke:var(--accent)"/><text x="358" y="528.0" class="fl-nn">🔭</text>
-<text x="614.0" y="519" class="fl-t">每个 G 的固定扩展牌组 + KILL 出口（可选）</text>
-<text x="614.0" y="539" class="fl-b">每个 G 约 7 张扩展卡 · 撑不起就 KILL</text>
-<text x="892" y="510" class="fl-pn">🔭 规划中 · 蓝图 B6</text>
+<rect x="330" y="494" width="540" height="60" rx="10" class="fl-box" style="stroke:var(--accent)"/>
+<circle cx="358" cy="524.0" r="16" class="fl-nc" style="stroke:var(--accent)"/><text x="358" y="528.0" class="fl-nn">18b</text>
+<text x="614.0" y="519" class="fl-t">每个 G 的固定扩展牌组 + KILL 出口</text>
+<text x="614.0" y="539" class="fl-b">可行性闸（撑不起就 KILL，写 null memo）+ 每条 G 7 张扩展卡，由你砍</text>
+<text x="892" y="510" class="fl-g">闸门 expand_deck.py check：feasibility.json 在；K</text>
+<text x="892" y="525" class="fl-g">ILL 时 null_memo.md 在；每条终稿 G 都有 7 张卡（lo…</text>
+<text x="892" y="540" class="fl-r">判决 PASS / PASS_DESCRIPTIVE_ONLY / KILL</text>
+<rect x="330" y="580" width="540" height="56" rx="10" class="fl-gate"/><circle cx="358" cy="608.0" r="14" class="fl-gc"/><text x="358" y="613.0" class="fl-gn">★</text>
+<text x="614.0" y="605" class="fl-t">【人工闸 ⑦】每个 G 的固定扩展牌组 + KILL 出口</text>
+<text x="614.0" y="625" class="fl-b">只回答一个问题：「哪几张扩展卡进论文？」</text>
 </svg></div></details>
 <details class="fl-d" id="fl-m5"><summary>模块 5 · 终局成文　<small>把 G 写成论文，溯源核对，翻译，出 PDF（9 个阶段）</small></summary><div class="tw"><svg class="fl" viewBox="0 0 1220 1010" role="img" aria-label="模块 5 终局成文 细图" xmlns="http://www.w3.org/2000/svg">
 <rect x="12" y="10" width="1196" height="990" rx="14" style="fill:var(--blue-soft)" class="fl-band"/>
@@ -646,7 +656,7 @@ python3 pipeline/check.py RUN_DIR extract          # 全部批次抽完后过闸
 
 <!-- ========== 你在哪些点介入 ========== -->
 <section id="gates">
-<h2>你在哪些点介入 · 6 个闸<span class="tag">你的工作清单</span></h2>
+<h2>你在哪些点介入 · 7 个闸<span class="tag">你的工作清单</span></h2>
 <p>每个闸只需要你做一个选择，或写一句意见；不需要你写代码。</p>
 <h4>★ 闸① · 菜单拍板</h4>
 <p>定选题、读者、时间窗、纳入排除、锁定答案。这一步决定后面所有 agent 看到什么，跑起来以后不再改。只回答一个问题：「菜单这样定，跑起来后不再改，可以吗？」</p>
@@ -656,6 +666,8 @@ python3 pipeline/check.py RUN_DIR extract          # 全部批次抽完后过闸
 <p>审查后的 <code>synthesis/final_candidates.json</code> 加上打分。需要你定口径的分歧写在台账里，例如 2026-10-22 你定的「采样基线默认只认纯投票」。只回答一个问题：「每条 G 的边界你认不认？」</p>
 <h4>★ 闸④ · 出卡勾选与花钱</h4>
 <p>棋盘出卡后，打开 <code>chessboard/decision_page.html</code> 勾选，得到 <code>decisions.json</code>。凡是要调付费 API 的实验，先过 <code>13_preapproval</code> 跑前配置卡：本次配置、原论文配置、差异与理由、预算。等你同意才跑。只回答一个问题：「哪几张卡做？（花钱的先看配置卡）」</p>
+<h4>★ 闸⑦ · 哪几张扩展卡进论文（成文前）</h4>
+<p>打开 <code>synthesis/…/deck/deck.md</code>：一行一条 G，七列是七张卡的结果；细节在 <code>deck/&lt;G&gt;/cards.md</code>。默认全留；不想写进论文的卡用 <code>expand_deck.py cut &lt;RUN_DIR&gt; &lt;G&gt; &lt;卡&gt;</code> 砍掉。可行性闸判 KILL 时不到这一步，先读 <code>deck/null_memo.md</code>。只回答一个问题：「哪几张扩展卡进论文？」</p>
 <h4>★ 闸⑥ · 用哪份骨架写（成文前）</h4>
 <p>打开 <code>synthesis/…/architecture/maps.html</code>，三份骨架并排，最上面是 decider 的选择和理由；<code>claim_calibration.md</code> 是每条 G 能说什么、不能说什么。同意就不用动；想换就跑 <code>architect_loop.py pick &lt;RUN_DIR&gt; &lt;prism&gt;</code>。只回答一个问题：「用哪份骨架写？」（编号按加入先后，时间上在闸⑤之前。）</p>
 <h4>★ 闸⑤ · 是不是真金</h4>
@@ -696,6 +708,7 @@ python3 pipeline/check.py RUN_DIR extract          # 全部批次抽完后过闸
 │  ├─ candidates_R*.json、notes_R*.md   各提议者的候选与笔记
 │  ├─ review.md、final_candidates.json  ★ 审查与终稿
 │  ├─ v2/                         第二版审查、打分、稳健性、挂靠
+│  ├─ <v>/deck/                   B6 可行性闸与扩展牌组（2026-10-24 起）：feasibility.md、null_memo.md（KILL 时）、<G>/cards.md 7 张卡、★ deck.md（闸⑦）、deck_decisions.json
 │  ├─ <v>/architecture/           B5 架构师（2026-10-24 起）：claim_rules*.json、claim_calibration.md 禁说清单、paper_map_{novelty,narrative,impact}.md、architecture_decision.md、★ maps.html（闸⑥）
 │  ├─ chef/                       各次零调用复核的结果
 │  ├─ catalyst_run/               构思出卡、查重、实验设计包

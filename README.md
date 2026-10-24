@@ -6,6 +6,13 @@
 
 ## 更新记录（新的在上）
 
+### 2026-10-24 16:05 · B6 可行性闸 + 扩展牌组
+
+- [它怎么思考](https://zhuchengx.github.io/paper-alchemy-manual/#think)：新增「架构师之前」一段。先判这一轮撑不撑得起金子：撑不起判 KILL，写 null memo，不成文；只撑得起边界则只写描述性论文。再给每条 G 发 7 张扩展卡，每张判 holds / narrows / descriptive_only / n_a / needs_call。
+- [你在哪些点介入](https://zhuchengx.github.io/paper-alchemy-manual/#gates)：闸由 6 个增为 7 个。新增闸⑦「哪几张扩展卡进论文？」。
+- [输出目录详解](https://zhuchengx.github.io/paper-alchemy-manual/#output)：目录树新增 `deck/`。
+- [流程图模块 4](https://zhuchengx.github.io/paper-alchemy-manual/#fl-m4)：S18b 由规划中改为已实现。
+
 ### 2026-10-24 15:40 · 新增更新记录
 
 - [更新记录](https://zhuchengx.github.io/paper-alchemy-manual/#news)：说明书最前面新增本节，列出每次发布改了哪里，新的在上，最新 3 条展开。侧栏日期改为最近一次更新时间。网页仓库 README 同步这份记录。
