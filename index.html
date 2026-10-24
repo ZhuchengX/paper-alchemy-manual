@@ -39,6 +39,7 @@ p,li{max-width:76ch}
 .warn{border-left:4px solid var(--amber);background:var(--amber-soft);padding:10px 14px;border-radius:0 8px 8px 0;margin:14px 0}
 .stop{border-left:4px solid var(--red);background:var(--red-soft);padding:10px 14px;border-radius:0 8px 8px 0;margin:14px 0}
 .note p,.warn p,.stop p{margin:4px 0}
+.news{border-left:4px solid var(--accent);background:var(--accent-soft);padding:6px 16px 10px;border-radius:0 8px 8px 0}.news h4{margin:12px 0 4px}.news ul{margin:0;padding-left:20px}.news li{margin:2px 0}.news details{margin-top:10px}.news summary{cursor:pointer;color:var(--muted)}
 .steps{display:grid;gap:10px;margin:14px 0}
 .step{display:grid;grid-template-columns:38px minmax(0,1fr);gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
 .step .n{width:30px;height:30px;border-radius:50%;background:var(--accent);color:var(--bg);display:grid;place-items:center;font-weight:700}
@@ -59,7 +60,8 @@ th{background:var(--accent-soft);font-weight:600}
 <div class="layout">
 <nav class="side" aria-label="目录">
   <div class="brand">论文炼金 · Paper Alchemy</div>
-  <div class="ver">使用说明书 · 2026-10-23</div>
+  <div class="ver">使用说明书 · 更新于 2026-10-24 15:40</div>
+  <a href="#news">更新记录</a>
   <a href="#what">这是什么</a>
   <a href="#install">安装与准备</a>
   <a href="#first">跑第一轮</a>
@@ -76,6 +78,18 @@ th{background:var(--accent-soft);font-weight:600}
   <h1>把一大堆 autoresearch 论文，炼成一篇值得精读的 insight 论文</h1>
   <p>本说明书的章节结构照 Team Paper Lite 公开说明书一一对应，方便对照、找差距；内容全部是本仓库的真实流程。标 <span class="st plan">🔭 规划中</span> 的是还没做的部分，编号对应蓝图 B0–B8（<a href="research/pipeline泛化_20261023/blueprint_TPL对照.html"><code>docs/research/pipeline泛化_20261023/blueprint_TPL对照.html</code></a>）。</p>
 </header>
+
+<!-- NEWS_START -->
+<section id="news">
+<h2>更新记录<span class="tag">每次发布改了哪里，新的在上</span></h2>
+<div class="news">
+<h4>2026-10-24 15:40 · 新增更新记录</h4><ul><li><a href="#news">更新记录</a>：说明书最前面新增本节，列出每次发布改了哪里，新的在上，最新 3 条展开。侧栏日期改为最近一次更新时间。网页仓库 README 同步这份记录。</li></ul>
+<h4>2026-10-24 14:45 · B5 架构师三棱镜 + 禁说清单</h4><ul><li><a href="#think">它怎么思考</a>：新增「成文之前」一段。先零调用从打分生成禁说清单，再由 novelty / narrative / impact 三个架构师各出一份骨架，decider 选一份；成稿由脚本逐条核对禁说。</li><li><a href="#gates">你在哪些点介入</a>：闸由 5 个增为 6 个。新增闸⑥「用哪份骨架写？」，时间上在闸⑤之前。</li><li><a href="#output">输出目录详解</a>：目录树新增 <code>architecture/</code>。</li><li><a href="#fl-m5">流程图模块 5</a>：S19b 由规划中改为已实现。</li></ul>
+<h4>2026-10-24 10:32 · B4 五角色新眼审稿</h4><ul><li><a href="#think">它怎么思考</a>：新增「成稿之后」一段。五个角色只读成稿和语料，修订只许改被点名的段落，终审判 ACCEPT 或 REOPEN，REOPEN 由你决定是否回成文。</li><li><a href="#fl-m5">流程图模块 5</a>：S21b 由规划中改为已实现。</li></ul>
+<details><summary>更早的 8 次</summary><h4>2026-10-23 20:31 · B2 逐候选审查、B3 全文数字机核</h4><ul><li><a href="#think">它怎么思考</a>：审查改为两层。每个候选一个 critic，判 VALIDATED / REVISE / DROP；REVISE 最多改写 2 轮；judge 只从 VALIDATED 里选。</li><li><a href="#output">输出目录详解</a>「常见疑问」：「数字从哪来」一问补上 S20b 数字机核。正文每个数字都要有来源指针，对不上即 FAIL。</li><li><a href="#fl-m3">流程图模块 3</a>、<a href="#fl-m5">模块 5</a>：B2、B3 对应阶段由规划中改为已实现。</li></ul><h4>2026-10-23 19:47 · LLM 阶段改由 codex 执行，B1 验矿卡</h4><ul><li><a href="#what">这是什么</a>、<a href="#install">安装与准备</a>：跑 case 的 LLM 阶段（采购到成文）改由 Codex CLI（gpt-6-astra）经 <code>pipeline/run_agent.py</code> 执行，Claude Code 主线程只改 pipeline、编排、核验。安装表新增 Codex CLI。</li><li><a href="#first">跑第一轮</a>：第 ② 步改为「渲染提示词 → 交给 codex → 过闸门」，并给出留痕位置 <code>traces/agent_runs/</code>。</li><li><a href="#fl-m2">流程图模块 2</a>：B1 验矿卡（<code>scripts/solidity.py</code>）由规划中改为已实现。</li></ul><h4>2026-10-23 17:04 · 中心问题</h4><ul><li><a href="#what">这是什么</a>：菜单新增「中心问题」：一句话，外行一分钟能听懂，并说清什么算答上了。审查用它判终稿是否跑题。附 run3 的中心问题作例子。</li></ul><h4>2026-10-23 16:47 · 启发池出 idea 草稿</h4><ul><li><a href="#what">这是什么</a>「④ 启发池」：新增构思算子出草稿。13 个算子各出一份，另有不超过 13 份算子组合，写明先后顺序和理由。草稿只用来启发，不是正式卡。</li></ul><h4>2026-10-23 16:06 · 启发池（B9）写进正文</h4><ul><li><a href="#what">这是什么</a>：新增「④ 启发池」卡片，写明算子从哪来、怎么用、为什么做、放在哪。输入侧、镜头、目录树同步加上 <code>inspire/</code>。</li></ul><h4>2026-10-23 15:51 · 流程图加启发池</h4><ul><li><a href="#fl-m1">流程图模块 1</a>：新增规划中阶段 S00a 启发池。</li></ul><h4>2026-10-23 15:43 · 蓝图加 B9</h4><ul><li>蓝图（<a href="#what">这是什么</a> 末尾链接的 TPL 对照页）新增 B9「输入广度」。说明书正文不变。</li></ul><h4>2026-10-23 15:35 · 首次发布</h4><ul><li>8 章：这是什么、安装与准备、跑第一轮、它怎么思考、你在哪些点介入、输出目录详解、规则与红线、常见问题。章节结构对照 Team Paper Lite 公开说明书。</li><li><a href="#think">它怎么思考</a>：两层流程图，由 <code>pipeline/stages.json</code> 自动生成。第一层 6 个模块，第二层每个模块折叠展开。</li><li><a href="#gates">你在哪些点介入</a>：5 个闸，每个只问一个问题。</li></ul></details>
+</div>
+</section>
+<!-- NEWS_END -->
 
 <!-- ========== 这是什么 ========== -->
 <section id="what">
