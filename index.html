@@ -230,6 +230,7 @@ python3 pipeline/check.py RUN_DIR extract          # 全部批次抽完后过闸
 <h3>核心 idea ② · 多个提议者并行，互不读对方，裁判另请</h3>
 <p>提议 agent 按角度 P1–P3、R1–R4 并行出候选通解，互不读对方文件；审查 agent 不提新想法，最多补一条（RUNBOOK §2 第 3 条）。打分用 MDL 思路：通解要短，用它解释事实也要短，并在时间更晚的留出论文上有预测力（设计原则第 4 条）。终稿条数上限由 <code>04_review</code> 的 <code>MAX_FINAL</code> 设定（RUNBOOK 示例值 6；run3 v2 放到了 10 条）。</p>
 <p>2026-10-23 起（蓝图 B2）审查拆成两层：<code>pipeline/review_loop.py</code> 给每个候选单独派一个 critic（只看这一条，判 VALIDATED / REVISE / DROP），REVISE 的交一个新 agent 按 critic 列的改动改写，最多 2 轮，第 2 轮后仍 REVISE 就记 DROP，写进 <code>dropped_routes.md</code>；最后一个 judge 只从 VALIDATED 里聚类、排序、选终稿，不能把被淘汰的捞回来。旧的单 agent <code>04_review</code> 留作后备。</p>
+<p>成稿之后（2026-10-24 起，蓝图 B4）还有一道新眼审稿：<code>pipeline/review5_loop.py</code> 请方法学家、领域专家、怀疑者、实践者、写作编辑五个角色，只读成稿和语料、不看任何作者侧材料，每条意见都要指到编号段落；一个修订 agent 只能改被指出的段落，脚本逐段比对，越界即判 FAIL；最后五个角色各自终审，判 ACCEPT 或 REOPEN，REOPEN 交你决定是否回成文。</p>
 
 <h3>核心 idea ③ · 每条结论都要被反复敲打</h3>
 <p>按算力归一化比较（设计原则第 6 条）。之后再做以下敲打，有争议的结论只输出带边界的条件陈述（设计原则第 7 条）：</p>
@@ -253,7 +254,7 @@ python3 pipeline/check.py RUN_DIR extract          # 全部批次抽完后过闸
 
 <!-- FLOW_START（由 python3 -I pipeline/check_stages.py --flow 生成，勿手改） -->
 <h3>全流程图 · 两层看</h3>
-<p>由 <code>pipeline/stages.json</code> 自动生成（<code>python3 -I pipeline/check_stages.py --flow</code>），和阶段契约表同源。<strong>第一层</strong>只看 6 个大模块：每个模块做什么、产出什么、有几个阶段、你在哪里介入、换领域要改几处。<strong>第二层</strong>是每个模块的拆解，点第一层的模块或下面的标题展开。全流程共 41 个阶段（35 个已能跑，6 个 🔭 规划中）、5 个人工闸。</p>
+<p>由 <code>pipeline/stages.json</code> 自动生成（<code>python3 -I pipeline/check_stages.py --flow</code>），和阶段契约表同源。<strong>第一层</strong>只看 6 个大模块：每个模块做什么、产出什么、有几个阶段、你在哪里介入、换领域要改几处。<strong>第二层</strong>是每个模块的拆解，点第一层的模块或下面的标题展开。全流程共 41 个阶段（36 个已能跑，5 个 🔭 规划中）、5 个人工闸。</p>
 <p>图例：实线框 = 已经能跑；虚线框 🔭 = 蓝图里规划、还没做；琥珀粗框 ★ = 你介入；橙线 = 回环（虚线是规划中的回环）；细图右栏写闸门、判决和上界。<strong>🧩 回答「科研大同小异」</strong>：模块和主干对任何领域都一样，带 🧩 的 15 个阶段是换领域时要换的部分（依据 <a href="https://github.com/ZhuchengX/paper-alchemy-manual/blob/main/research/pipeline泛化_20261023/coupling_audit.md">主题耦合审计</a> §1）。窄屏可左右滑动。</p>
 
 <style>.fl{width:100%;min-width:760px;height:auto;display:block;font-family:-apple-system,"PingFang SC","Noto Sans CJK SC",sans-serif}.fl-band{opacity:.55}.fl-ph{fill:var(--bg);font-size:13px;font-weight:700}.fl-box{fill:var(--panel);stroke-width:1.6}.fl-box.pl{stroke-dasharray:6 4;opacity:.8}.fl-gate{fill:var(--amber-soft);stroke:var(--amber);stroke-width:2.6}.fl-io{fill:var(--panel);stroke:var(--fg);stroke-width:1.6}.fl-nc{fill:var(--panel);stroke-width:1.6}.fl-nn{text-anchor:middle;font-size:11.5px;font-weight:700;fill:var(--fg);font-family:ui-monospace,Menlo,monospace}.fl-gc{fill:var(--amber)}.fl-gn{text-anchor:middle;font-size:14px;fill:var(--bg)}.fl-t{text-anchor:middle;font-size:15px;font-weight:700;fill:var(--fg)}.fl-b{text-anchor:middle;font-size:12px;fill:var(--muted)}.fl-ln{stroke:var(--muted);stroke-width:1.4}.fl-ah{fill:var(--muted)}.fl-el{font-size:11px;fill:var(--muted)}.fl-lp{fill:none;stroke:var(--accent);stroke-width:1.4}.fl-lp.pl{stroke-dasharray:5 4;opacity:.75}.fl-lt{text-anchor:middle;font-size:11.5px;fill:var(--accent)}.fl-lx{font-size:12px;fill:var(--accent)}.fl-g{font-size:12px;fill:var(--fg)}.fl-r{font-size:11.5px;fill:var(--muted)}.fl-pn{font-size:11.5px;fill:var(--red)}.fl-dm{font-size:12px;font-weight:700;fill:var(--red)}.fl-dm.half{fill:var(--amber)}.fl-mod{fill:var(--panel);stroke-width:2}.fl-link:hover .fl-mod{fill:var(--accent-soft)}.fl-mn{text-anchor:middle;font-size:18px;font-weight:700;fill:var(--bg)}.fl-mt{font-size:19px;font-weight:700;fill:var(--fg)}.fl-mg{font-size:14px;fill:var(--fg)}.fl-mo{font-size:13px;fill:var(--muted)}.fl-mc{font-size:13px;font-weight:600;fill:var(--accent)}.fl-more{text-anchor:end;font-size:12.5px;fill:var(--accent)}details.fl-d{border:1px solid var(--line);border-radius:10px;margin:10px 0;background:var(--panel)}details.fl-d>summary{cursor:pointer;padding:10px 14px;font-weight:600}details.fl-d>summary small{font-weight:400;color:var(--muted)}details.fl-d .tw{margin:0 8px 10px}</style>
@@ -273,7 +274,7 @@ python3 pipeline/check.py RUN_DIR extract          # 全部批次抽完后过闸
 <a href="#fl-m2" class="fl-link"><rect x="300" y="270" width="700" height="116" rx="12" class="fl-mod" style="stroke:var(--teal)"/><rect x="300" y="270" width="10" height="116" rx="5" style="fill:var(--teal)"/><circle cx="344" cy="310" r="20" style="fill:var(--teal)"/><text x="344" y="317" class="fl-mn">2</text><text x="380" y="304" class="fl-mt">证据地基</text><text x="380" y="328" class="fl-mg">把论文池筛成 solid 的核心集，逐篇抽成结构化事实，建成数据库</text><text x="380" y="350" class="fl-mo">产物：extract/*.json + db/*.csv</text><text x="380" y="373" class="fl-mc">11 个阶段　·　★ 人工闸 ②　·　🧩 7 处换领域要改</text><text x="982" y="304" class="fl-more">看细图 ↓</text></a>
 <a href="#fl-m3" class="fl-link"><rect x="300" y="420" width="700" height="116" rx="12" class="fl-mod" style="stroke:var(--green)"/><rect x="300" y="420" width="10" height="116" rx="5" style="fill:var(--green)"/><circle cx="344" cy="460" r="20" style="fill:var(--green)"/><text x="344" y="467" class="fl-mn">3</text><text x="380" y="454" class="fl-mt">候选通解轮</text><text x="380" y="478" class="fl-mg">多个提议者并行提出通解，独立审查后留下终稿结论 G</text><text x="380" y="500" class="fl-mo">产物：final_candidates.json + 打分</text><text x="380" y="523" class="fl-mc">4 个阶段　·　★ 人工闸 ③　·　🧩 3 处换领域要改　·　↻ 模块内回环 2</text><text x="982" y="454" class="fl-more">看细图 ↓</text></a>
 <a href="#fl-m4" class="fl-link"><rect x="300" y="570" width="700" height="116" rx="12" class="fl-mod" style="stroke:var(--accent)"/><rect x="300" y="570" width="10" height="116" rx="5" style="fill:var(--accent)"/><circle cx="344" cy="610" r="20" style="fill:var(--accent)"/><text x="344" y="617" class="fl-mn">4</text><text x="380" y="604" class="fl-mt">试味与扩展</text><text x="380" y="628" class="fl-mg">不花钱地反复敲打每条 G：稳健性、复用、复现价值、矛盾</text><text x="380" y="650" class="fl-mo">产物：robustness / 复核结果</text><text x="380" y="673" class="fl-mc">6 个阶段（🔭 1 个规划中）　·　🧩 1 处换领域要改</text><text x="982" y="604" class="fl-more">看细图 ↓</text></a>
-<a href="#fl-m5" class="fl-link"><rect x="300" y="720" width="700" height="116" rx="12" class="fl-mod" style="stroke:var(--blue)"/><rect x="300" y="720" width="10" height="116" rx="5" style="fill:var(--blue)"/><circle cx="344" cy="760" r="20" style="fill:var(--blue)"/><text x="344" y="767" class="fl-mn">5</text><text x="380" y="754" class="fl-mt">终局成文</text><text x="380" y="778" class="fl-mg">把 G 写成论文，溯源核对，翻译，出 PDF</text><text x="380" y="800" class="fl-mo">产物：金子论文中英文 PDF</text><text x="380" y="823" class="fl-mc">9 个阶段（🔭 3 个规划中）　·　★ 人工闸 ⑤　·　↻ 模块内回环 3</text><text x="982" y="754" class="fl-more">看细图 ↓</text></a>
+<a href="#fl-m5" class="fl-link"><rect x="300" y="720" width="700" height="116" rx="12" class="fl-mod" style="stroke:var(--blue)"/><rect x="300" y="720" width="10" height="116" rx="5" style="fill:var(--blue)"/><circle cx="344" cy="760" r="20" style="fill:var(--blue)"/><text x="344" y="767" class="fl-mn">5</text><text x="380" y="754" class="fl-mt">终局成文</text><text x="380" y="778" class="fl-mg">把 G 写成论文，溯源核对，翻译，出 PDF</text><text x="380" y="800" class="fl-mo">产物：金子论文中英文 PDF</text><text x="380" y="823" class="fl-mc">9 个阶段（🔭 2 个规划中）　·　★ 人工闸 ⑤　·　↻ 模块内回环 3</text><text x="982" y="754" class="fl-more">看细图 ↓</text></a>
 <a href="#fl-m6" class="fl-link"><rect x="300" y="870" width="700" height="116" rx="12" class="fl-mod" style="stroke:var(--teal)"/><rect x="300" y="870" width="10" height="116" rx="5" style="fill:var(--teal)"/><circle cx="344" cy="910" r="20" style="fill:var(--teal)"/><text x="344" y="917" class="fl-mn">6</text><text x="380" y="904" class="fl-mt">构思与评估</text><text x="380" y="928" class="fl-mg">用巨人镜头出新设想卡，查重、勾选花钱；最后对照锁定答案评估</text><text x="380" y="950" class="fl-mo">产物：设想卡 + decisions.json + 评估</text><text x="380" y="973" class="fl-mc">8 个阶段　·　★ 人工闸 ④　·　🧩 2 处换领域要改</text><text x="982" y="904" class="fl-more">看细图 ↓</text></a>
 <rect x="300" y="1020" width="700" height="62" rx="10" class="fl-io"/><text x="650" y="1046" class="fl-t">交付物</text><text x="650" y="1066" class="fl-b">金子论文中英文 PDF + 决策指南 + 打分与稳健性证据 + 下一轮的卡</text>
 </svg></div>
@@ -493,8 +494,8 @@ python3 pipeline/check.py RUN_DIR extract          # 全部批次抽完后过闸
 <text x="612" y="825" class="fl-el">确认 → 继续</text>
 <path d="M330,352.0 H300 V266.0 H328" class="fl-lp" marker-end="url(#fl-a)"/>
 <text transform="translate(293,309.0) rotate(-90)" class="fl-lt">↩ 数字对不上 → 回成文</text>
-<path d="M330,524.0 H266 V266.0 H328" class="fl-lp pl" marker-end="url(#fl-a)"/>
-<text transform="translate(259,395.0) rotate(-90)" class="fl-lt">↩ REOPEN → 回成文（🔭 B4）</text>
+<path d="M330,524.0 H266 V266.0 H328" class="fl-lp" marker-end="url(#fl-a)"/>
+<text transform="translate(259,395.0) rotate(-90)" class="fl-lt">↩ REOPEN → 回成文（人定）</text>
 <path d="M330,780.0 H232 V266.0 H328" class="fl-lp" marker-end="url(#fl-a)"/>
 <text transform="translate(225,523.0) rotate(-90)" class="fl-lt">↩ ⑤ 不是金子 → 写意见打回成文</text>
 <rect x="330" y="64" width="540" height="60" rx="10" class="fl-box" style="stroke:var(--blue)"/>
@@ -527,11 +528,13 @@ python3 pipeline/check.py RUN_DIR extract          # 全部批次抽完后过闸
 <text x="614.0" y="433" class="fl-t">溯源</text>
 <text x="614.0" y="453" class="fl-b">抽查论断与出处 · 记错误率</text>
 <text x="892" y="424" class="fl-g">闸门 错误率写进 provenance_check.md</text>
-<rect x="330" y="494" width="540" height="60" rx="10" class="fl-box pl" style="stroke:var(--blue)"/>
-<circle cx="358" cy="524.0" r="16" class="fl-nc" style="stroke:var(--blue)"/><text x="358" y="528.0" class="fl-nn">🔭</text>
+<rect x="330" y="494" width="540" height="60" rx="10" class="fl-box" style="stroke:var(--blue)"/>
+<circle cx="358" cy="524.0" r="16" class="fl-nc" style="stroke:var(--blue)"/><text x="358" y="528.0" class="fl-nn">21b</text>
 <text x="614.0" y="519" class="fl-t">5 角色新眼审稿</text>
-<text x="614.0" y="539" class="fl-b">5 人只读成稿与语料 → 修订 → 终审</text>
-<text x="892" y="510" class="fl-pn">🔭 规划中 · 蓝图 B4</text>
+<text x="614.0" y="539" class="fl-b">方法学家 / 领域专家 / 怀疑者 / 实践者 / 写作编辑只读成稿与语料 → 一次修订只动被指段落 → 各自终审 ACCEPT / REOPEN</text>
+<text x="892" y="510" class="fl-g">闸门 review5_loop.py check：每条意见指到存在的段落</text>
+<text x="892" y="525" class="fl-g">且引文在该段；修订稿段落数与顺序不变、只改被指出的段…</text>
+<text x="892" y="540" class="fl-r">判决 ACCEPT / REOPEN</text>
 <rect x="330" y="580" width="540" height="60" rx="10" class="fl-box" style="stroke:var(--blue)"/>
 <circle cx="358" cy="610.0" r="16" class="fl-nc" style="stroke:var(--blue)"/><text x="358" y="614.0" class="fl-nn">22</text>
 <text x="614.0" y="605" class="fl-t">翻译（可选）</text>
