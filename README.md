@@ -6,6 +6,13 @@
 
 ## 更新记录（新的在上）
 
+### 2026-10-24 17:25 · B9 启发池：先发散，再炼金
+
+- [跑第一轮](https://zhuchengx.github.io/paper-alchemy-manual/#first)「④ 启发池」：改为已实现。新增「怎么跑」：编排器在 S00a 自动做完，约 27 次 codex；跑完看 `inspire/INDEX.md`（草稿目录）和 `inspire/diversity.md`（去重后几份、覆盖几个算子）。启发池现在只交给提议者（S12），构思出卡（S25）还没接上。
+- [跑第一轮](https://zhuchengx.github.io/paper-alchemy-manual/#first)「④ 启发池」：新增「还没做」。B9 另一半「按菜单详略分三档」仍在规划。
+- [输出目录详解](https://zhuchengx.github.io/paper-alchemy-manual/#output)：`inspire/` 下新增 `INDEX.md` 和 `diversity.md`。
+- [流程图模块 1](https://zhuchengx.github.io/paper-alchemy-manual/#fl-m1)：S00a 由规划中改为已实现，排到 S00 之后。
+
 ### 2026-10-24 16:42 · B8 交付包：解包即可复算全部数字
 
 - [它怎么思考](https://zhuchengx.github.io/paper-alchemy-manual/#think)：新增「最后一步打包交付」一段。交付包含正文、PDF、证据包、最终报告。在禁读原机器文件的沙箱里，包内脚本重新打分、逐条核对正文数字，全部 MATCH 才算通过。报告把数字分为「从 db 重新算出」和「读随包输入」两类。摘要可交没参与写作的 reader 重写，不许含数字。
