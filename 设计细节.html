@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>论文炼金设计细节</title>
+<style>
+:root{--bg:#faf8f4;--panel:#ffffff;--fg:#1f1d1a;--muted:#6b665d;--line:#e6e1d8;--accent:#b4691f;--accent-soft:#f6ead9;--blue:#2f5f8a;--blue-soft:#e4edf6;--teal:#2c7a72;--teal-soft:#e0f1ee;--green:#3d7a35;--green-soft:#e6f1e2;--amber:#a66a00;--amber-soft:#fbefd2;--red:#a33a2c;--red-soft:#f8e3df;--code:#f2eee7;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17161a;--panel:#1f1e23;--fg:#ece8e1;--muted:#a49d92;--line:#34323a;--accent:#e59a4f;--accent-soft:#3a2b1c;--blue:#8db6de;--blue-soft:#1f2b38;--teal:#7cc7bd;--teal-soft:#1a2f2c;--green:#9ccc8f;--green-soft:#1f2d1c;--amber:#e5b14d;--amber-soft:#36290f;--red:#ec8f80;--red-soft:#3a1f1b;--code:#26252b;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#17161a;--panel:#1f1e23;--fg:#ece8e1;--muted:#a49d92;--line:#34323a;--accent:#e59a4f;--accent-soft:#3a2b1c;--blue:#8db6de;--blue-soft:#1f2b38;--teal:#7cc7bd;--teal-soft:#1a2f2c;--green:#9ccc8f;--green-soft:#1f2d1c;--amber:#e5b14d;--amber-soft:#36290f;--red:#ec8f80;--red-soft:#3a1f1b;--code:#26252b;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","Microsoft YaHei",sans-serif}
+a{color:var(--accent)}
+code{font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--code);padding:1px 5px;border-radius:4px;overflow-wrap:anywhere}
+pre{background:var(--code);border:1px solid var(--line);border-radius:8px;padding:12px 14px;overflow-x:auto;font:13px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace}
+pre code{background:none;padding:0}
+.layout{display:grid;grid-template-columns:230px minmax(0,1fr);max-width:1180px;margin:0 auto;gap:36px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+nav.side{position:sticky;top:0;align-self:start;height:100vh;overflow:auto;padding-block:28px}
+nav.side .brand{font-weight:700;font-size:16px;margin-bottom:4px}
+nav.side .ver{color:var(--muted);font-size:12px;margin-bottom:18px}
+nav.side a{display:block;color:var(--fg);text-decoration:none;padding:6px 10px;border-radius:6px;font-size:14px}
+nav.side a:hover{background:var(--accent-soft)}
+main{padding-block:28px 80px;min-width:0}
+.hero{border-bottom:1px solid var(--line);padding-bottom:22px;margin-bottom:10px}
+.hero .eyebrow{color:var(--accent);font-weight:600;letter-spacing:.08em;font-size:12px}
+.hero h1{font-size:clamp(24px,3.4vw,34px);line-height:1.3;margin:8px 0 10px;text-wrap:balance}
+.hero p{color:var(--muted);margin:0;max-width:72ch}
+section{padding-top:34px}
+h2{font-size:24px;margin:0 0 4px;text-wrap:balance}
+h2 .tag{font-size:13px;font-weight:500;color:var(--muted);margin-left:10px;letter-spacing:.04em}
+h3{font-size:18px;margin:28px 0 8px}
+h4{font-size:15px;margin:18px 0 6px}
+p,li{max-width:76ch}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin:16px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.card h4{margin:0 0 6px;color:var(--accent)}
+.card p{margin:0;font-size:14px}
+.note{border-left:4px solid var(--blue);background:var(--blue-soft);padding:10px 14px;border-radius:0 8px 8px 0;margin:14px 0}
+.warn{border-left:4px solid var(--amber);background:var(--amber-soft);padding:10px 14px;border-radius:0 8px 8px 0;margin:14px 0}
+.stop{border-left:4px solid var(--red);background:var(--red-soft);padding:10px 14px;border-radius:0 8px 8px 0;margin:14px 0}
+.note p,.warn p,.stop p{margin:4px 0}
+.news{border-left:4px solid var(--accent);background:var(--accent-soft);padding:6px 16px 10px;border-radius:0 8px 8px 0}.news h4{margin:12px 0 4px}.news ul{margin:0;padding-left:20px}.news li{margin:2px 0}.news details{margin-top:10px}.news summary{cursor:pointer;color:var(--muted)}
+.steps{display:grid;gap:10px;margin:14px 0}
+.step{display:grid;grid-template-columns:38px minmax(0,1fr);gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.step .n{width:30px;height:30px;border-radius:50%;background:var(--accent);color:var(--bg);display:grid;place-items:center;font-weight:700}
+.step h4{margin:2px 0 4px}
+.step p{margin:0;font-size:14px}
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14px;background:var(--panel)}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--accent-soft);font-weight:600}
+.tree{white-space:pre;font:12.5px/1.6 ui-monospace,Menlo,monospace}
+.st{font-size:12px;border-radius:4px;padding:0 6px;white-space:nowrap}
+.st.ok{background:var(--green-soft);color:var(--green)} .st.half{background:var(--amber-soft);color:var(--amber)} .st.plan{background:var(--red-soft);color:var(--red)}
+.themebtn{margin-top:16px;font:inherit;font-size:13px;background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:4px 10px;cursor:pointer}
+@media (max-width:860px){.layout{grid-template-columns:minmax(0,1fr);gap:0}nav.side{position:static;height:auto;padding-block:16px;border-bottom:1px solid var(--line)}nav.side a{display:inline-block}}
+.lead{font-size:16px}
+.src{color:var(--muted);font-size:12.5px;margin-top:4px}
+details.more{border:1px solid var(--line);border-radius:10px;background:var(--panel);margin:12px 0;padding:0 14px}
+details.more>summary{cursor:pointer;padding:10px 0;font-weight:600;color:var(--accent)}
+details#news{border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:0 16px 8px}
+details#news>summary{cursor:pointer;padding:12px 0;font-weight:700;font-size:18px}
+details#news>summary small{font-weight:400;color:var(--muted);font-size:13px;margin-left:8px}
+</style>
+</head>
+<body>
+<div class="layout">
+<nav class="side" aria-label="目录">
+  <div class="brand">论文炼金 · Paper Alchemy</div>
+  <div class="ver">使用说明书 · 更新于 2026-10-24 17:25</div>
+  <a href="index.html">← 回说明书</a>
+  <a href="#b1">B1 验矿卡</a>
+  <a href="#b2">B2 逐候选审查</a>
+  <a href="#b4">B4 新眼审稿</a>
+  <a href="#b5">B5 架构师</a>
+  <a href="#b6">B6 可行性闸</a>
+  <a href="#b7">B7 编排器</a>
+  <a href="#b8">B8 交付包</a>
+  <a href="#b9">B9 启发池</a>
+  <a href="#lens">巨人镜头</a>
+  <a href="#gates">7 个闸</a>
+  <a href="#menu">菜单与建目录</a>
+  <a href="#tree">详版目录树</a>
+  <button class="themebtn" type="button" id="tt">切换深浅色</button>
+</nav>
+<main>
+<header class="hero">
+  <div class="eyebrow">PAPER ALCHEMY · 设计细节</div>
+  <h1>每个模块怎么运转</h1>
+  <p>说明书主页只放你要用的部分；这里是各模块的完整机制，原文从主页移过来，没删。状态见主页 <a href="index.html#progress">进度表</a>。</p>
+</header>
+<section id="b1"><h2>B1 · 验矿卡</h2><div class="cards">  <div class="card"><h4>① 输入侧：先验矿</h4><p>输入是一大批论文，人写的或 autoresearch 产出的都行。先两轮筛选：摘要初筛给 solid 分，再按 PDF 首页印出的机构二筛；然后按共享作者分独立来源组，防止同一拨人刷屏。<span class="st ok">已实现 · B1 验矿卡</span>：抽取后、建库前生成 <code>triage/solidity.csv</code>，逐篇报告内部不一致、代码公开和来源 ID 是否见于全文；保留命中原句供复核，不造总分、不设默认阈值，建库过滤须显式打开开关。<span class="st ok">已实现 · B9 启发池</span>：另用 ScholarCatalyst 作者理由（rationale）蒸馏出的构思动作当算子，找表面不相关、但能启发的论文，并让 13 个算子各出、多个算子组合出 idea 草稿，先把多样性做起来；单独成池，不进统计。</p></div></div></section>
+<section id="b2"><h2>B2 · 逐候选审查</h2><p>2026-10-23 起（蓝图 B2）审查拆成两层：<code>pipeline/review_loop.py</code> 给每个候选单独派一个 critic（只看这一条，判 VALIDATED / REVISE / DROP），REVISE 的交一个新 agent 按 critic 列的改动改写，最多 2 轮，第 2 轮后仍 REVISE 就记 DROP，写进 <code>dropped_routes.md</code>；最后一个 judge 只从 VALIDATED 里聚类、排序、选终稿，不能把被淘汰的捞回来。旧的单 agent <code>04_review</code> 留作后备。</p></section>
+<section id="b4"><h2>B4 · 五角色新眼审稿</h2><p>成稿之后（2026-10-24 起，蓝图 B4）还有一道新眼审稿：<code>pipeline/review5_loop.py</code> 请方法学家、领域专家、怀疑者、实践者、写作编辑五个角色，只读成稿和语料、不看任何作者侧材料，每条意见都要指到编号段落；一个修订 agent 只能改被指出的段落，脚本逐段比对，越界即判 FAIL；最后五个角色各自终审，判 ACCEPT 或 REOPEN，REOPEN 交你决定是否回成文。</p></section>
+<section id="b5"><h2>B5 · 架构师三棱镜 + 禁说清单</h2><p>成文之前（2026-10-24 起，蓝图 B5）先过「架构师三棱镜」：<code>pipeline/architect_loop.py</code> 先不花钱，从 <code>final_scores.json</code> 生成禁说清单（边界结论不许写成机制或定律、猜想必须写成猜想、指路测试的数字不许引用、作者自家方法一去掉覆盖率就变的必须点明）；再请 novelty / narrative / impact 三个架构师各出一份论文骨架，它们只改顺序和讲法，不增删结论；一个 decider 选一份、补几条措辞规则。三份骨架并排在 <code>architecture/maps.html</code> 里交你选（闸⑥）。写作 agent 按选中的骨架写，写完 <code>check.py paper</code> 用 <code>check_claims.py</code> 逐条核对，出现禁说即 FAIL。思路借自 TPL 的 argument_architect / argument_select 与 claim_calibration.md；TPL 的论证审计员（argument_audit）这里没做，留给 B6/B7。</p></section>
+<section id="b6"><h2>B6 · 可行性闸 + 扩展牌组</h2><p>架构师之前（2026-10-24 起，蓝图 B6）先过可行性闸和扩展牌组：<code>pipeline/expand_deck.py</code> 不花钱，先判这一轮撑不撑得起金子。没有一条 G 有至少 2 个独立组的计数支撑，就判 KILL，写 <code>deck/null_memo.md</code>「这一轮不出金子，原因是……」，不再成文；撑得起的 G 全是边界，就判 PASS_DESCRIPTIVE_ONLY，只写描述性论文。然后给每条 G 发 7 张扩展卡：留一组覆盖率、按格异质、机制、反例、发表偏倚、成本口径、闭卷对照。每张卡判 holds（不变）/ narrows（要加边界）/ descriptive_only / n_a / needs_call，判据只看结论会不会翻到 0.5 的另一侧，且子集里要有至少 2 个独立组。闭卷卡要花一次调用，只先渲染好提示词。你在 <code>deck/deck.md</code> 砍卡（闸⑦），留下的卡交给写作：narrows 写进该 G 的边界，其余进局限与开放问题。思路借自 TPL 的约 7 张扩展卡与 KILL 出口。</p></section>
+<section id="b7"><h2>B7 · 编排器</h2><p><strong>或者一条命令串起来</strong>（2026-10-24 起，蓝图 B7）：<code>pipeline/orchestrate.py</code> 按 <code>stages.json</code> 的阶段顺序、<code>pipeline/flow.json</code> 写的每阶段做法逐个执行。每个阶段都要过闸门，碰到人工闸就停下等你回答。</p>
+<pre><code>python3 -I pipeline/orchestrate.py run RUN_DIR                    # interactive：停在 ①②③⑦⑥ 等你
+python3 -I pipeline/orchestrate.py run RUN_DIR --answer ⑦=ok      # 认了，接着跑；=no:&lt;原因&gt; 则停住
+python3 -I pipeline/orchestrate.py run RUN_DIR --mode auto        # 全自动：人工闸记 auto-approved
+python3 -I pipeline/orchestrate.py status RUN_DIR                 # 每个阶段的状态
+#   可选阶段要点名才跑：--with S19,S22；只跑到某步：--until S20；跑完某步就停：--stop-after S12</code></pre>
+<ul>
+  <li><strong>状态</strong>：记在 <code>traces/state.json</code>，流水记在 <code>traces/orchestrate.log.jsonl</code>。</li>
+  <li><strong>跳过</strong>：每个阶段算一个指纹（它渲染的模板、调用的脚本、上游产物）。指纹没变就跳过；改了哪个模板或脚本，只重跑用到它的阶段，以及产物因此变了的下游阶段。</li>
+  <li><strong>KILL</strong>：可行性闸判 KILL 时，流程停在 S18b，不往下成文。</li>
+  <li><strong>手动阶段</strong>：数字机核、新眼审稿、评估这几步还要人做，编排器停下说明要做什么，做完再跑同一条命令。</li>
+  <li><strong>自检</strong>：<code>--fake-agent</code> 模式不花钱。agent 和联网步骤换成拷贝 fixture，脚本和闸门照常跑。<code>pipeline/_fixtures/selftest_orchestrate.py</code> 在 3 篇小语料上验收：从头跑到成文、kill -9 后续跑、改模板只重跑成文、KILL 停住，8 项全过。</li>
+</ul><div class="warn"><p><strong>和 TPL 的差距</strong>：TPL 的闸在 TUI 里弹清单、回车放行，还有全自动模式。我们的闸由 <code>orchestrate.py</code> 统一处理：interactive 模式停下，打印问题和要看的文件，你用 <code>--answer</code> 回答；auto 模式直接放行，并记为 auto-approved。TUI 弹窗没有做，命令行就是界面。<span class="st ok">已实现 · B7</span></p></div></section>
+<section id="b8"><h2>B8 · 交付包</h2><p>最后一步打包交付（2026-10-24 起，蓝图 B8）：<code>pipeline/deliver.py pack</code> 把正文、PDF、证据包和最终报告打成一个 <code>.tar.gz</code>。证据包里有打分要用的 db 表、候选、打分脚本、数字机核的 registry，以及 registry 指到的每个文件；打分结果本身不带。<code>reproduce.sh</code> 在包里重新打分，再逐条核对正文数字，生成逐数字对照表 <code>evidence/check/check.md</code>。<code>deliver.py verify</code> 把包解到空目录，在空环境变量、且禁止读 <code>/Users</code> 的沙箱里跑 <code>reproduce.sh</code>，相当于换一台干净机器：每个数字都要 MATCH，重新打分的结果要和原文件一致。<code>REPORT.md</code> 把数字分成两类：从 db 重新算出的，和读随包输入的（抽取、候选里写下的数、菜单常量）；后一类只能证明正文抄对了，证明不了输入本身对。摘要可以交给没参与写作的 reader 重写（<code>templates/21_abstract_reader.md</code>，1 次 codex），不许含数字，<code>deliver.py abstract-check</code> 用和数字机核同一套数字定义检查。v4 的包里 214 个数字全部复算通过。</p></section>
+<section id="b9"><h2>B9 · 启发池</h2><h4>④ 启发池（不用你填） <span class="st ok">已实现 · B9 启发池</span></h4>
+<p>菜单定下中心问题后，流水线自己建一个启发池（流程图模块 1 的 S00a），用来让有信息量的想法尽量都冒出来：</p>
+<ul>
+  <li><strong>算子从哪来</strong>：ScholarCatalyst 里 184 位作者亲笔写的 1,348 条「我当初为什么受这篇启发」的理由（rationale）。每条理由拆成三槽：前作做出了什么 / 我拿走什么、搬到哪 / 凭什么相信会成。661 条 core 理由逐条标成 13 种构思动作（M1–M9、M13–M16）或 8 种不出卡的引用角色（C1–C8），构思动作例如 M1 跨域移植、M2 换挂点、M4 解释现象、M13 问题重述（skill <code>catalyst-ideation/SKILL.md</code> §0、§5；范例库 <code>references/moves_bank_v1.md</code>）。</li>
+  <li><strong>怎么当算子用</strong>：每个动作配一条真实理由当范例，把中心问题改写成一组检索词，去找<strong>表面不直接相关</strong>的论文。例：问题「聚合器读 K 条轨迹为什么丢掉正确证据」，按 M1 改写成「弱监督里多个标注源的相关误差」，找到 2603.00039；按关键词搜原题找不到它（<code>SKILL.md</code> §8，core 469）。</li>
+  <li><strong>为什么要做</strong>：作者实际用到的催化剂论文，49.5% 来自本领域之外（ScholarCatalyst 论文 §5）。</li>
+  <li><strong>算子还出 idea 草稿（2026-10-23 与师兄讨论后定）</strong>：
+    <ul>
+      <li><strong>单算子</strong>：13 个算子轮流上，每个都按中心问题出一份 idea 草稿。</li>
+      <li><strong>算子组合</strong>：agent 按中心问题挑几组算子组合，每组出一份草稿，并写明先用哪个、后用哪个、为什么这样组合。最多 13 组（上限可调），不穷举全部 78 种两两组合。组合的是两个动作；M9「组合互补」组合的是两篇论文，不是一回事。</li>
+      <li><strong>多投入调用，先发散</strong>：这一步用订阅额度并行多个 agent。验收看多样性：草稿去重后剩几份、覆盖了几个算子。</li>
+      <li><strong>草稿不是正式卡</strong>：只用来启发。流程末尾的构思出卡（S25）照旧，正式卡仍要过撞车检查和信心打分。</li>
+    </ul></li>
+  <li><strong>放在哪</strong>：单独的 <code>RUN_DIR/inspire/</code>：<code>papers.jsonl</code> 放启发论文，每篇记下是哪个算子、哪条检索词找到的；<code>drafts/</code> 放 idea 草稿，每份记下用了哪个或哪组算子。<strong>不进抽取和数据库</strong>，金子论文的统计数字只来自主题论文；启发池现在只交给提议者（S12）当镜头，构思出卡（S25）还没接上。</li>
+  <li><strong>怎么跑</strong>：编排器跑到 S00a 自动做完，一轮约 27 次 codex（13 份单算子 + 1 次挑组合 + 至多 13 份组合，组合上限用 <code>--set MAX_COMBOS=N</code> 调）。只找 <code>SPLIT</code> 之前的论文；菜单里留作检验的论文一篇都不许出现。跑完先看 <code>inspire/INDEX.md</code>（每份草稿的题目和找到几篇论文）和 <code>inspire/diversity.md</code>（去重后剩几份、覆盖几个算子、几成论文不在本轮语料里）。旧菜单没有「Central question」时用「Dish」代替并打出警告。</li>
+  <li><strong>还没做</strong> <span class="st plan">🔭 B9 另一半</span>：按菜单详略分三档、路线数随之变（3 / 4–5 / 6）。</li>
+  <li><strong>别和「算子 DSL」混</strong>：这里的「构思算子」指 ScholarCatalyst 的构思动作；开头「② 中间侧」卡片和下文「它怎么思考」里的「算子程序 / 算子 DSL」（Gen / Comm / Agg…）是描述方法结构的记法，两者无关。</li>
+</ul></section>
+<section id="lens"><h2>巨人镜头</h2><h3>核心 idea ④ · 洞见来自巨人镜头</h3>
+<p>除了从数据里炼通解，还用别人的眼光找新问题：</p>
+<ul>
+  <li>汪浩然：借人类社会制度当多智能体的巨人肩膀，见 <code>10_institution_catalyst.md</code>；「升维看问题、低维出工具」，见 <code>15_problem_lift.md</code>。</li>
+  <li>ScholarCatalyst：作者当年怎么被前作启发，见 <code>14_catalyst_ideation.md</code>。</li>
+  <li>凌杨：棋盘法找空格，见 <code>scripts/chessboard.py</code> 和 <code>docs/10</code>。</li>
+</ul>
+<p>构思和查重分开做，构思 agent 不判自己的卡（RUNBOOK §2 第 6 条）。</p>
+<p>现在这些镜头都在最后一个模块「构思与评估」里，金子论文炼完才用；出的卡经回环 ④ 变成下一轮的选题。<span class="st ok">B9 已实现</span> 把 ScholarCatalyst 镜头再往前放了一份：在输入侧用构思算子建启发池（见上文「三类输入」④）：一是找领域外的启发论文，二是每个算子、几组算子组合各出 idea 草稿，让提议者一开始就能看到领域外的启发和发散开的想法。草稿只用来启发，正式卡仍在这里出。</p></section>
+<section id="gates"><h2>7 个闸 · 每个的细节</h2><h4>★ 闸① · 菜单拍板</h4>
+<p>定选题、读者、时间窗、纳入排除、锁定答案。这一步决定后面所有 agent 看到什么，跑起来以后不再改。只回答一个问题：「菜单这样定，跑起来后不再改，可以吗？」</p>
+<h4>★ 闸② · 筛选边界</h4>
+<p>看 <code>triage/lab_review_lenient.csv</code>（宽松机构清单），决定删谁；需要补读图表的论文列在 <code>figure_pass_candidates.tsv</code>。只回答一个问题：「这些边缘论文算不算 solid？」</p>
+<h4>★ 闸③ · 终稿结论过目</h4>
+<p>审查后的 <code>synthesis/final_candidates.json</code> 加上打分。需要你定口径的分歧写在台账里，例如 2026-10-22 你定的「采样基线默认只认纯投票」。只回答一个问题：「每条 G 的边界你认不认？」</p>
+<h4>★ 闸④ · 出卡勾选与花钱</h4>
+<p>棋盘出卡后，打开 <code>chessboard/decision_page.html</code> 勾选，得到 <code>decisions.json</code>。凡是要调付费 API 的实验，先过 <code>13_preapproval</code> 跑前配置卡：本次配置、原论文配置、差异与理由、预算。等你同意才跑。只回答一个问题：「哪几张卡做？（花钱的先看配置卡）」</p>
+<h4>★ 闸⑦ · 哪几张扩展卡进论文（成文前）</h4>
+<p>打开 <code>synthesis/…/deck/deck.md</code>：一行一条 G，七列是七张卡的结果；细节在 <code>deck/&lt;G&gt;/cards.md</code>。默认全留；不想写进论文的卡用 <code>expand_deck.py cut &lt;RUN_DIR&gt; &lt;G&gt; &lt;卡&gt;</code> 砍掉。可行性闸判 KILL 时不到这一步，先读 <code>deck/null_memo.md</code>。只回答一个问题：「哪几张扩展卡进论文？」</p>
+<h4>★ 闸⑥ · 用哪份骨架写（成文前）</h4>
+<p>打开 <code>synthesis/…/architecture/maps.html</code>，三份骨架并排，最上面是 decider 的选择和理由；<code>claim_calibration.md</code> 是每条 G 能说什么、不能说什么。同意就不用动；想换就跑 <code>architect_loop.py pick &lt;RUN_DIR&gt; &lt;prism&gt;</code>。只回答一个问题：「用哪份骨架写？」（编号按加入先后，时间上在闸⑤之前。）</p>
+<h4>★ 闸⑤ · 是不是真金</h4>
+<p>读终稿 PDF 和决策指南。只回答一个问题：「这篇是不是值得精读的金子？」改动意见写进 <code>paper/v3/changelog.md</code> 的下一版。</p></section>
+<section id="menu"><h2>菜单与建运行目录 · 详版</h2><p>照 <code>config/menu.md</code> 的格式写一份菜单，包括：</p>
+<ul>
+  <li>选题</li>
+  <li><strong>中心问题</strong>：一句话，外行一分钟能听懂，并说清什么算答上了；子问题都挂在它下面，偏题的进剩菜。审查步用它判终稿集合有没有跑题（凌杨 §4.2a、§3.7）</li>
+  <li>读者与注意力预算</li>
+  <li>时间窗 <code>YYYY-MM-DD .. YYYY-MM-DD</code></li>
+  <li>纳入 / 排除标准</li>
+  <li><strong>锁定答案的论文编号</strong>，写在 “reserved for evaluation” 后面</li>
+</ul>
+<p>然后建运行目录：</p>
+<pre><code>python3 pipeline/init_run.py ~/runs/run4 --run-id run4_xxx --menu ~/runs/menu_run4.md \
+    --split 2025-07-01 --forbid ~/HITSZ/paper_alchemy_run3 --agent-models "claude-opus-5-5=2026-06"</code></pre>
+<ul>
+  <li>它会把 <code>scripts/*.py</code>（全部）、<code>config/schema.md</code>、<code>config/db_guide.md</code>、<code>config/model_prices*</code> 拷进运行目录，成为这一轮的冻结快照。</li>
+  <li>它会写 <code>run.json</code>，后面所有提示词的占位符都从这里取。</li>
+  <li><code>--forbid</code> 列出 agent 不许读的目录。pipeline 目录本身总在禁读名单里，因为它装着别的轮的结论和答案键。</li>
+  <li>答案文件放在运行目录之外，只有最后的评估 agent 能读。</li>
+</ul></section>
+<section id="tree"><h2>完整目录树 · 详版（以 run3 为例）</h2><div class="tw"><div class="tree">paper_alchemy_run3/
+├─ run.json                       ★ 这一轮的配置：RUN_ID / 全文目录 / 禁读目录 / 时间切分 / agent 模型
+├─ config/                        schema.md、db_guide.md、menu.md、model_prices*（价格表与来源）
+├─ scripts/                       init_run 时冻结的脚本快照
+├─ corpus/                        9,630 篇候选 → corpus.json（2,237 篇）
+├─ inspire/                       B9 启发池（run3 没有，不进统计）
+│  ├─ INDEX.md                      草稿目录（给提议者看）· diversity.md 多样性
+│  ├─ papers.jsonl                  构思算子找来的启发论文 + 每条检索词
+│  └─ drafts/                       单算子 ×13 + 算子组合 ≤13 的 idea 草稿（只启发，不是正式卡）
+├─ triage/
+│  ├─ b00…b14.jsonl               摘要初筛逐批结果
+│  ├─ core_ids.txt                ★ 进抽取的核心论文
+│  ├─ paper_tier.csv              core / legacy + 独立来源组
+│  ├─ authors_full.jsonl          完整作者表（independence_graph 用）
+│  ├─ independence_group_v2.csv   共享 ≥2 作者的连通块
+│  ├─ lab_review_lenient.csv      ★ 闸②：待你删减的宽松机构
+│  └─ duplicates.tsv              重复稿与同组关系
+├─ extract/&lt;arxiv_id&gt;.json        ★ 每篇一个：方法程序 + 带条件的结果行（_excluded/ 放剔除的重复稿）
+├─ db/                            papers / methods / results / pairs / cheap_vs_strong / qual_findings
+├─ db_pure_vote/ db_corrected/ …  同一份抽取在不同口径下建的库（原 db/ 不动）
+├─ analysis/                      归并、荟萃、矛盾对
+├─ synthesis/
+│  ├─ candidates_R*.json、notes_R*.md   各提议者的候选与笔记
+│  ├─ review.md、final_candidates.json  ★ 审查与终稿
+│  ├─ v2/                         第二版审查、打分、稳健性、挂靠
+│  ├─ <v>/deck/                   B6 可行性闸与扩展牌组（2026-10-24 起）：feasibility.md、null_memo.md（KILL 时）、<G>/cards.md 7 张卡、★ deck.md（闸⑦）、deck_decisions.json
+│  ├─ <v>/architecture/           B5 架构师（2026-10-24 起）：claim_rules*.json、claim_calibration.md 禁说清单、paper_map_{novelty,narrative,impact}.md、architecture_decision.md、★ maps.html（闸⑥）
+│  ├─ chef/                       各次零调用复核的结果
+│  ├─ catalyst_run/               构思出卡、查重、实验设计包
+│  └─ institution_run/            借古代制度看多智能体
+├─ chessboard/                    棋盘：axes.json、cells.csv、board.html、F4/ 出卡、decision_page.html
+├─ paper/v3/                      ★★★ 金子论文：gold_paper_en.pdf、gold_paper_zh.pdf、decision_guide_*.pdf、changelog.md、gold_*.html
+├─ deliver/                       B8 交付包（2026-10-24 起）：&lt;名&gt;.tar.gz（正文 + PDF + 证据包 + reproduce.sh + MANIFEST.json）、&lt;名&gt;_REPORT.md
+├─ eval/                          评估（只有评估 agent 能读答案键）
+├─ traces/
+│  ├─ prompts/                    ★ 所有渲染后的 agent 提示词（可复现）
+│  ├─ extraction.jsonl            抽取留痕，一篇一行
+│  ├─ state.json、orchestrate.log.jsonl   B7 编排器的阶段状态与流水（2026-10-24 起）
+│  └─ funnel.md                   漏斗台账
+└─ _scratch/                      各 agent 的私有中间文件（追溯用，不保证整洁）</div></div></section>
+</main>
+</div>
+<script>
+(function(){var b=document.getElementById('tt'),r=document.documentElement;
+try{var s=localStorage.getItem('pa-theme');if(s)r.setAttribute('data-theme',s);}catch(e){}
+b.addEventListener('click',function(){var d=r.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');var n=d==='dark'?'light':'dark';r.setAttribute('data-theme',n);try{localStorage.setItem('pa-theme',n);}catch(e){}});})();
+</script>
+</body>
+</html>

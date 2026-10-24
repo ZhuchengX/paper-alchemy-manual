@@ -54,14 +54,20 @@ th{background:var(--accent-soft);font-weight:600}
 .st.ok{background:var(--green-soft);color:var(--green)} .st.half{background:var(--amber-soft);color:var(--amber)} .st.plan{background:var(--red-soft);color:var(--red)}
 .themebtn{margin-top:16px;font:inherit;font-size:13px;background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:4px 10px;cursor:pointer}
 @media (max-width:860px){.layout{grid-template-columns:minmax(0,1fr);gap:0}nav.side{position:static;height:auto;padding-block:16px;border-bottom:1px solid var(--line)}nav.side a{display:inline-block}}
+.lead{font-size:16px}
+.src{color:var(--muted);font-size:12.5px;margin-top:4px}
+details.more{border:1px solid var(--line);border-radius:10px;background:var(--panel);margin:12px 0;padding:0 14px}
+details.more>summary{cursor:pointer;padding:10px 0;font-weight:600;color:var(--accent)}
+details#news{border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:0 16px 8px}
+details#news>summary{cursor:pointer;padding:12px 0;font-weight:700;font-size:18px}
+details#news>summary small{font-weight:400;color:var(--muted);font-size:13px;margin-left:8px}
 </style>
 </head>
 <body>
 <div class="layout">
 <nav class="side" aria-label="目录">
   <div class="brand">论文炼金 · Paper Alchemy</div>
-  <div class="ver">使用说明书 · 更新于 2026-10-24 17:25</div>
-  <a href="#news">更新记录</a>
+  <div class="ver">使用说明书 · 更新于 2026-10-24 19:45</div>
   <a href="#what">这是什么</a>
   <a href="#install">安装与准备</a>
   <a href="#first">跑第一轮</a>
@@ -70,121 +76,124 @@ th{background:var(--accent-soft);font-weight:600}
   <a href="#output">输出目录详解</a>
   <a href="#rules">规则与红线</a>
   <a href="#faq">常见问题与小技巧</a>
+  <a href="#news">更新记录</a>
+  <a href="设计细节.html">设计细节 →</a>
   <button class="themebtn" type="button" id="tt">切换深浅色</button>
 </nav>
 <main>
 <header class="hero">
   <div class="eyebrow">PAPER ALCHEMY · 用户使用说明书</div>
   <h1>把一大堆 autoresearch 论文，炼成一篇值得精读的 insight 论文</h1>
-  <p>本说明书的章节结构照 Team Paper Lite 公开说明书一一对应，方便对照、找差距；内容全部是本仓库的真实流程。标 <span class="st plan">🔭 规划中</span> 的是还没做的部分，编号对应蓝图 B0–B8（<a href="research/pipeline泛化_20261023/blueprint_TPL对照.html"><code>docs/research/pipeline泛化_20261023/blueprint_TPL对照.html</code></a>）。</p>
+  <p>章节照 Team Paper Lite 公开说明书一一对应，内容全是本仓库的真实流程。各模块做到哪了看 <a href="#progress">进度表</a>；每个模块的完整机制看 <a href="设计细节.html">设计细节</a>。</p>
 </header>
-
-<!-- NEWS_START -->
-<section id="news">
-<h2>更新记录<span class="tag">每次发布改了哪里，新的在上</span></h2>
-<div class="news">
-<h4>2026-10-24 17:25 · B9 启发池：先发散，再炼金</h4><ul><li><a href="#first">跑第一轮</a>「④ 启发池」：改为已实现。新增「怎么跑」：编排器在 S00a 自动做完，约 27 次 codex；跑完看 <code>inspire/INDEX.md</code>（草稿目录）和 <code>inspire/diversity.md</code>（去重后几份、覆盖几个算子）。启发池现在只交给提议者（S12），构思出卡（S25）还没接上。</li><li><a href="#first">跑第一轮</a>「④ 启发池」：新增「还没做」。B9 另一半「按菜单详略分三档」仍在规划。</li><li><a href="#output">输出目录详解</a>：<code>inspire/</code> 下新增 <code>INDEX.md</code> 和 <code>diversity.md</code>。</li><li><a href="#fl-m1">流程图模块 1</a>：S00a 由规划中改为已实现，排到 S00 之后。</li></ul>
-<h4>2026-10-24 16:42 · B8 交付包：解包即可复算全部数字</h4><ul><li><a href="#think">它怎么思考</a>：新增「最后一步打包交付」一段。交付包含正文、PDF、证据包、最终报告。在禁读原机器文件的沙箱里，包内脚本重新打分、逐条核对正文数字，全部 MATCH 才算通过。报告把数字分为「从 db 重新算出」和「读随包输入」两类。摘要可交没参与写作的 reader 重写，不许含数字。</li><li><a href="#output">输出目录详解</a>：目录树新增 <code>deliver/</code>，<code>traces/</code> 下新增编排器的 <code>state.json</code>。</li><li><a href="#fl-m5">流程图模块 5</a>：S23b 由规划中改为已实现。</li></ul>
-<h4>2026-10-24 16:28 · B7 编排器：一条命令跑全流程</h4><ul><li><a href="#first">跑第一轮</a>「②」：新增 <code>orchestrate.py</code> 用法。它按阶段表逐个执行，每阶段过闸才往下；改了哪个模板或脚本，只重跑用到它的阶段。</li><li><a href="#first">跑第一轮</a>「③ 跟跑」：中途离开后，再跑同一条命令接着来，被中断的阶段重跑。</li><li><a href="#gates">你在哪些点介入</a>：7 个闸统一由编排器停下提问，用 <code>--answer</code> 回答；auto 模式直接放行，记为 auto-approved。</li><li><a href="#think">它怎么思考</a> 流程图说明：新增「谁沿着这张图跑」，说明编排器按图上从左到右执行、停在每个 ★ 闸。</li></ul>
-<details><summary>更早的 12 次</summary><h4>2026-10-24 16:05 · B6 可行性闸 + 扩展牌组</h4><ul><li><a href="#think">它怎么思考</a>：新增「架构师之前」一段。先判这一轮撑不撑得起金子：撑不起判 KILL，写 null memo，不成文；只撑得起边界则只写描述性论文。再给每条 G 发 7 张扩展卡，每张判 holds / narrows / descriptive_only / n_a / needs_call。</li><li><a href="#gates">你在哪些点介入</a>：闸由 6 个增为 7 个。新增闸⑦「哪几张扩展卡进论文？」。</li><li><a href="#output">输出目录详解</a>：目录树新增 <code>deck/</code>。</li><li><a href="#fl-m4">流程图模块 4</a>：S18b 由规划中改为已实现。</li></ul><h4>2026-10-24 15:40 · 新增更新记录</h4><ul><li><a href="#news">更新记录</a>：说明书最前面新增本节，列出每次发布改了哪里，新的在上，最新 3 条展开。侧栏日期改为最近一次更新时间。网页仓库 README 同步这份记录。</li></ul><h4>2026-10-24 14:45 · B5 架构师三棱镜 + 禁说清单</h4><ul><li><a href="#think">它怎么思考</a>：新增「成文之前」一段。先零调用从打分生成禁说清单，再由 novelty / narrative / impact 三个架构师各出一份骨架，decider 选一份；成稿由脚本逐条核对禁说。</li><li><a href="#gates">你在哪些点介入</a>：闸由 5 个增为 6 个。新增闸⑥「用哪份骨架写？」，时间上在闸⑤之前。</li><li><a href="#output">输出目录详解</a>：目录树新增 <code>architecture/</code>。</li><li><a href="#fl-m5">流程图模块 5</a>：S19b 由规划中改为已实现。</li></ul><h4>2026-10-24 10:32 · B4 五角色新眼审稿</h4><ul><li><a href="#think">它怎么思考</a>：新增「成稿之后」一段。五个角色只读成稿和语料，修订只许改被点名的段落，终审判 ACCEPT 或 REOPEN，REOPEN 由你决定是否回成文。</li><li><a href="#fl-m5">流程图模块 5</a>：S21b 由规划中改为已实现。</li></ul><h4>2026-10-23 20:31 · B2 逐候选审查、B3 全文数字机核</h4><ul><li><a href="#think">它怎么思考</a>：审查改为两层。每个候选一个 critic，判 VALIDATED / REVISE / DROP；REVISE 最多改写 2 轮；judge 只从 VALIDATED 里选。</li><li><a href="#output">输出目录详解</a>「常见疑问」：「数字从哪来」一问补上 S20b 数字机核。正文每个数字都要有来源指针，对不上即 FAIL。</li><li><a href="#fl-m3">流程图模块 3</a>、<a href="#fl-m5">模块 5</a>：B2、B3 对应阶段由规划中改为已实现。</li></ul><h4>2026-10-23 19:47 · LLM 阶段改由 codex 执行，B1 验矿卡</h4><ul><li><a href="#what">这是什么</a>、<a href="#install">安装与准备</a>：跑 case 的 LLM 阶段（采购到成文）改由 Codex CLI（gpt-6-astra）经 <code>pipeline/run_agent.py</code> 执行，Claude Code 主线程只改 pipeline、编排、核验。安装表新增 Codex CLI。</li><li><a href="#first">跑第一轮</a>：第 ② 步改为「渲染提示词 → 交给 codex → 过闸门」，并给出留痕位置 <code>traces/agent_runs/</code>。</li><li><a href="#fl-m2">流程图模块 2</a>：B1 验矿卡（<code>scripts/solidity.py</code>）由规划中改为已实现。</li></ul><h4>2026-10-23 17:04 · 中心问题</h4><ul><li><a href="#what">这是什么</a>：菜单新增「中心问题」：一句话，外行一分钟能听懂，并说清什么算答上了。审查用它判终稿是否跑题。附 run3 的中心问题作例子。</li></ul><h4>2026-10-23 16:47 · 启发池出 idea 草稿</h4><ul><li><a href="#what">这是什么</a>「④ 启发池」：新增构思算子出草稿。13 个算子各出一份，另有不超过 13 份算子组合，写明先后顺序和理由。草稿只用来启发，不是正式卡。</li></ul><h4>2026-10-23 16:06 · 启发池（B9）写进正文</h4><ul><li><a href="#what">这是什么</a>：新增「④ 启发池」卡片，写明算子从哪来、怎么用、为什么做、放在哪。输入侧、镜头、目录树同步加上 <code>inspire/</code>。</li></ul><h4>2026-10-23 15:51 · 流程图加启发池</h4><ul><li><a href="#fl-m1">流程图模块 1</a>：新增规划中阶段 S00a 启发池。</li></ul><h4>2026-10-23 15:43 · 蓝图加 B9</h4><ul><li>蓝图（<a href="#what">这是什么</a> 末尾链接的 TPL 对照页）新增 B9「输入广度」。说明书正文不变。</li></ul><h4>2026-10-23 15:35 · 首次发布</h4><ul><li>8 章：这是什么、安装与准备、跑第一轮、它怎么思考、你在哪些点介入、输出目录详解、规则与红线、常见问题。章节结构对照 Team Paper Lite 公开说明书。</li><li><a href="#think">它怎么思考</a>：两层流程图，由 <code>pipeline/stages.json</code> 自动生成。第一层 6 个模块，第二层每个模块折叠展开。</li><li><a href="#gates">你在哪些点介入</a>：5 个闸，每个只问一个问题。</li></ul></details>
-</div>
-</section>
-<!-- NEWS_END -->
 
 <!-- ========== 这是什么 ========== -->
 <section id="what">
 <h2>这是什么<span class="tag">一句话讲清</span></h2>
-<p><strong>论文炼金 = 文献采购员 ＋ 证据抽取员 ＋ 统计审查员 ＋ 写作伙伴</strong>，由你本机的 Claude Code 主线程按本手册逐阶段调度，要调 LLM 的阶段默认交 codex（gpt-6-astra，ultra 推理档）执行，加上一组 Python 脚本和闸门。你的工作不是读完几百篇论文，而是定选题、在关键决策点拍板、判断最后那篇是不是真金。</p>
-<p>它的优化目标是<strong>注意力经济</strong>：N 篇论文 → m 篇必读（m 远小于 N）。输出必须是论文形态，并且抽象出更高层的通解，不是摘要或综述（<code>CLAUDE.md</code>「必须遵守的设计原则」第 1 条）。</p>
+<p class="lead"><strong>论文炼金 = 文献采购员 ＋ 证据抽取员 ＋ 统计审查员 ＋ 写作伙伴</strong>，跑在你本机。你的工作不是读完几百篇论文，而是定选题、在闸口拍板、判断最后那篇是不是真金。</p>
+<p>目标是<strong>注意力经济</strong>：N 篇论文 → m 篇必读（m 远小于 N）。输出是抽象出通解的论文，不是摘要或综述。</p>
 <div class="cards">
-  <div class="card"><h4>① 输入侧：先验矿</h4><p>输入是一大批论文，人写的或 autoresearch 产出的都行。先两轮筛选：摘要初筛给 solid 分，再按 PDF 首页印出的机构二筛；然后按共享作者分独立来源组，防止同一拨人刷屏。<span class="st ok">已实现 · B1 验矿卡</span>：抽取后、建库前生成 <code>triage/solidity.csv</code>，逐篇报告内部不一致、代码公开和来源 ID 是否见于全文；保留命中原句供复核，不造总分、不设默认阈值，建库过滤须显式打开开关。<span class="st ok">已实现 · B9 启发池</span>：另用 ScholarCatalyst 作者理由（rationale）蒸馏出的构思动作当算子，找表面不相关、但能启发的论文，并让 13 个算子各出、多个算子组合出 idea 草稿，先把多样性做起来；单独成池，不进统计。</p></div>
-  <div class="card"><h4>② 中间侧：多炉并炼</h4><p>每篇论文拆成「带条件的事实 ＋ 算子程序」。3–4 个提议 agent 从不同角度并行提出候选通解，互不读对方文件；打分器和审查 agent 负责筛选。巨人镜头（制度借鉴、构思动作、棋盘法）另出候选卡。</p></div>
-  <div class="card"><h4>③ 控制权在你</h4><p>选题与锁定答案、宽松机构的删减、终稿结论、出卡勾选、花钱前的配置卡，这几处都停下来等你。agent 只提议，不替你拍板。</p></div>
-  <div class="card"><h4>④ 产出侧：成色可查</h4><p>金子论文（英文全文 ＋ 中文正文 PDF）、决策指南、可视化页（地图、拼盘、结果页）。每条结论都带支撑行、独立组数、稳健性；正文只许引用语料内的论文，由闸门机器拦截。</p></div>
+  <div class="card"><h4>① 输入侧：先验矿</h4><p>一批论文，人写的或 autoresearch 产出的都行。摘要初筛、按机构二筛、按共享作者分独立来源组；另建启发池，找领域外的启发。</p></div>
+  <div class="card"><h4>② 中间侧：多炉并炼</h4><p>每篇拆成「带条件的事实 ＋ 算子程序」。多个提议者并行出候选通解，互不读对方；审查和打分另请人做。</p></div>
+  <div class="card"><h4>③ 控制权在你</h4><p>7 个闸停下等你，每个只问一个问题。agent 只提议，不拍板；花钱前先看配置卡。</p></div>
+  <div class="card"><h4>④ 产出侧：成色可查</h4><p>中英文金子论文 PDF ＋ 决策指南 ＋ 交付包。正文每个数字都能在包里复算。</p></div>
 </div>
-<div class="note"><p><strong>这不是什么</strong>：它不是一键出论文的 SaaS，也不是「帮你想题目」的聊天框，更不是综述生成器。它是一条在你本机跑的、从一批论文到一篇通解论文的流水线。可以照 <code>pipeline/RUNBOOK.md</code> 一个阶段一个阶段手动推进，也可以用 <code>pipeline/orchestrate.py</code> 一条命令按阶段表串起来，它会停在每个人工闸等你。<span class="st ok">已实现 · B7 编排器</span></p></div>
+<div class="note"><p><strong>这不是什么</strong>：不是一键出论文的 SaaS，不是帮你想题目的聊天框，也不是综述生成器。它是一条本机流水线：Claude Code 调度，codex（gpt-6-astra）跑 LLM 阶段，Python 脚本和闸门把关。</p></div>
+
+<h3 id="progress">进度表 · 蓝图 B0–B9</h3>
+<p>蓝图对照 TPL 列出要补的模块，一次落一个。点模块名看细节。</p>
+<div class="tw"><table>
+<thead><tr><th>编号</th><th>模块</th><th>做什么</th><th>状态</th><th>入口</th></tr></thead>
+<tbody>
+<tr><td>B0</td><td><a href="#fl-m1">阶段契约表</a></td><td>每个阶段写死产物、闸门、判决和人工闸问题</td><td><span class="st ok">✅ 已实现</span></td><td><code>pipeline/stages.json</code></td></tr>
+<tr><td>B1</td><td><a href="设计细节.html#b1">验矿卡</a></td><td>逐篇报告内部不一致、代码公开、来源 ID 是否见于全文</td><td><span class="st ok">✅ 已实现</span></td><td><code>scripts/solidity.py</code></td></tr>
+<tr><td>B2</td><td><a href="设计细节.html#b2">逐候选审查</a></td><td>每个候选一个 critic，判 VALIDATED / REVISE / DROP</td><td><span class="st ok">✅ 已实现</span></td><td><code>pipeline/review_loop.py</code></td></tr>
+<tr><td>B3</td><td><a href="#output">全文数字机核</a></td><td>正文每个数字都有来源指针，对不上即 FAIL</td><td><span class="st ok">✅ 已实现</span></td><td><code>pipeline/check_numbers.py</code></td></tr>
+<tr><td>B4</td><td><a href="设计细节.html#b4">五角色新眼审稿</a></td><td>只读成稿和语料，每条意见指到编号段落</td><td><span class="st ok">✅ 已实现</span></td><td><code>pipeline/review5_loop.py</code></td></tr>
+<tr><td>B5</td><td><a href="设计细节.html#b5">架构师三棱镜 + 禁说清单</a></td><td>三份论文骨架选一份；成稿逐条核对禁说</td><td><span class="st ok">✅ 已实现</span></td><td><code>pipeline/architect_loop.py</code></td></tr>
+<tr><td>B6</td><td><a href="设计细节.html#b6">可行性闸 + 扩展牌组</a></td><td>撑不起就 KILL 不成文；每条 G 发 7 张扩展卡</td><td><span class="st ok">✅ 已实现</span></td><td><code>pipeline/expand_deck.py</code></td></tr>
+<tr><td>B7</td><td><a href="设计细节.html#b7">编排器</a></td><td>一条命令按阶段表跑全流程，停在每个闸</td><td><span class="st ok">✅ 已实现</span></td><td><code>pipeline/orchestrate.py</code></td></tr>
+<tr><td>B8</td><td><a href="设计细节.html#b8">交付包</a></td><td>解包后在干净沙箱里复算全部数字</td><td><span class="st ok">✅ 已实现</span></td><td><code>pipeline/deliver.py</code></td></tr>
+<tr><td>B9</td><td><a href="设计细节.html#b9">启发池</a></td><td>构思动作找领域外启发、出 idea 草稿；按菜单详略分三档、接构思出卡（S25）还没做</td><td><span class="st half">🟡 一半</span></td><td><code>pipeline/inspire.py</code></td></tr>
+<tr><td>T1</td><td><a href="#faq">泛化：方法族从领域插件读</a></td><td>现在方法族写死 5 个值，换领域会报错</td><td><span class="st plan">🔭 规划中</span></td><td><code>check.py:49-50</code></td></tr>
+<tr><td>T2</td><td><a href="#first">泛化：筛选口径从菜单读</a></td><td>筛选模板目前写死了 run3 的部分纳入 / 排除口径</td><td><span class="st plan">🔭 规划中</span></td><td><code>01b_triage.md:24-25</code></td></tr>
+<tr><td>T3</td><td><a href="#faq">泛化：建库容错</a></td><td>空配对表、0–1 指标被乘 100</td><td><span class="st plan">🔭 规划中</span></td><td><code>build_db.py:210</code></td></tr>
+</tbody></table></div>
+<p class="src">完整对照：<a href="research/pipeline泛化_20261023/blueprint_TPL对照.html">TPL 对照蓝图</a> · <a href="research/pipeline泛化_20261023/plan.html">泛化方案</a></p>
 </section>
 
 <!-- ========== 安装与准备 ========== -->
 <section id="install">
 <h2>安装与准备<span class="tag">从空白电脑到能跑一轮</span></h2>
 <div class="steps">
-  <div class="step"><div class="n">1</div><div><h4>装前置软件</h4><p>Python 3 + pandas / numpy、Claude Code CLI（调度 agent）、poppler 的 <code>pdftotext</code>（全文转文本），可选 pandoc + xelatex（出 PDF）。</p></div></div>
-  <div class="step"><div class="n">2</div><div><h4>取代码</h4><p>维护者本机是 <code>/Users/xzc/HITSZ/paper_alchemy</code>；合作者从私密仓库 <code>ZhuchengX/paper-alchemy</code> 克隆，pipeline 在其中的 <code>pipeline/</code> 目录。</p></div></div>
-  <div class="step"><div class="n">3</div><div><h4>本地化路径（合作者必做）</h4><p>模板和脚本里写的是维护者本机路径。在仓库根执行 <code>bash localize_paths.sh</code>，把它们换成你这份克隆的路径。</p></div></div>
-  <div class="step"><div class="n">4</div><div><h4>自检</h4><p>用自带的 run3 重建一次库，看到 <code>GATE db: PASS</code> 就说明装好了。</p></div></div>
+  <div class="step"><div class="n">1</div><div><h4>装前置软件</h4><p>Python 3 + pandas / numpy、Claude Code CLI、Codex CLI、poppler 的 <code>pdftotext</code>；出 PDF 再装 pandoc + xelatex。</p></div></div>
+  <div class="step"><div class="n">2</div><div><h4>取代码</h4><p>从私密仓库 <code>ZhuchengX/paper-alchemy</code> 克隆，pipeline 在 <code>pipeline/</code> 目录。维护者本机是 <code>/Users/xzc/HITSZ/paper_alchemy</code>。</p></div></div>
+  <div class="step"><div class="n">3</div><div><h4>本地化路径（合作者必做）</h4><p>在仓库根跑 <code>bash localize_paths.sh</code>，把维护者本机路径换成你的。</p></div></div>
+  <div class="step"><div class="n">4</div><div><h4>自检</h4><p>用自带的 run3 重建一次库，看到 <code>GATE db: PASS</code> 就装好了。</p></div></div>
 </div>
 
 <h3>前置软件清单 · 一张表看全</h3>
 <div class="tw"><table>
 <thead><tr><th>软件</th><th>用途</th><th>验证命令</th><th>必装 / 可选</th></tr></thead>
 <tbody>
-<tr><td>Python 3 + pandas / numpy</td><td>建库、打分、闸门、棋盘等全部脚本</td><td><code>python3 -c "import pandas, numpy"</code></td><td>必装</td></tr>
-<tr><td>Claude Code CLI</td><td>主线程：改 pipeline、编排、核验；子 agent 只作后备</td><td><code>claude --version</code></td><td>必装</td></tr>
-<tr><td>Codex CLI（gpt-6-astra）</td><td>跑 case 时的 LLM 阶段（采购、筛选、抽取、提议、审查、成文……），经 <code>pipeline/run_agent.py</code> 调用，同时 ≤4 路</td><td><code>codex --version</code></td><td>必装（2026-10-23 起）</td></tr>
-<tr><td>poppler（<code>pdftotext</code>）</td><td>论文 PDF 转纯文本，供抽取 agent 读</td><td><code>pdftotext -v</code></td><td>必装</td></tr>
-<tr><td>pandoc + xelatex（TeX Live）</td><td><code>pipeline/pdf/make_pdf.sh</code> 把金子论文 md 渲染成中英文 PDF</td><td><code>pandoc --version</code>、<code>xelatex --version</code></td><td>可选（只要 md 不要 PDF 可不装）</td></tr>
-<tr><td>HuggingFace <code>datasets</code></td><td>下载 ScholarCatalyst 19 万篇摘要库，给构思出卡用 BM25 检索</td><td><code>python3 -c "import datasets"</code></td><td>可选（只在构思出卡时需要）</td></tr>
+<tr><td>Python 3 + pandas / numpy</td><td>建库、打分、闸门等全部脚本</td><td><code>python3 -c "import pandas, numpy"</code></td><td>必装</td></tr>
+<tr><td>Claude Code CLI</td><td>主线程：改 pipeline、编排、核验</td><td><code>claude --version</code></td><td>必装</td></tr>
+<tr><td>Codex CLI（gpt-6-astra）</td><td>跑 case 的 LLM 阶段，经 <code>pipeline/run_agent.py</code> 调用，同时 ≤4 路</td><td><code>codex --version</code></td><td>必装</td></tr>
+<tr><td>poppler（<code>pdftotext</code>）</td><td>论文 PDF 转纯文本</td><td><code>pdftotext -v</code></td><td>必装</td></tr>
+<tr><td>pandoc + xelatex（TeX Live）</td><td>把金子论文渲染成中英文 PDF</td><td><code>pandoc --version</code>、<code>xelatex --version</code></td><td>可选</td></tr>
+<tr><td>HuggingFace <code>datasets</code></td><td>下载 ScholarCatalyst 摘要库，给启发池和构思出卡检索</td><td><code>python3 -c "import datasets"</code></td><td>可选</td></tr>
 </tbody></table></div>
 
 <h3>取代码并自检</h3>
-<pre><code># 合作者
-git clone git@github.com:ZhuchengX/paper-alchemy.git && cd paper-alchemy
+<pre><code>git clone git@github.com:ZhuchengX/paper-alchemy.git && cd paper-alchemy
 bash localize_paths.sh                 # 只改你本地副本；撤销：git checkout -- pipeline run3 skills
-bash localize_paths.sh --check         # 列出还剩哪些维护者本机路径（剩下的都是可选资料）
+bash localize_paths.sh --check         # 列出还剩哪些维护者本机路径
 
-# 自检：用自带的 run3 重建一次库
 cd run3 && python3 -I scripts/build_db.py && python3 -I ../pipeline/pipeline/check.py . db
 # 预期：打印 n_papers: 513，最后一行 GATE db: PASS</code></pre>
-<div class="note"><p><strong>下文命令的执行位置</strong>：都在 pipeline 根目录下执行。维护者本机是 <code>/Users/xzc/HITSZ/paper_alchemy</code>，GitHub 仓库里是 <code>pipeline/</code>。每一轮的运行目录（RUN_DIR）放在 pipeline 目录之外。</p></div>
+<p class="src">下文命令都在 pipeline 根目录执行；每一轮的运行目录（RUN_DIR）放在 pipeline 目录之外。</p>
 
 <h3>日常需要的命令一共就这几条</h3>
-<pre><code>python3 pipeline/init_run.py RUN_DIR --run-id ID --menu 菜单.md --split YYYY-MM-DD   # 建运行目录
-python3 pipeline/render.py RUN_DIR 模板名 KEY=VALUE …                                # 渲染某阶段的 agent 提示词
-python3 pipeline/check.py RUN_DIR corpus|extract|db|candidates|final|paper           # 阶段闸门
-cd RUN_DIR && python3 -I scripts/build_db.py                                          # 建库
-python3 scripts/score_candidates.py 候选.json 打分.json                               # 候选通解打分</code></pre>
-<p>其余脚本都登记在 RUNBOOK 第 1 节的阶段表里，每个脚本开头的 docstring 写了用法、口径和输出。</p>
-
-<h3>可选 · 装构思 skill</h3>
-<pre><code>cp -r skills/catalyst-ideation ~/.claude/skills/     # ScholarCatalyst 蒸馏出的构思动作手册，构思出卡阶段用</code></pre>
+<pre><code>python3 -I pipeline/init_run.py RUN_DIR --run-id ID --menu 菜单.md --split YYYY-MM-DD   # 建运行目录
+python3 -I pipeline/orchestrate.py run RUN_DIR                                          # 跑（停在每个闸）
+python3 -I pipeline/orchestrate.py run RUN_DIR --answer ⑦=ok                            # 回答闸，接着跑
+python3 -I pipeline/orchestrate.py status RUN_DIR                                       # 看每个阶段的状态
+python3 -I pipeline/check_stages.py RUN_DIR                                             # 对照阶段表查缺什么</code></pre>
+<p>其余脚本登记在 <code>pipeline/RUNBOOK.md</code> 第 1 节，每个脚本开头的 docstring 写了用法。构思 skill 可选：<code>cp -r skills/catalyst-ideation ~/.claude/skills/</code>。</p>
 
 <h3>安装阶段常见报错</h3>
 <div class="tw"><table>
 <thead><tr><th>报错</th><th>怎么办</th></tr></thead>
 <tbody>
-<tr><td><code>FileNotFoundError: …/corpus/corpus.json</code>（跑 <code>check.py … extract</code> 时）</td><td>运行目录里还没有 corpus。先走采购阶段，或者在重抽这类场景下从源运行目录拷一份 <code>corpus/corpus.json</code>。</td></tr>
-<tr><td>别人机器上提示词里的路径打不开</td><td>没跑 <code>localize_paths.sh</code>。跑完用 <code>--check</code> 确认。</td></tr>
-<tr><td><code>ModuleNotFoundError: pandas</code></td><td><code>pip install pandas numpy</code>。运行脚本统一用 <code>python3 -I</code>（隔离模式，避免读到当前目录下的同名模块）。</td></tr>
-<tr><td>出 PDF 时中文是方块</td><td>TeX 不完整，或缺 CJK 字体。用 TeX Live 完整版；<code>pipeline/pdf/header.tex</code> 里指定的字体本机要有。</td></tr>
+<tr><td><code>FileNotFoundError: …/corpus/corpus.json</code></td><td>运行目录里还没有 corpus。先走采购阶段，或从源运行目录拷一份 <code>corpus/corpus.json</code>。</td></tr>
+<tr><td>提示词里的路径打不开</td><td>没跑 <code>localize_paths.sh</code>。跑完用 <code>--check</code> 确认。</td></tr>
+<tr><td><code>ModuleNotFoundError: pandas</code></td><td><code>pip install pandas numpy</code>。脚本统一用 <code>python3 -I</code>（隔离模式）。</td></tr>
+<tr><td>出 PDF 时中文是方块</td><td>用 TeX Live 完整版；<code>pipeline/pdf/header.tex</code> 指定的字体本机要有。</td></tr>
 </tbody></table></div>
 </section>
 
 <!-- ========== 跑第一轮 ========== -->
 <section id="first">
 <h2>跑第一轮<span class="tag">动手</span></h2>
-<p>每一轮一个独立的运行目录。agent 只能读这个目录和全文目录，读不到别的轮次的结论和答案（RUNBOOK 开头）。</p>
+<p>每一轮一个独立的运行目录。agent 只能读这个目录和全文目录，读不到别的轮次的结论和答案。</p>
 
 <h3>① 写菜单、建运行目录</h3>
-<p>照 <code>config/menu.md</code> 的格式写一份菜单，包括：</p>
+<p>照 <code>config/menu.md</code> 写菜单：选题、<strong>中心问题</strong>、读者与注意力预算、时间窗、纳入 / 排除、<strong>锁定答案的论文编号</strong>（写在 “reserved for evaluation” 后面）。然后：</p>
+<pre><code>python3 -I pipeline/init_run.py ~/runs/run4 --run-id run4_xxx --menu ~/runs/menu_run4.md \
+    --split 2025-07-01 --forbid ~/HITSZ/paper_alchemy_run3</code></pre>
 <ul>
-  <li>选题</li>
-  <li><strong>中心问题</strong>：一句话，外行一分钟能听懂，并说清什么算答上了；子问题都挂在它下面，偏题的进剩菜。审查步用它判终稿集合有没有跑题（凌杨 §4.2a、§3.7）</li>
-  <li>读者与注意力预算</li>
-  <li>时间窗 <code>YYYY-MM-DD .. YYYY-MM-DD</code></li>
-  <li>纳入 / 排除标准</li>
-  <li><strong>锁定答案的论文编号</strong>，写在 “reserved for evaluation” 后面</li>
-</ul>
-<p>然后建运行目录：</p>
-<pre><code>python3 pipeline/init_run.py ~/runs/run4 --run-id run4_xxx --menu ~/runs/menu_run4.md \
-    --split 2025-07-01 --forbid ~/HITSZ/paper_alchemy_run3 --agent-models "claude-opus-5-5=2026-06"</code></pre>
-<ul>
-  <li>它会把 <code>scripts/*.py</code>（全部）、<code>config/schema.md</code>、<code>config/db_guide.md</code>、<code>config/model_prices*</code> 拷进运行目录，成为这一轮的冻结快照。</li>
-  <li>它会写 <code>run.json</code>，后面所有提示词的占位符都从这里取。</li>
-  <li><code>--forbid</code> 列出 agent 不许读的目录。pipeline 目录本身总在禁读名单里，因为它装着别的轮的结论和答案键。</li>
+  <li>脚本和 schema 拷进运行目录，成为这一轮的冻结快照；占位符写进 <code>run.json</code>。</li>
+  <li><code>--forbid</code> 列出 agent 不许读的目录；pipeline 目录总在禁读名单里。</li>
   <li>答案文件放在运行目录之外，只有最后的评估 agent 能读。</li>
 </ul>
+<p class="src"><a href="设计细节.html#menu">菜单与建目录详版 →</a></p>
 
+<h3>② 一条命令跑完</h3>
+<pre><code>python3 -I pipeline/orchestrate.py run RUN_DIR                 # interactive：停在每个 ★ 闸等你
+python3 -I pipeline/orchestrate.py run RUN_DIR --answer ⑦=ok   # 认了接着跑；=no:&lt;原因&gt; 停住
+python3 -I pipeline/orchestrate.py run RUN_DIR --mode auto     # 全自动：闸记 auto-approved</code></pre>
+<p>每个阶段过闸才往下。改了哪个模板或脚本，只重跑用到它的阶段。想先不花钱验一遍，加 <code>--fake-agent</code>。</p>
+<details class="more"><summary>想手动一步步推？</summary>
 <h3>② 逐阶段：渲染提示词 → 交给 codex → 过闸门</h3>
 <pre><code># 例：抽取第 1 批（每个 agent 4–5 篇）
 python3 pipeline/make_batches.py RUN_DIR --size 5 --ids RUN_DIR/triage/core_ids.txt
@@ -195,94 +204,50 @@ python3 -I pipeline/run_agent.py RUN_DIR RUN_DIR/traces/prompts/02_extract_b1.md
 #   （旧：主线程把整段交给子 agent（Agent 工具，model: opus），现只作后备）
 python3 pipeline/check.py RUN_DIR extract          # 全部批次抽完后过闸</code></pre>
 <p>一次只推进一个阶段，过了闸门再进下一个。阶段顺序见下一节「它怎么思考」。</p>
-<p><strong>或者一条命令串起来</strong>（2026-10-24 起，蓝图 B7）：<code>pipeline/orchestrate.py</code> 按 <code>stages.json</code> 的阶段顺序、<code>pipeline/flow.json</code> 写的每阶段做法逐个执行。每个阶段都要过闸门，碰到人工闸就停下等你回答。</p>
-<pre><code>python3 -I pipeline/orchestrate.py run RUN_DIR                    # interactive：停在 ①②③⑦⑥ 等你
-python3 -I pipeline/orchestrate.py run RUN_DIR --answer ⑦=ok      # 认了，接着跑；=no:&lt;原因&gt; 则停住
-python3 -I pipeline/orchestrate.py run RUN_DIR --mode auto        # 全自动：人工闸记 auto-approved
-python3 -I pipeline/orchestrate.py status RUN_DIR                 # 每个阶段的状态
-#   可选阶段要点名才跑：--with S19,S22；只跑到某步：--until S20；跑完某步就停：--stop-after S12</code></pre>
-<ul>
-  <li><strong>状态</strong>：记在 <code>traces/state.json</code>，流水记在 <code>traces/orchestrate.log.jsonl</code>。</li>
-  <li><strong>跳过</strong>：每个阶段算一个指纹（它渲染的模板、调用的脚本、上游产物）。指纹没变就跳过；改了哪个模板或脚本，只重跑用到它的阶段，以及产物因此变了的下游阶段。</li>
-  <li><strong>KILL</strong>：可行性闸判 KILL 时，流程停在 S18b，不往下成文。</li>
-  <li><strong>手动阶段</strong>：数字机核、新眼审稿、评估这几步还要人做，编排器停下说明要做什么，做完再跑同一条命令。</li>
-  <li><strong>自检</strong>：<code>--fake-agent</code> 模式不花钱。agent 和联网步骤换成拷贝 fixture，脚本和闸门照常跑。<code>pipeline/_fixtures/selftest_orchestrate.py</code> 在 3 篇小语料上验收：从头跑到成文、kill -9 后续跑、改模板只重跑成文、KILL 停住，8 项全过。</li>
-</ul>
+</details>
 
 <h3>三类输入怎么填 · 带范例</h3>
-<h4>① 选题与读者（菜单里必填）</h4>
+<h4>① 选题与读者（必填）</h4>
 <pre><code>选题：多次便宜调用 vs 一次贵调用——多 agent、并行采样、投票 / 聚合、辩论、自适应停止、test-time scaling。
 中心问题：多花便宜模型的 token（多采样、多 agent、辩论、验证、共享、聪明地停），什么时候能追平或超过一次贵模型调用，要花多少真钱？
 读者：做 agent 系统的研究者；注意力预算：一篇 ≤ 4,500 词的正文。
 时间窗：2023-01-01 .. 2026-10-19</code></pre>
-<h4>② 纳入 / 排除（菜单里必填）</h4>
+<p class="src">中心问题要外行一分钟能听懂，并说清什么算答上了；审查用它判终稿有没有跑题。</p>
+<h4>② 纳入 / 排除（必填）</h4>
 <pre><code>纳入：train-free；报告了算力或成本；有受控基线。
 排除：只训练策略的论文、单链推理、综述、没有任务准确率的。</code></pre>
-<p>以上两段改写自 run3 的菜单口径（<code>docs/07_第三轮运行记录_run3.md</code>）。筛选模板 <code>01b_triage.md:24-25</code> 目前写死了其中一部分，<span class="st plan">🔭 泛化 T2</span> 会改成从菜单读。</p>
-<h4>③ 锁定答案（菜单里必填）</h4>
-<p>挑几篇「人类后来公认的结论」论文，编号写进 reserved for evaluation。它们不进语料，也不让任何 agent 读到，最后用来检验金子论文有没有独立炼出同样的结论（<code>CLAUDE.md</code> 设计原则第 10 条）。</p>
-<h4>④ 启发池（不用你填） <span class="st ok">已实现 · B9 启发池</span></h4>
-<p>菜单定下中心问题后，流水线自己建一个启发池（流程图模块 1 的 S00a），用来让有信息量的想法尽量都冒出来：</p>
-<ul>
-  <li><strong>算子从哪来</strong>：ScholarCatalyst 里 184 位作者亲笔写的 1,348 条「我当初为什么受这篇启发」的理由（rationale）。每条理由拆成三槽：前作做出了什么 / 我拿走什么、搬到哪 / 凭什么相信会成。661 条 core 理由逐条标成 13 种构思动作（M1–M9、M13–M16）或 8 种不出卡的引用角色（C1–C8），构思动作例如 M1 跨域移植、M2 换挂点、M4 解释现象、M13 问题重述（skill <code>catalyst-ideation/SKILL.md</code> §0、§5；范例库 <code>references/moves_bank_v1.md</code>）。</li>
-  <li><strong>怎么当算子用</strong>：每个动作配一条真实理由当范例，把中心问题改写成一组检索词，去找<strong>表面不直接相关</strong>的论文。例：问题「聚合器读 K 条轨迹为什么丢掉正确证据」，按 M1 改写成「弱监督里多个标注源的相关误差」，找到 2603.00039；按关键词搜原题找不到它（<code>SKILL.md</code> §8，core 469）。</li>
-  <li><strong>为什么要做</strong>：作者实际用到的催化剂论文，49.5% 来自本领域之外（ScholarCatalyst 论文 §5）。</li>
-  <li><strong>算子还出 idea 草稿（2026-10-23 与师兄讨论后定）</strong>：
-    <ul>
-      <li><strong>单算子</strong>：13 个算子轮流上，每个都按中心问题出一份 idea 草稿。</li>
-      <li><strong>算子组合</strong>：agent 按中心问题挑几组算子组合，每组出一份草稿，并写明先用哪个、后用哪个、为什么这样组合。最多 13 组（上限可调），不穷举全部 78 种两两组合。组合的是两个动作；M9「组合互补」组合的是两篇论文，不是一回事。</li>
-      <li><strong>多投入调用，先发散</strong>：这一步用订阅额度并行多个 agent。验收看多样性：草稿去重后剩几份、覆盖了几个算子。</li>
-      <li><strong>草稿不是正式卡</strong>：只用来启发。流程末尾的构思出卡（S25）照旧，正式卡仍要过撞车检查和信心打分。</li>
-    </ul></li>
-  <li><strong>放在哪</strong>：单独的 <code>RUN_DIR/inspire/</code>：<code>papers.jsonl</code> 放启发论文，每篇记下是哪个算子、哪条检索词找到的；<code>drafts/</code> 放 idea 草稿，每份记下用了哪个或哪组算子。<strong>不进抽取和数据库</strong>，金子论文的统计数字只来自主题论文；启发池现在只交给提议者（S12）当镜头，构思出卡（S25）还没接上。</li>
-  <li><strong>怎么跑</strong>：编排器跑到 S00a 自动做完，一轮约 27 次 codex（13 份单算子 + 1 次挑组合 + 至多 13 份组合，组合上限用 <code>--set MAX_COMBOS=N</code> 调）。只找 <code>SPLIT</code> 之前的论文；菜单里留作检验的论文一篇都不许出现。跑完先看 <code>inspire/INDEX.md</code>（每份草稿的题目和找到几篇论文）和 <code>inspire/diversity.md</code>（去重后剩几份、覆盖几个算子、几成论文不在本轮语料里）。旧菜单没有「Central question」时用「Dish」代替并打出警告。</li>
-  <li><strong>还没做</strong> <span class="st plan">🔭 B9 另一半</span>：按菜单详略分三档、路线数随之变（3 / 4–5 / 6）。</li>
-  <li><strong>别和「算子 DSL」混</strong>：这里的「构思算子」指 ScholarCatalyst 的构思动作；开头「② 中间侧」卡片和下文「它怎么思考」里的「算子程序 / 算子 DSL」（Gen / Comm / Agg…）是描述方法结构的记法，两者无关。</li>
-</ul>
+<h4>③ 锁定答案（必填）</h4>
+<p>挑几篇「人类后来公认的结论」论文写进 reserved for evaluation。它们不进语料、不让任何 agent 读到，最后用来检验金子论文有没有独立炼出同样的结论。</p>
+<p class="src">另有 <strong>启发池</strong>（不用你填）：流水线按中心问题，用 13 个构思动作找领域外的启发论文并出 idea 草稿，只给提议者当镜头，不进统计。跑完看 <code>inspire/INDEX.md</code>。<a href="设计细节.html#b9">细节 →</a></p>
 
 <h3>③ 跟跑 · 离开 · 回来取成果</h3>
 <ul>
-  <li><strong>中途离开</strong>：每个阶段的产物都落在运行目录里，下次用同一条 <code>orchestrate.py run</code> 命令接着跑：已完成且指纹没变的阶段直接跳过；被中断的阶段（状态停在 running）从头重跑。<span class="st ok">已实现 · B7</span></li>
-  <li><strong>进度怎么看</strong>：<code>RUN_DIR=… python3 -I scripts/funnel.py RUN_DIR</code> 生成 <code>traces/funnel.md</code>，列出 corpus → triage → extract → db → G 每一站的进出数和掉落原因。</li>
-  <li><strong>取成果</strong>：进 <code>RUN_DIR/paper/</code>。run3 的终稿在 <code>paper/v3/</code>：<code>gold_paper_en.pdf</code>（英文全文含附录）、<code>gold_paper_zh.pdf</code>（中文正文）、<code>decision_guide_{en,zh}.pdf</code>（决策指南）、<code>changelog.md</code>（每次改动的来源和数字）。</li>
+  <li><strong>中途离开</strong>：直接走。回来再跑同一条 <code>orchestrate.py run</code>，做完的跳过，断掉的重跑。</li>
+  <li><strong>进度</strong>：<code>orchestrate.py status</code>；各站进出多少篇看 <code>traces/funnel.md</code>（<code>scripts/funnel.py</code> 生成）。</li>
+  <li><strong>取成果</strong>：进 <code>RUN_DIR/paper/</code>。英文全文 PDF、中文正文 PDF、决策指南、<code>changelog.md</code>；交付包在 <code>deliver/</code>。</li>
 </ul>
 </section>
 
 <!-- ========== 它怎么思考 ========== -->
 <section id="think">
 <h2>它怎么思考<span class="tag">读懂流水线</span></h2>
-<p>一条固定的多阶段流水线，分成 6 个相位：<strong>下锚 → 证据地基 → 候选通解轮 → 试味与扩展 → 终局成文 → 构思与评估</strong>。设计原文见 <code>docs/03_pipeline设计_22步.md</code>（5 个阶段 22 步），运行入口见 <code>pipeline/RUNBOOK.md</code> 第 1 节阶段表。</p>
+<p>一条固定的多阶段流水线，6 个模块：<strong>下锚 → 证据地基 → 候选通解轮 → 试味与扩展 → 终局成文 → 构思与评估</strong>。</p>
 
 <h3>核心 idea ① · 先拆后聚</h3>
-<p>剔除包装 → 带条件的事实 + 算子 DSL 方法程序 → 积木库 → 在积木层面找通解（设计原则第 3 条）。每个方法都写成 <code>Gen / Comm / Revise / Critique / Loop / Stop / Share / Escalate / Agg / Tool</code> 的程序，例如自一致性 k=9 写成 <code>Gen(9,cot,same); Agg(vote)</code>（<code>config/schema.md</code> 算子表）。</p>
+<p>剔除包装 → 带条件的事实 ＋ 方法程序 → 积木库 → 在积木层面找通解。每个方法写成算子程序，例如自一致性 k=9 写成 <code>Gen(9,cot,same); Agg(vote)</code>。</p>
+<p class="src">设计原则第 3 条；<code>config/schema.md</code> 算子表</p>
 
-<h3>核心 idea ② · 多个提议者并行，互不读对方，裁判另请</h3>
-<p>提议 agent 按角度 P1–P3、R1–R4 并行出候选通解，互不读对方文件；审查 agent 不提新想法，最多补一条（RUNBOOK §2 第 3 条）。打分用 MDL 思路：通解要短，用它解释事实也要短，并在时间更晚的留出论文上有预测力（设计原则第 4 条）。终稿条数上限由 <code>04_review</code> 的 <code>MAX_FINAL</code> 设定（RUNBOOK 示例值 6；run3 v2 放到了 10 条）。</p>
-<p>2026-10-23 起（蓝图 B2）审查拆成两层：<code>pipeline/review_loop.py</code> 给每个候选单独派一个 critic（只看这一条，判 VALIDATED / REVISE / DROP），REVISE 的交一个新 agent 按 critic 列的改动改写，最多 2 轮，第 2 轮后仍 REVISE 就记 DROP，写进 <code>dropped_routes.md</code>；最后一个 judge 只从 VALIDATED 里聚类、排序、选终稿，不能把被淘汰的捞回来。旧的单 agent <code>04_review</code> 留作后备。</p>
-<p>架构师之前（2026-10-24 起，蓝图 B6）先过可行性闸和扩展牌组：<code>pipeline/expand_deck.py</code> 不花钱，先判这一轮撑不撑得起金子。没有一条 G 有至少 2 个独立组的计数支撑，就判 KILL，写 <code>deck/null_memo.md</code>「这一轮不出金子，原因是……」，不再成文；撑得起的 G 全是边界，就判 PASS_DESCRIPTIVE_ONLY，只写描述性论文。然后给每条 G 发 7 张扩展卡：留一组覆盖率、按格异质、机制、反例、发表偏倚、成本口径、闭卷对照。每张卡判 holds（不变）/ narrows（要加边界）/ descriptive_only / n_a / needs_call，判据只看结论会不会翻到 0.5 的另一侧，且子集里要有至少 2 个独立组。闭卷卡要花一次调用，只先渲染好提示词。你在 <code>deck/deck.md</code> 砍卡（闸⑦），留下的卡交给写作：narrows 写进该 G 的边界，其余进局限与开放问题。思路借自 TPL 的约 7 张扩展卡与 KILL 出口。</p>
-<p>成文之前（2026-10-24 起，蓝图 B5）先过「架构师三棱镜」：<code>pipeline/architect_loop.py</code> 先不花钱，从 <code>final_scores.json</code> 生成禁说清单（边界结论不许写成机制或定律、猜想必须写成猜想、指路测试的数字不许引用、作者自家方法一去掉覆盖率就变的必须点明）；再请 novelty / narrative / impact 三个架构师各出一份论文骨架，它们只改顺序和讲法，不增删结论；一个 decider 选一份、补几条措辞规则。三份骨架并排在 <code>architecture/maps.html</code> 里交你选（闸⑥）。写作 agent 按选中的骨架写，写完 <code>check.py paper</code> 用 <code>check_claims.py</code> 逐条核对，出现禁说即 FAIL。思路借自 TPL 的 argument_architect / argument_select 与 claim_calibration.md；TPL 的论证审计员（argument_audit）这里没做，留给 B6/B7。</p>
-<p>成稿之后（2026-10-24 起，蓝图 B4）还有一道新眼审稿：<code>pipeline/review5_loop.py</code> 请方法学家、领域专家、怀疑者、实践者、写作编辑五个角色，只读成稿和语料、不看任何作者侧材料，每条意见都要指到编号段落；一个修订 agent 只能改被指出的段落，脚本逐段比对，越界即判 FAIL；最后五个角色各自终审，判 ACCEPT 或 REOPEN，REOPEN 交你决定是否回成文。</p>
-<p>最后一步打包交付（2026-10-24 起，蓝图 B8）：<code>pipeline/deliver.py pack</code> 把正文、PDF、证据包和最终报告打成一个 <code>.tar.gz</code>。证据包里有打分要用的 db 表、候选、打分脚本、数字机核的 registry，以及 registry 指到的每个文件；打分结果本身不带。<code>reproduce.sh</code> 在包里重新打分，再逐条核对正文数字，生成逐数字对照表 <code>evidence/check/check.md</code>。<code>deliver.py verify</code> 把包解到空目录，在空环境变量、且禁止读 <code>/Users</code> 的沙箱里跑 <code>reproduce.sh</code>，相当于换一台干净机器：每个数字都要 MATCH，重新打分的结果要和原文件一致。<code>REPORT.md</code> 把数字分成两类：从 db 重新算出的，和读随包输入的（抽取、候选里写下的数、菜单常量）；后一类只能证明正文抄对了，证明不了输入本身对。摘要可以交给没参与写作的 reader 重写（<code>templates/21_abstract_reader.md</code>，1 次 codex），不许含数字，<code>deliver.py abstract-check</code> 用和数字机核同一套数字定义检查。v4 的包里 214 个数字全部复算通过。</p>
+<h3>核心 idea ② · 多炉并炼，裁判另请</h3>
+<p>多个提议者从不同角度并行出候选通解，互不读对方文件。每个候选单独派一个 critic，判 VALIDATED / REVISE / DROP；REVISE 最多改写 2 轮；judge 只从 VALIDATED 里选终稿，被淘汰的进 <code>dropped_routes.md</code>。另有巨人镜头出候选卡：制度借鉴、构思动作、棋盘法。</p>
+<p class="src">打分用 MDL：通解要短、解释事实要短、对更晚的论文有预测力（设计原则第 4 条）· <a href="设计细节.html#b2">B2 细节</a> · <a href="设计细节.html#lens">巨人镜头</a></p>
 
 <h3>核心 idea ③ · 每条结论都要被反复敲打</h3>
-<p>按算力归一化比较（设计原则第 6 条）。之后再做以下敲打，有争议的结论只输出带边界的条件陈述（设计原则第 7 条）：</p>
-<ul>
-  <li><strong>留一组稳健性</strong>：<code>scripts/robustness.py</code></li>
-  <li><strong>独立组荟萃</strong>：<code>meta_analysis.py</code>，I² ≥ 75% 时只能说「平均」</li>
-  <li><strong>发表偏倚回归</strong></li>
-  <li><strong>测试重合度、矛盾对</strong></li>
-  <li><strong>闭卷对照</strong></li>
-</ul>
+<p>按算力归一化比较，再做留一组稳健性、独立组荟萃、发表偏倚、矛盾对、闭卷对照。成文前先判这一轮撑不撑得起：撑不起判 <strong>KILL</strong>，写一页说明、不成文；撑得起就给每条结论发 7 张扩展卡，你砍卡。有争议的只写带边界的条件陈述。</p>
+<p class="src">设计原则第 6、7 条 · <a href="设计细节.html#b6">B6 细节</a></p>
 
-<h3>核心 idea ④ · 洞见来自巨人镜头</h3>
-<p>除了从数据里炼通解，还用别人的眼光找新问题：</p>
-<ul>
-  <li>汪浩然：借人类社会制度当多智能体的巨人肩膀，见 <code>10_institution_catalyst.md</code>；「升维看问题、低维出工具」，见 <code>15_problem_lift.md</code>。</li>
-  <li>ScholarCatalyst：作者当年怎么被前作启发，见 <code>14_catalyst_ideation.md</code>。</li>
-  <li>凌杨：棋盘法找空格，见 <code>scripts/chessboard.py</code> 和 <code>docs/10</code>。</li>
-</ul>
-<p>构思和查重分开做，构思 agent 不判自己的卡（RUNBOOK §2 第 6 条）。</p>
-<p>现在这些镜头都在最后一个模块「构思与评估」里，金子论文炼完才用；出的卡经回环 ④ 变成下一轮的选题。<span class="st ok">B9 已实现</span> 把 ScholarCatalyst 镜头再往前放了一份：在输入侧用构思算子建启发池（见上文「三类输入」④）：一是找领域外的启发论文，二是每个算子、几组算子组合各出 idea 草稿，让提议者一开始就能看到领域外的启发和发散开的想法。草稿只用来启发，正式卡仍在这里出。</p>
+<h3>核心 idea ④ · 终局成文也被机器管住</h3>
+<p>三个架构师各出一份论文骨架，你选一份 → 按骨架写 → 脚本逐条核对禁说清单 → 正文每个数字核对来源 → 五个角色只读成稿做新眼审稿 → 翻译、出 PDF → 打成交付包，在干净沙箱里复算全部数字。</p>
+<p class="src"><a href="设计细节.html#b5">B5 架构师</a> · <a href="设计细节.html#b4">B4 新眼审稿</a> · <a href="设计细节.html#b8">B8 交付包</a></p>
 
 <!-- FLOW_START（由 python3 -I pipeline/check_stages.py --flow 生成，勿手改） -->
 <h3>全流程图 · 两层看</h3>
@@ -671,105 +636,81 @@ python3 -I pipeline/orchestrate.py status RUN_DIR                 # 每个阶段
 </svg></div></details>
 <script>(function(){function o(){var h=location.hash;if(/^#fl-m\d+$/.test(h)){var d=document.querySelector(h);if(d){d.open=true;d.scrollIntoView();}}}document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href^="#fl-m"]');if(!a)return;e.preventDefault();var d=document.querySelector(a.getAttribute('href'));if(d){d.open=true;d.scrollIntoView({behavior:'smooth'});}});window.addEventListener('hashchange',o);o();})();</script>
 <!-- FLOW_END -->
-<div class="note"><p><strong>case 反馈环</strong>：每跑完一个 case，写 <code>docs/09_case反馈台账_&lt;case&gt;.md</code>，按「发现 / 在 case 哪里暴露 / 落到 pipeline 哪个文件 / 状态」逐行登记，再把能修的修进 pipeline（RUNBOOK §2.5）。相当于 TPL 的漂流账本，不同的是我们的账本横跨多轮、改的是 pipeline 本身。</p></div>
+<div class="note"><p><strong>case 反馈环</strong>：每跑完一个 case，把暴露的问题逐行写进 <code>docs/09_case反馈台账_&lt;case&gt;.md</code>，能修的修进 pipeline。账本横跨多轮，改的是 pipeline 本身。</p></div>
 </section>
 
 <!-- ========== 你在哪些点介入 ========== -->
 <section id="gates">
 <h2>你在哪些点介入 · 7 个闸<span class="tag">你的工作清单</span></h2>
-<p>每个闸只需要你做一个选择，或写一句意见；不需要你写代码。</p>
-<h4>★ 闸① · 菜单拍板</h4>
-<p>定选题、读者、时间窗、纳入排除、锁定答案。这一步决定后面所有 agent 看到什么，跑起来以后不再改。只回答一个问题：「菜单这样定，跑起来后不再改，可以吗？」</p>
-<h4>★ 闸② · 筛选边界</h4>
-<p>看 <code>triage/lab_review_lenient.csv</code>（宽松机构清单），决定删谁；需要补读图表的论文列在 <code>figure_pass_candidates.tsv</code>。只回答一个问题：「这些边缘论文算不算 solid？」</p>
-<h4>★ 闸③ · 终稿结论过目</h4>
-<p>审查后的 <code>synthesis/final_candidates.json</code> 加上打分。需要你定口径的分歧写在台账里，例如 2026-10-22 你定的「采样基线默认只认纯投票」。只回答一个问题：「每条 G 的边界你认不认？」</p>
-<h4>★ 闸④ · 出卡勾选与花钱</h4>
-<p>棋盘出卡后，打开 <code>chessboard/decision_page.html</code> 勾选，得到 <code>decisions.json</code>。凡是要调付费 API 的实验，先过 <code>13_preapproval</code> 跑前配置卡：本次配置、原论文配置、差异与理由、预算。等你同意才跑。只回答一个问题：「哪几张卡做？（花钱的先看配置卡）」</p>
-<h4>★ 闸⑦ · 哪几张扩展卡进论文（成文前）</h4>
-<p>打开 <code>synthesis/…/deck/deck.md</code>：一行一条 G，七列是七张卡的结果；细节在 <code>deck/&lt;G&gt;/cards.md</code>。默认全留；不想写进论文的卡用 <code>expand_deck.py cut &lt;RUN_DIR&gt; &lt;G&gt; &lt;卡&gt;</code> 砍掉。可行性闸判 KILL 时不到这一步，先读 <code>deck/null_memo.md</code>。只回答一个问题：「哪几张扩展卡进论文？」</p>
-<h4>★ 闸⑥ · 用哪份骨架写（成文前）</h4>
-<p>打开 <code>synthesis/…/architecture/maps.html</code>，三份骨架并排，最上面是 decider 的选择和理由；<code>claim_calibration.md</code> 是每条 G 能说什么、不能说什么。同意就不用动；想换就跑 <code>architect_loop.py pick &lt;RUN_DIR&gt; &lt;prism&gt;</code>。只回答一个问题：「用哪份骨架写？」（编号按加入先后，时间上在闸⑤之前。）</p>
-<h4>★ 闸⑤ · 是不是真金</h4>
-<p>读终稿 PDF 和决策指南。只回答一个问题：「这篇是不是值得精读的金子？」改动意见写进 <code>paper/v3/changelog.md</code> 的下一版。</p>
-<div class="warn"><p><strong>和 TPL 的差距</strong>：TPL 的闸在 TUI 里弹清单、回车放行，还有全自动模式。我们的闸由 <code>orchestrate.py</code> 统一处理：interactive 模式停下，打印问题和要看的文件，你用 <code>--answer</code> 回答；auto 模式直接放行，并记为 auto-approved。TUI 弹窗没有做，命令行就是界面。<span class="st ok">已实现 · B7</span></p></div>
+<p>每个闸只问一个问题，你选或写一句意见，不用写代码。按时间顺序：</p>
+<div class="tw"><table>
+<thead><tr><th>闸</th><th>你看</th><th>只回答一个问题</th></tr></thead>
+<tbody>
+<tr><td>★ ① 菜单拍板</td><td>菜单</td><td>菜单这样定，跑起来后不再改，可以吗？</td></tr>
+<tr><td>★ ② 筛选边界</td><td><code>triage/lab_review_lenient.csv</code></td><td>这些边缘论文算不算 solid？</td></tr>
+<tr><td>★ ③ 终稿结论</td><td><code>synthesis/final_candidates.json</code> ＋ 打分</td><td>每条结论的边界你认不认？</td></tr>
+<tr><td>★ ⑦ 扩展卡</td><td><code>deck/deck.md</code></td><td>哪几张扩展卡进论文？</td></tr>
+<tr><td>★ ⑥ 论文骨架</td><td><code>architecture/maps.html</code></td><td>用哪份骨架写？</td></tr>
+<tr><td>★ ⑤ 是不是真金</td><td>终稿 PDF ＋ 决策指南</td><td>这篇值得精读吗？</td></tr>
+<tr><td>★ ④ 出卡与花钱</td><td><code>chessboard/decision_page.html</code> ＋ 配置卡</td><td>哪几张卡做？花钱的先看配置卡</td></tr>
+</tbody></table></div>
+<div class="note"><p><strong>怎么答</strong>：interactive 模式下编排器停住，打印问题和要看的文件，你用 <code>--answer 闸号=ok</code> 或 <code>=no:原因</code> 回答；auto 模式直接放行，记为 auto-approved。闸号按加入先后编，所以不连续。<a href="设计细节.html#gates">每个闸的细节 →</a></p></div>
 </section>
 
 <!-- ========== 输出目录详解 ========== -->
 <section id="output">
 <h2>输出目录详解<span class="tag">每个文件夹是什么</span></h2>
 <div class="cards">
-  <div class="card"><h4>① pipeline 目录 · 方法本身</h4><p>模板、脚本、文档、台账。所有轮次共用，agent 一律不许读，因为里面有别的轮的结论和答案。</p></div>
-  <div class="card"><h4>② 运行目录 · 一轮的全部</h4><p>语料、筛选、抽取、库、综合、论文、留痕。init_run 时冻结的脚本快照也在这里，pipeline 后来再改，这一轮的结果不受影响。</p></div>
-  <div class="card"><h4>③ 全文共享目录</h4><p><code>paper_alchemy_fulltext/&lt;id&gt;.txt</code> 加 <code>pdf/</code>，各轮共用。因为版权问题不上传 GitHub。</p></div>
+  <div class="card"><h4>① pipeline 目录 · 方法本身</h4><p>模板、脚本、文档、台账。所有轮次共用，agent 一律不许读。</p></div>
+  <div class="card"><h4>② 运行目录 · 一轮的全部</h4><p>语料、筛选、抽取、库、综合、论文、留痕，加上开跑时冻结的脚本快照。</p></div>
+  <div class="card"><h4>③ 全文共享目录</h4><p><code>paper_alchemy_fulltext/</code>，各轮共用；版权原因不上传 GitHub。</p></div>
 </div>
-<h3>完整目录树 · 以 run3 为例</h3>
+<h3>完整目录树 · 以 run3 为例 <a href="设计细节.html#tree" style="font-size:13px;font-weight:400">详版 →</a></h3>
 <div class="tw"><div class="tree">paper_alchemy_run3/
-├─ run.json                       ★ 这一轮的配置：RUN_ID / 全文目录 / 禁读目录 / 时间切分 / agent 模型
-├─ config/                        schema.md、db_guide.md、menu.md、model_prices*（价格表与来源）
-├─ scripts/                       init_run 时冻结的脚本快照
+├─ run.json                       ★ 这一轮的配置：RUN_ID / 全文目录 / 禁读目录 / 时间切分
+├─ config/                        schema.md、db_guide.md、menu.md、价格表
+├─ scripts/                       开跑时冻结的脚本快照
 ├─ corpus/                        9,630 篇候选 → corpus.json（2,237 篇）
-├─ inspire/                       B9 启发池（run3 没有，不进统计）
-│  ├─ INDEX.md                      草稿目录（给提议者看）· diversity.md 多样性
-│  ├─ papers.jsonl                  构思算子找来的启发论文 + 每条检索词
-│  └─ drafts/                       单算子 ×13 + 算子组合 ≤13 的 idea 草稿（只启发，不是正式卡）
-├─ triage/
-│  ├─ b00…b14.jsonl               摘要初筛逐批结果
-│  ├─ core_ids.txt                ★ 进抽取的核心论文
-│  ├─ paper_tier.csv              core / legacy + 独立来源组
-│  ├─ authors_full.jsonl          完整作者表（independence_graph 用）
-│  ├─ independence_group_v2.csv   共享 ≥2 作者的连通块
-│  ├─ lab_review_lenient.csv      ★ 闸②：待你删减的宽松机构
-│  └─ duplicates.tsv              重复稿与同组关系
-├─ extract/&lt;arxiv_id&gt;.json        ★ 每篇一个：方法程序 + 带条件的结果行（_excluded/ 放剔除的重复稿）
-├─ db/                            papers / methods / results / pairs / cheap_vs_strong / qual_findings
-├─ db_pure_vote/ db_corrected/ …  同一份抽取在不同口径下建的库（原 db/ 不动）
-├─ analysis/                      归并、荟萃、矛盾对
+├─ inspire/                       启发池：INDEX.md 草稿目录、diversity.md、drafts/（只启发，不进统计）
+├─ triage/                        初筛结果、★ core_ids.txt、paper_tier.csv、独立来源组、★ lab_review_lenient.csv（闸②）
+├─ extract/&lt;arxiv_id&gt;.json        ★ 每篇一个：方法程序 + 带条件的结果行
+├─ db/                            papers / methods / results / pairs …（db_pure_vote/ 等是别的口径，原 db/ 不动）
 ├─ synthesis/
-│  ├─ candidates_R*.json、notes_R*.md   各提议者的候选与笔记
-│  ├─ review.md、final_candidates.json  ★ 审查与终稿
-│  ├─ v2/                         第二版审查、打分、稳健性、挂靠
-│  ├─ <v>/deck/                   B6 可行性闸与扩展牌组（2026-10-24 起）：feasibility.md、null_memo.md（KILL 时）、<G>/cards.md 7 张卡、★ deck.md（闸⑦）、deck_decisions.json
-│  ├─ <v>/architecture/           B5 架构师（2026-10-24 起）：claim_rules*.json、claim_calibration.md 禁说清单、paper_map_{novelty,narrative,impact}.md、architecture_decision.md、★ maps.html（闸⑥）
-│  ├─ chef/                       各次零调用复核的结果
-│  ├─ catalyst_run/               构思出卡、查重、实验设计包
-│  └─ institution_run/            借古代制度看多智能体
-├─ chessboard/                    棋盘：axes.json、cells.csv、board.html、F4/ 出卡、decision_page.html
-├─ paper/v3/                      ★★★ 金子论文：gold_paper_en.pdf、gold_paper_zh.pdf、decision_guide_*.pdf、changelog.md、gold_*.html
-├─ deliver/                       B8 交付包（2026-10-24 起）：&lt;名&gt;.tar.gz（正文 + PDF + 证据包 + reproduce.sh + MANIFEST.json）、&lt;名&gt;_REPORT.md
+│  ├─ final_candidates.json       ★ 终稿结论（闸③）
+│  ├─ &lt;v&gt;/deck/                   可行性判决、扩展卡、★ deck.md（闸⑦）
+│  ├─ &lt;v&gt;/architecture/           禁说清单、三份骨架、★ maps.html（闸⑥）
+│  └─ chef/ catalyst_run/ …       零调用复核、构思出卡
+├─ chessboard/                    棋盘出卡、★ decision_page.html（闸④）
+├─ paper/v3/                      ★★★ 金子论文：gold_paper_en.pdf、gold_paper_zh.pdf、decision_guide_*.pdf、changelog.md
+├─ deliver/                       交付包 .tar.gz + REPORT.md
 ├─ eval/                          评估（只有评估 agent 能读答案键）
-├─ traces/
-│  ├─ prompts/                    ★ 所有渲染后的 agent 提示词（可复现）
-│  ├─ extraction.jsonl            抽取留痕，一篇一行
-│  ├─ state.json、orchestrate.log.jsonl   B7 编排器的阶段状态与流水（2026-10-24 起）
-│  └─ funnel.md                   漏斗台账
-└─ _scratch/                      各 agent 的私有中间文件（追溯用，不保证整洁）</div></div>
+└─ traces/                        ★ 所有渲染后的提示词、抽取留痕、编排器状态、funnel.md</div></div>
 <h3>几个常见疑问</h3>
 <div class="tw"><table>
 <thead><tr><th>问题</th><th>答</th></tr></thead>
 <tbody>
-<tr><td>G1、G4 是什么？</td><td>金子论文里的第 1、第 4 条通解。每条在 <code>final_candidates.json</code> 里有 level（本质机制 / 规律 / 边界）、可执行检验、支撑行。</td></tr>
-<tr><td>为什么同一轮有好几个 db 目录？</td><td>同一份抽取在不同口径下各建一库：<code>db_pure_vote/</code> 是纯投票基线，<code>db_corrected/</code> 是审查纠错层。原 <code>db/</code> 永远不动，所以旧版论文的数字随时能复现。</td></tr>
-<tr><td>被审查淘汰的候选还在吗？</td><td>在。<code>candidates_R*.json</code> 和 <code>notes_R*.md</code> 全部保留；删掉的卡移到 <code>_archive/</code>，只归档，不删除。</td></tr>
-<tr><td>怎么知道某个数字从哪来？</td><td>正文数字 → <code>final_scores*.json</code> → 支撑行 → <code>db/results.csv</code> → <code>extract/&lt;id&gt;.json</code> 的 source（表号）。S20b 全文数字机核（B3，2026-10-23 起）由 <code>pipeline/check_numbers.py</code> 逐条核对：每个数字在 <code>number_check/registry.jsonl</code> 里有一行来源指针，<code>check.md</code> 列出对不上的行。</td></tr>
+<tr><td>G1、G4 是什么？</td><td>金子论文里的第 1、第 4 条通解。每条在 <code>final_candidates.json</code> 里有层级、可执行检验和支撑行。</td></tr>
+<tr><td>为什么有好几个 db 目录？</td><td>同一份抽取在不同口径下各建一库。原 <code>db/</code> 永远不动，旧版论文的数字随时能复现。</td></tr>
+<tr><td>被淘汰的候选还在吗？</td><td>在。全部保留；删掉的卡移到 <code>_archive/</code>，只归档不删除。</td></tr>
+<tr><td>某个数字从哪来？</td><td>正文数字 → <code>final_scores*.json</code> → 支撑行 → <code>db/results.csv</code> → <code>extract/&lt;id&gt;.json</code> 的表号。数字机核逐条核对，每个数字在 <code>number_check/registry.jsonl</code> 里有一行来源指针。</td></tr>
 </tbody></table></div>
 </section>
 
 <!-- ========== 规则与红线 ========== -->
 <section id="rules">
-<h2>规则与红线<span class="tag">对应 TPL 的「授权体系」：这里管的是证据干不干净</span></h2>
-<div class="stop"><p><strong>锁定答案</strong>：人类后来的共识论文不得进入语料，也不得被任何 agent 读到（设计原则第 10 条）。答案键只给评估 agent。</p></div>
+<h2>规则与红线<span class="tag">管的是证据干不干净</span></h2>
+<div class="stop"><p><strong>锁定答案</strong>：人类后来的共识论文不进语料，也不让任何 agent 读到。答案键只给评估 agent。</p></div>
 <div class="tw"><table>
 <thead><tr><th>规则</th><th>为什么</th><th>出处</th></tr></thead>
 <tbody>
-<tr><td>agent 只读运行目录和全文目录；<code>FORBIDDEN_DIRS</code> 一律不读</td><td>防止 agent 读到别的轮的结论和答案</td><td>RUNBOOK §2 第 1 条</td></tr>
-<tr><td>抽取者自己标方法族、是否真实运行、是否抄自他文；建库脚本不再猜</td><td>猜出来的标签会污染配对</td><td>RUNBOOK §2 第 2 条</td></tr>
-<tr><td>正文只引语料内论文；语料外写成「arXiv xxxx（不在语料内）」</td><td>防幻觉引用，机器可拦截</td><td>RUNBOOK §2 第 5 条；<code>check.py paper</code></td></tr>
-<tr><td>荟萃与复用率只报数字，不设通过阈值；I² ≥ 75% 只能说「平均」</td><td>防止把异质结果说成普遍规律</td><td>RUNBOOK §2 第 7 条</td></tr>
-<tr><td>不要对已完成的运行目录跑 <code>render.py</code></td><td>它会覆盖 <code>traces/prompts/</code> 里的留痕</td><td>维护经验</td></tr>
-<tr><td>花钱的实验先过跑前配置卡，由负责人拍板</td><td>订阅额度不算花钱；付费 API、租机器、付费数据才算</td><td>README「使用须知」；<code>13_preapproval.md</code></td></tr>
+<tr><td>agent 只读运行目录和全文目录；禁读目录一律不读</td><td>防止读到别的轮的结论和答案</td><td>RUNBOOK §2 第 1 条</td></tr>
+<tr><td>抽取者自己标方法族、是否真实运行、是否抄自他文</td><td>建库脚本猜的标签会污染配对</td><td>RUNBOOK §2 第 2 条</td></tr>
+<tr><td>正文只引语料内论文</td><td>防幻觉引用，机器可拦截</td><td>RUNBOOK §2 第 5 条</td></tr>
+<tr><td>荟萃只报数字，不设通过阈值；I² ≥ 75% 只能说「平均」</td><td>防止把异质结果说成普遍规律</td><td>RUNBOOK §2 第 7 条</td></tr>
+<tr><td>不对已完成的运行目录跑 <code>render.py</code></td><td>会覆盖提示词留痕</td><td>维护经验</td></tr>
+<tr><td>花钱的实验先过跑前配置卡，由负责人拍板</td><td>付费 API、租机器、付费数据才算花钱</td><td><code>13_preapproval.md</code></td></tr>
 <tr><td>ScholarCatalyst 数据只能非商用，引用署名</td><td>CC-BY-NC-4.0</td><td>RUNBOOK §2 第 6 条</td></tr>
-<tr><td>BrowseComp 等基准的答案不进公开或明文仓库</td><td>防止泄题</td><td>README「没上传的东西」</td></tr>
+<tr><td>BrowseComp 等基准的答案不进公开或明文仓库</td><td>防止泄题</td><td>README</td></tr>
 </tbody></table></div>
 </section>
 
@@ -778,27 +719,40 @@ python3 -I pipeline/orchestrate.py status RUN_DIR                 # 每个阶段
 <h2>常见问题与小技巧<span class="tag">实用</span></h2>
 <h3>实用小技巧</h3>
 <ul>
-  <li><strong>先小后大</strong>：抽取先试抽 2 批，确认新字段都填上了、留痕一篇一行，再分波放量（2026-10-23 重抽 513 篇就是这么做的）。</li>
-  <li><strong>口径换了先另建库</strong>：改基线口径或纠错时，用 <code>DB_DIR</code> / 新目录另建库，再对比新旧 G 的数字。原库不动，旧版论文永远能复现。</li>
-  <li><strong>多看漏斗</strong>：哪一站掉的论文多，pipeline 就在哪里卡得紧。<code>traces/funnel.md</code> 一眼就能看出来。</li>
-  <li><strong>case 收尾写台账</strong>：每跑完一个 case，把暴露的问题写进 <code>docs/09_*</code>。下一轮 pipeline 变好，靠的就是这本账。</li>
+  <li><strong>先小后大</strong>：抽取先试 2 批，确认字段都填上再放量。</li>
+  <li><strong>口径换了另建库</strong>：用新目录另建库，再对比新旧数字；原库不动。</li>
+  <li><strong>多看漏斗</strong>：哪一站掉的论文多，pipeline 就在哪卡得紧。</li>
+  <li><strong>case 收尾写台账</strong>：下一轮 pipeline 变好，靠的就是这本账。</li>
 </ul>
 <h3>常见问题</h3>
 <div class="tw"><table>
 <thead><tr><th>遇到</th><th>怎么办</th></tr></thead>
 <tbody>
-<tr><td>抽取闸门报「methods without a valid family」</td><td>方法族不在 5 个合法值里（<code>check.py:49-50</code>）。在多智能体以外的领域这是已知限制，<span class="st plan">🔭 泛化 T1</span> 会改成从领域插件读。</td></tr>
-<tr><td>建库后 pairs 表 0 行，打分报 EmptyDataError</td><td>语料里没有「交互方法 vs 同调用投票」的配对，空表不写表头。已知问题，<span class="st plan">🔭 泛化 T3</span>。</td></tr>
-<tr><td>0–1 的指标在库里变成了 0–100</td><td><code>build_db.py:210</code> 会把 0–1 且没写单位的值乘 100。抽取时写明 <code>unit</code> 可以避开；<span class="st plan">🔭 泛化 T3</span> 修。</td></tr>
-<tr><td>pdftotext 把表格列打乱了</td><td>抽取模板要求按正文里引用的数字核对行列（<code>02_extract.md</code>）。重建过的表在 <code>extractor_notes</code> 里注明。</td></tr>
-<tr><td>agent 把 <code>paper_alchemy_run3_reextract</code> 当成禁读目录</td><td>禁读名单按完整路径判断，不按前缀。在 brief 里写明：自己的工作区和全文目录允许读。</td></tr>
-<tr><td>正文 G4 数字和旧版对不上</td><td>2026-10-22 起采样基线默认只认纯投票（<code>SA_BASELINE=pure_vote</code>）。<code>SA_BASELINE=any</code> 可以复现旧口径。</td></tr>
-<tr><td>想知道一个运行目录走到了哪一步</td><td><code>python3 -I pipeline/check_stages.py RUN_DIR</code>：按阶段契约表 <code>pipeline/stages.json</code> 逐阶段报「齐 / 部分 / 未到达 / 早于该阶段 / 可选·未跑」。人读版契约表是 <code>pipeline/STAGES.md</code>。</td></tr>
-<tr><td>想看还有哪些没做</td><td>蓝图 <a href="research/pipeline泛化_20261023/blueprint_TPL对照.html"><code>docs/research/pipeline泛化_20261023/blueprint_TPL对照.html</code></a> 第 2 节逐项对照；泛化方案在同目录的 <a href="research/pipeline泛化_20261023/plan.html"><code>plan.html</code></a>，依据是同目录的 <code>coupling_audit.md</code>、<code>giants.md</code>。</td></tr>
+<tr><td>抽取闸门报「methods without a valid family」</td><td>方法族不在 5 个合法值里。多智能体以外的领域是已知限制（进度表 T1）。</td></tr>
+<tr><td>建库后 pairs 表 0 行，打分报 EmptyDataError</td><td>语料里没有「交互方法 vs 同调用投票」的配对（进度表 T3）。</td></tr>
+<tr><td>0–1 的指标变成了 0–100</td><td>抽取时写明 <code>unit</code> 可避开（进度表 T3）。</td></tr>
+<tr><td>pdftotext 把表格列打乱了</td><td>抽取模板要求按正文引用的数字核对行列；重建过的表在 <code>extractor_notes</code> 注明。</td></tr>
+<tr><td>agent 把自己的工作区当成禁读目录</td><td>禁读名单按完整路径判断，不按前缀；在 brief 里写明自己的工作区可读。</td></tr>
+<tr><td>正文 G4 数字和旧版对不上</td><td>采样基线默认只认纯投票（<code>SA_BASELINE=pure_vote</code>）；<code>SA_BASELINE=any</code> 复现旧口径。</td></tr>
+<tr><td>想知道一个运行目录走到了哪一步</td><td><code>python3 -I pipeline/check_stages.py RUN_DIR</code>；人读版阶段表是 <code>pipeline/STAGES.md</code>。</td></tr>
+<tr><td>想看还有哪些没做</td><td>看上面的 <a href="#progress">进度表</a>。</td></tr>
 </tbody></table></div>
 <h3>联系</h3>
-<p>维护者：熊祝成（HITSZ）。问题和建议记进对应 case 的 <code>docs/09_case反馈台账_*.md</code>，或在 GitHub 仓库提 issue。</p>
+<p>维护者：熊祝成（HITSZ）。问题记进对应 case 的 <code>docs/09_case反馈台账_*.md</code>，或在 GitHub 仓库提 issue。</p>
 </section>
+
+<!-- NEWS_START -->
+<section>
+<details id="news"><summary>更新记录<small>最新：2026-10-24 19:45 · 说明书瘦身：主页只留要用的，细节进子页 · 共 16 次，点开看</small></summary>
+<div class="news">
+<h4>2026-10-24 19:45 · 说明书瘦身：主页只留要用的，细节进子页</h4><ul><li><a href="#what">这是什么</a>：新增「进度表」（<a href="#progress">直达</a>），一张表看 B0–B9 各做到哪、T1–T3 还在规划。</li><li><a href="#first">跑第一轮</a>：围绕一条命令 <code>orchestrate.py</code> 讲；手动逐步跑的写法折叠在「展开」里。</li><li><a href="#think">它怎么思考</a>：压成 4 条核心想法 + 流程图，每条下面一行小字注明出处。</li><li><a href="#gates">你在哪些点介入</a>：7 个人工闸改成一张表：看什么、只回答哪一个问题。</li><li>B2–B9 各模块的完整做法、每个闸的详细说明、完整菜单和完整目录树，原文挪到新子页「设计细节」（侧栏最下方），一字未删。</li><li><a href="#news">更新记录</a>：从页首挪到页末并整体折叠，点开看最新 3 条。</li></ul>
+<h4>2026-10-24 17:25 · B9 启发池：先发散，再炼金</h4><ul><li><a href="#first">跑第一轮</a>「④ 启发池」：改为已实现。新增「怎么跑」：编排器在 S00a 自动做完，约 27 次 codex；跑完看 <code>inspire/INDEX.md</code>（草稿目录）和 <code>inspire/diversity.md</code>（去重后几份、覆盖几个算子）。启发池现在只交给提议者（S12），构思出卡（S25）还没接上。</li><li><a href="#first">跑第一轮</a>「④ 启发池」：新增「还没做」。B9 另一半「按菜单详略分三档」仍在规划。</li><li><a href="#output">输出目录详解</a>：<code>inspire/</code> 下新增 <code>INDEX.md</code> 和 <code>diversity.md</code>。</li><li><a href="#fl-m1">流程图模块 1</a>：S00a 由规划中改为已实现，排到 S00 之后。</li></ul>
+<h4>2026-10-24 16:42 · B8 交付包：解包即可复算全部数字</h4><ul><li><a href="#think">它怎么思考</a>：新增「最后一步打包交付」一段。交付包含正文、PDF、证据包、最终报告。在禁读原机器文件的沙箱里，包内脚本重新打分、逐条核对正文数字，全部 MATCH 才算通过。报告把数字分为「从 db 重新算出」和「读随包输入」两类。摘要可交没参与写作的 reader 重写，不许含数字。</li><li><a href="#output">输出目录详解</a>：目录树新增 <code>deliver/</code>，<code>traces/</code> 下新增编排器的 <code>state.json</code>。</li><li><a href="#fl-m5">流程图模块 5</a>：S23b 由规划中改为已实现。</li></ul>
+<details><summary>更早的 13 次</summary><h4>2026-10-24 16:28 · B7 编排器：一条命令跑全流程</h4><ul><li><a href="#first">跑第一轮</a>「②」：新增 <code>orchestrate.py</code> 用法。它按阶段表逐个执行，每阶段过闸才往下；改了哪个模板或脚本，只重跑用到它的阶段。</li><li><a href="#first">跑第一轮</a>「③ 跟跑」：中途离开后，再跑同一条命令接着来，被中断的阶段重跑。</li><li><a href="#gates">你在哪些点介入</a>：7 个闸统一由编排器停下提问，用 <code>--answer</code> 回答；auto 模式直接放行，记为 auto-approved。</li><li><a href="#think">它怎么思考</a> 流程图说明：新增「谁沿着这张图跑」，说明编排器按图上从左到右执行、停在每个 ★ 闸。</li></ul><h4>2026-10-24 16:05 · B6 可行性闸 + 扩展牌组</h4><ul><li><a href="#think">它怎么思考</a>：新增「架构师之前」一段。先判这一轮撑不撑得起金子：撑不起判 KILL，写 null memo，不成文；只撑得起边界则只写描述性论文。再给每条 G 发 7 张扩展卡，每张判 holds / narrows / descriptive_only / n_a / needs_call。</li><li><a href="#gates">你在哪些点介入</a>：闸由 6 个增为 7 个。新增闸⑦「哪几张扩展卡进论文？」。</li><li><a href="#output">输出目录详解</a>：目录树新增 <code>deck/</code>。</li><li><a href="#fl-m4">流程图模块 4</a>：S18b 由规划中改为已实现。</li></ul><h4>2026-10-24 15:40 · 新增更新记录</h4><ul><li><a href="#news">更新记录</a>：说明书最前面新增本节，列出每次发布改了哪里，新的在上，最新 3 条展开。侧栏日期改为最近一次更新时间。网页仓库 README 同步这份记录。</li></ul><h4>2026-10-24 14:45 · B5 架构师三棱镜 + 禁说清单</h4><ul><li><a href="#think">它怎么思考</a>：新增「成文之前」一段。先零调用从打分生成禁说清单，再由 novelty / narrative / impact 三个架构师各出一份骨架，decider 选一份；成稿由脚本逐条核对禁说。</li><li><a href="#gates">你在哪些点介入</a>：闸由 5 个增为 6 个。新增闸⑥「用哪份骨架写？」，时间上在闸⑤之前。</li><li><a href="#output">输出目录详解</a>：目录树新增 <code>architecture/</code>。</li><li><a href="#fl-m5">流程图模块 5</a>：S19b 由规划中改为已实现。</li></ul><h4>2026-10-24 10:32 · B4 五角色新眼审稿</h4><ul><li><a href="#think">它怎么思考</a>：新增「成稿之后」一段。五个角色只读成稿和语料，修订只许改被点名的段落，终审判 ACCEPT 或 REOPEN，REOPEN 由你决定是否回成文。</li><li><a href="#fl-m5">流程图模块 5</a>：S21b 由规划中改为已实现。</li></ul><h4>2026-10-23 20:31 · B2 逐候选审查、B3 全文数字机核</h4><ul><li><a href="#think">它怎么思考</a>：审查改为两层。每个候选一个 critic，判 VALIDATED / REVISE / DROP；REVISE 最多改写 2 轮；judge 只从 VALIDATED 里选。</li><li><a href="#output">输出目录详解</a>「常见疑问」：「数字从哪来」一问补上 S20b 数字机核。正文每个数字都要有来源指针，对不上即 FAIL。</li><li><a href="#fl-m3">流程图模块 3</a>、<a href="#fl-m5">模块 5</a>：B2、B3 对应阶段由规划中改为已实现。</li></ul><h4>2026-10-23 19:47 · LLM 阶段改由 codex 执行，B1 验矿卡</h4><ul><li><a href="#what">这是什么</a>、<a href="#install">安装与准备</a>：跑 case 的 LLM 阶段（采购到成文）改由 Codex CLI（gpt-6-astra）经 <code>pipeline/run_agent.py</code> 执行，Claude Code 主线程只改 pipeline、编排、核验。安装表新增 Codex CLI。</li><li><a href="#first">跑第一轮</a>：第 ② 步改为「渲染提示词 → 交给 codex → 过闸门」，并给出留痕位置 <code>traces/agent_runs/</code>。</li><li><a href="#fl-m2">流程图模块 2</a>：B1 验矿卡（<code>scripts/solidity.py</code>）由规划中改为已实现。</li></ul><h4>2026-10-23 17:04 · 中心问题</h4><ul><li><a href="#what">这是什么</a>：菜单新增「中心问题」：一句话，外行一分钟能听懂，并说清什么算答上了。审查用它判终稿是否跑题。附 run3 的中心问题作例子。</li></ul><h4>2026-10-23 16:47 · 启发池出 idea 草稿</h4><ul><li><a href="#what">这是什么</a>「④ 启发池」：新增构思算子出草稿。13 个算子各出一份，另有不超过 13 份算子组合，写明先后顺序和理由。草稿只用来启发，不是正式卡。</li></ul><h4>2026-10-23 16:06 · 启发池（B9）写进正文</h4><ul><li><a href="#what">这是什么</a>：新增「④ 启发池」卡片，写明算子从哪来、怎么用、为什么做、放在哪。输入侧、镜头、目录树同步加上 <code>inspire/</code>。</li></ul><h4>2026-10-23 15:51 · 流程图加启发池</h4><ul><li><a href="#fl-m1">流程图模块 1</a>：新增规划中阶段 S00a 启发池。</li></ul><h4>2026-10-23 15:43 · 蓝图加 B9</h4><ul><li>蓝图（<a href="#what">这是什么</a> 末尾链接的 TPL 对照页）新增 B9「输入广度」。说明书正文不变。</li></ul><h4>2026-10-23 15:35 · 首次发布</h4><ul><li>8 章：这是什么、安装与准备、跑第一轮、它怎么思考、你在哪些点介入、输出目录详解、规则与红线、常见问题。章节结构对照 Team Paper Lite 公开说明书。</li><li><a href="#think">它怎么思考</a>：两层流程图，由 <code>pipeline/stages.json</code> 自动生成。第一层 6 个模块，第二层每个模块折叠展开。</li><li><a href="#gates">你在哪些点介入</a>：5 个闸，每个只问一个问题。</li></ul></details>
+</div>
+</details>
+</section>
+<!-- NEWS_END -->
 </main>
 </div>
 <script>

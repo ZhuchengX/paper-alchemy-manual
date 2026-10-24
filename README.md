@@ -6,6 +6,15 @@
 
 ## 更新记录（新的在上）
 
+### 2026-10-24 19:45 · 说明书瘦身：主页只留要用的，细节进子页
+
+- [这是什么](https://zhuchengx.github.io/paper-alchemy-manual/#what)：新增「进度表」（[直达](https://zhuchengx.github.io/paper-alchemy-manual/#progress)），一张表看 B0–B9 各做到哪、T1–T3 还在规划。
+- [跑第一轮](https://zhuchengx.github.io/paper-alchemy-manual/#first)：围绕一条命令 `orchestrate.py` 讲；手动逐步跑的写法折叠在「展开」里。
+- [它怎么思考](https://zhuchengx.github.io/paper-alchemy-manual/#think)：压成 4 条核心想法 + 流程图，每条下面一行小字注明出处。
+- [你在哪些点介入](https://zhuchengx.github.io/paper-alchemy-manual/#gates)：7 个人工闸改成一张表：看什么、只回答哪一个问题。
+- B2–B9 各模块的完整做法、每个闸的详细说明、完整菜单和完整目录树，原文挪到新子页「设计细节」（侧栏最下方），一字未删。
+- [更新记录](https://zhuchengx.github.io/paper-alchemy-manual/#news)：从页首挪到页末并整体折叠，点开看最新 3 条。
+
 ### 2026-10-24 17:25 · B9 启发池：先发散，再炼金
 
 - [跑第一轮](https://zhuchengx.github.io/paper-alchemy-manual/#first)「④ 启发池」：改为已实现。新增「怎么跑」：编排器在 S00a 自动做完，约 27 次 codex；跑完看 `inspire/INDEX.md`（草稿目录）和 `inspire/diversity.md`（去重后几份、覆盖几个算子）。启发池现在只交给提议者（S12），构思出卡（S25）还没接上。
