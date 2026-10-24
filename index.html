@@ -230,6 +230,7 @@ python3 pipeline/check.py RUN_DIR extract          # 全部批次抽完后过闸
 <h3>核心 idea ② · 多个提议者并行，互不读对方，裁判另请</h3>
 <p>提议 agent 按角度 P1–P3、R1–R4 并行出候选通解，互不读对方文件；审查 agent 不提新想法，最多补一条（RUNBOOK §2 第 3 条）。打分用 MDL 思路：通解要短，用它解释事实也要短，并在时间更晚的留出论文上有预测力（设计原则第 4 条）。终稿条数上限由 <code>04_review</code> 的 <code>MAX_FINAL</code> 设定（RUNBOOK 示例值 6；run3 v2 放到了 10 条）。</p>
 <p>2026-10-23 起（蓝图 B2）审查拆成两层：<code>pipeline/review_loop.py</code> 给每个候选单独派一个 critic（只看这一条，判 VALIDATED / REVISE / DROP），REVISE 的交一个新 agent 按 critic 列的改动改写，最多 2 轮，第 2 轮后仍 REVISE 就记 DROP，写进 <code>dropped_routes.md</code>；最后一个 judge 只从 VALIDATED 里聚类、排序、选终稿，不能把被淘汰的捞回来。旧的单 agent <code>04_review</code> 留作后备。</p>
+<p>成文之前（2026-10-24 起，蓝图 B5）先过「架构师三棱镜」：<code>pipeline/architect_loop.py</code> 先不花钱，从 <code>final_scores.json</code> 生成禁说清单（边界结论不许写成机制或定律、猜想必须写成猜想、指路测试的数字不许引用、作者自家方法一去掉覆盖率就变的必须点明）；再请 novelty / narrative / impact 三个架构师各出一份论文骨架，它们只改顺序和讲法，不增删结论；一个 decider 选一份、补几条措辞规则。三份骨架并排在 <code>architecture/maps.html</code> 里交你选（闸⑥）。写作 agent 按选中的骨架写，写完 <code>check.py paper</code> 用 <code>check_claims.py</code> 逐条核对，出现禁说即 FAIL。思路借自 TPL 的 argument_architect / argument_select 与 claim_calibration.md；TPL 的论证审计员（argument_audit）这里没做，留给 B6/B7。</p>
 <p>成稿之后（2026-10-24 起，蓝图 B4）还有一道新眼审稿：<code>pipeline/review5_loop.py</code> 请方法学家、领域专家、怀疑者、实践者、写作编辑五个角色，只读成稿和语料、不看任何作者侧材料，每条意见都要指到编号段落；一个修订 agent 只能改被指出的段落，脚本逐段比对，越界即判 FAIL；最后五个角色各自终审，判 ACCEPT 或 REOPEN，REOPEN 交你决定是否回成文。</p>
 
 <h3>核心 idea ③ · 每条结论都要被反复敲打</h3>
@@ -254,7 +255,7 @@ python3 pipeline/check.py RUN_DIR extract          # 全部批次抽完后过闸
 
 <!-- FLOW_START（由 python3 -I pipeline/check_stages.py --flow 生成，勿手改） -->
 <h3>全流程图 · 两层看</h3>
-<p>由 <code>pipeline/stages.json</code> 自动生成（<code>python3 -I pipeline/check_stages.py --flow</code>），和阶段契约表同源。<strong>第一层</strong>只看 6 个大模块：每个模块做什么、产出什么、有几个阶段、你在哪里介入、换领域要改几处。<strong>第二层</strong>是每个模块的拆解，点第一层的模块或下面的标题展开。全流程共 41 个阶段（36 个已能跑，5 个 🔭 规划中）、5 个人工闸。</p>
+<p>由 <code>pipeline/stages.json</code> 自动生成（<code>python3 -I pipeline/check_stages.py --flow</code>），和阶段契约表同源。<strong>第一层</strong>只看 6 个大模块：每个模块做什么、产出什么、有几个阶段、你在哪里介入、换领域要改几处。<strong>第二层</strong>是每个模块的拆解，点第一层的模块或下面的标题展开。全流程共 41 个阶段（37 个已能跑，4 个 🔭 规划中）、6 个人工闸。</p>
 <p>图例：实线框 = 已经能跑；虚线框 🔭 = 蓝图里规划、还没做；琥珀粗框 ★ = 你介入；橙线 = 回环（虚线是规划中的回环）；细图右栏写闸门、判决和上界。<strong>🧩 回答「科研大同小异」</strong>：模块和主干对任何领域都一样，带 🧩 的 15 个阶段是换领域时要换的部分（依据 <a href="https://github.com/ZhuchengX/paper-alchemy-manual/blob/main/research/pipeline泛化_20261023/coupling_audit.md">主题耦合审计</a> §1）。窄屏可左右滑动。</p>
 
 <style>.fl{width:100%;min-width:760px;height:auto;display:block;font-family:-apple-system,"PingFang SC","Noto Sans CJK SC",sans-serif}.fl-band{opacity:.55}.fl-ph{fill:var(--bg);font-size:13px;font-weight:700}.fl-box{fill:var(--panel);stroke-width:1.6}.fl-box.pl{stroke-dasharray:6 4;opacity:.8}.fl-gate{fill:var(--amber-soft);stroke:var(--amber);stroke-width:2.6}.fl-io{fill:var(--panel);stroke:var(--fg);stroke-width:1.6}.fl-nc{fill:var(--panel);stroke-width:1.6}.fl-nn{text-anchor:middle;font-size:11.5px;font-weight:700;fill:var(--fg);font-family:ui-monospace,Menlo,monospace}.fl-gc{fill:var(--amber)}.fl-gn{text-anchor:middle;font-size:14px;fill:var(--bg)}.fl-t{text-anchor:middle;font-size:15px;font-weight:700;fill:var(--fg)}.fl-b{text-anchor:middle;font-size:12px;fill:var(--muted)}.fl-ln{stroke:var(--muted);stroke-width:1.4}.fl-ah{fill:var(--muted)}.fl-el{font-size:11px;fill:var(--muted)}.fl-lp{fill:none;stroke:var(--accent);stroke-width:1.4}.fl-lp.pl{stroke-dasharray:5 4;opacity:.75}.fl-lt{text-anchor:middle;font-size:11.5px;fill:var(--accent)}.fl-lx{font-size:12px;fill:var(--accent)}.fl-g{font-size:12px;fill:var(--fg)}.fl-r{font-size:11.5px;fill:var(--muted)}.fl-pn{font-size:11.5px;fill:var(--red)}.fl-dm{font-size:12px;font-weight:700;fill:var(--red)}.fl-dm.half{fill:var(--amber)}.fl-mod{fill:var(--panel);stroke-width:2}.fl-link:hover .fl-mod{fill:var(--accent-soft)}.fl-mn{text-anchor:middle;font-size:18px;font-weight:700;fill:var(--bg)}.fl-mt{font-size:19px;font-weight:700;fill:var(--fg)}.fl-mg{font-size:14px;fill:var(--fg)}.fl-mo{font-size:13px;fill:var(--muted)}.fl-mc{font-size:13px;font-weight:600;fill:var(--accent)}.fl-more{text-anchor:end;font-size:12.5px;fill:var(--accent)}details.fl-d{border:1px solid var(--line);border-radius:10px;margin:10px 0;background:var(--panel)}details.fl-d>summary{cursor:pointer;padding:10px 14px;font-weight:600}details.fl-d>summary small{font-weight:400;color:var(--muted)}details.fl-d .tw{margin:0 8px 10px}</style>
@@ -274,7 +275,7 @@ python3 pipeline/check.py RUN_DIR extract          # 全部批次抽完后过闸
 <a href="#fl-m2" class="fl-link"><rect x="300" y="270" width="700" height="116" rx="12" class="fl-mod" style="stroke:var(--teal)"/><rect x="300" y="270" width="10" height="116" rx="5" style="fill:var(--teal)"/><circle cx="344" cy="310" r="20" style="fill:var(--teal)"/><text x="344" y="317" class="fl-mn">2</text><text x="380" y="304" class="fl-mt">证据地基</text><text x="380" y="328" class="fl-mg">把论文池筛成 solid 的核心集，逐篇抽成结构化事实，建成数据库</text><text x="380" y="350" class="fl-mo">产物：extract/*.json + db/*.csv</text><text x="380" y="373" class="fl-mc">11 个阶段　·　★ 人工闸 ②　·　🧩 7 处换领域要改</text><text x="982" y="304" class="fl-more">看细图 ↓</text></a>
 <a href="#fl-m3" class="fl-link"><rect x="300" y="420" width="700" height="116" rx="12" class="fl-mod" style="stroke:var(--green)"/><rect x="300" y="420" width="10" height="116" rx="5" style="fill:var(--green)"/><circle cx="344" cy="460" r="20" style="fill:var(--green)"/><text x="344" y="467" class="fl-mn">3</text><text x="380" y="454" class="fl-mt">候选通解轮</text><text x="380" y="478" class="fl-mg">多个提议者并行提出通解，独立审查后留下终稿结论 G</text><text x="380" y="500" class="fl-mo">产物：final_candidates.json + 打分</text><text x="380" y="523" class="fl-mc">4 个阶段　·　★ 人工闸 ③　·　🧩 3 处换领域要改　·　↻ 模块内回环 2</text><text x="982" y="454" class="fl-more">看细图 ↓</text></a>
 <a href="#fl-m4" class="fl-link"><rect x="300" y="570" width="700" height="116" rx="12" class="fl-mod" style="stroke:var(--accent)"/><rect x="300" y="570" width="10" height="116" rx="5" style="fill:var(--accent)"/><circle cx="344" cy="610" r="20" style="fill:var(--accent)"/><text x="344" y="617" class="fl-mn">4</text><text x="380" y="604" class="fl-mt">试味与扩展</text><text x="380" y="628" class="fl-mg">不花钱地反复敲打每条 G：稳健性、复用、复现价值、矛盾</text><text x="380" y="650" class="fl-mo">产物：robustness / 复核结果</text><text x="380" y="673" class="fl-mc">6 个阶段（🔭 1 个规划中）　·　🧩 1 处换领域要改</text><text x="982" y="604" class="fl-more">看细图 ↓</text></a>
-<a href="#fl-m5" class="fl-link"><rect x="300" y="720" width="700" height="116" rx="12" class="fl-mod" style="stroke:var(--blue)"/><rect x="300" y="720" width="10" height="116" rx="5" style="fill:var(--blue)"/><circle cx="344" cy="760" r="20" style="fill:var(--blue)"/><text x="344" y="767" class="fl-mn">5</text><text x="380" y="754" class="fl-mt">终局成文</text><text x="380" y="778" class="fl-mg">把 G 写成论文，溯源核对，翻译，出 PDF</text><text x="380" y="800" class="fl-mo">产物：金子论文中英文 PDF</text><text x="380" y="823" class="fl-mc">9 个阶段（🔭 2 个规划中）　·　★ 人工闸 ⑤　·　↻ 模块内回环 3</text><text x="982" y="754" class="fl-more">看细图 ↓</text></a>
+<a href="#fl-m5" class="fl-link"><rect x="300" y="720" width="700" height="116" rx="12" class="fl-mod" style="stroke:var(--blue)"/><rect x="300" y="720" width="10" height="116" rx="5" style="fill:var(--blue)"/><circle cx="344" cy="760" r="20" style="fill:var(--blue)"/><text x="344" y="767" class="fl-mn">5</text><text x="380" y="754" class="fl-mt">终局成文</text><text x="380" y="778" class="fl-mg">把 G 写成论文，溯源核对，翻译，出 PDF</text><text x="380" y="800" class="fl-mo">产物：金子论文中英文 PDF</text><text x="380" y="823" class="fl-mc">9 个阶段（🔭 1 个规划中）　·　★ 人工闸 ⑥ ⑤　·　↻ 模块内回环 4</text><text x="982" y="754" class="fl-more">看细图 ↓</text></a>
 <a href="#fl-m6" class="fl-link"><rect x="300" y="870" width="700" height="116" rx="12" class="fl-mod" style="stroke:var(--teal)"/><rect x="300" y="870" width="10" height="116" rx="5" style="fill:var(--teal)"/><circle cx="344" cy="910" r="20" style="fill:var(--teal)"/><text x="344" y="917" class="fl-mn">6</text><text x="380" y="904" class="fl-mt">构思与评估</text><text x="380" y="928" class="fl-mg">用巨人镜头出新设想卡，查重、勾选花钱；最后对照锁定答案评估</text><text x="380" y="950" class="fl-mo">产物：设想卡 + decisions.json + 评估</text><text x="380" y="973" class="fl-mc">8 个阶段　·　★ 人工闸 ④　·　🧩 2 处换领域要改</text><text x="982" y="904" class="fl-more">看细图 ↓</text></a>
 <rect x="300" y="1020" width="700" height="62" rx="10" class="fl-io"/><text x="650" y="1046" class="fl-t">交付物</text><text x="650" y="1066" class="fl-b">金子论文中英文 PDF + 决策指南 + 打分与稳健性证据 + 下一轮的卡</text>
 </svg></div>
@@ -479,80 +480,89 @@ python3 pipeline/check.py RUN_DIR extract          # 全部批次抽完后过闸
 <text x="614.0" y="539" class="fl-b">每个 G 约 7 张扩展卡 · 撑不起就 KILL</text>
 <text x="892" y="510" class="fl-pn">🔭 规划中 · 蓝图 B6</text>
 </svg></div></details>
-<details class="fl-d" id="fl-m5"><summary>模块 5 · 终局成文　<small>把 G 写成论文，溯源核对，翻译，出 PDF（9 个阶段）</small></summary><div class="tw"><svg class="fl" viewBox="0 0 1220 928" role="img" aria-label="模块 5 终局成文 细图" xmlns="http://www.w3.org/2000/svg">
-<rect x="12" y="10" width="1196" height="908" rx="14" style="fill:var(--blue-soft)" class="fl-band"/>
+<details class="fl-d" id="fl-m5"><summary>模块 5 · 终局成文　<small>把 G 写成论文，溯源核对，翻译，出 PDF（9 个阶段）</small></summary><div class="tw"><svg class="fl" viewBox="0 0 1220 1010" role="img" aria-label="模块 5 终局成文 细图" xmlns="http://www.w3.org/2000/svg">
+<rect x="12" y="10" width="1196" height="990" rx="14" style="fill:var(--blue-soft)" class="fl-band"/>
 <rect x="24" y="20" width="126" height="26" rx="13" style="fill:var(--blue)"/><text x="38" y="38" class="fl-ph">模块 5 · 终局成文</text>
 <line x1="600" y1="124" x2="600" y2="149" class="fl-ln" marker-end="url(#fl-a)"/>
 <line x1="600" y1="210" x2="600" y2="235" class="fl-ln" marker-end="url(#fl-a)"/>
-<line x1="600" y1="296" x2="600" y2="321" class="fl-ln" marker-end="url(#fl-a)"/>
-<line x1="600" y1="382" x2="600" y2="407" class="fl-ln" marker-end="url(#fl-a)"/>
-<line x1="600" y1="468" x2="600" y2="493" class="fl-ln" marker-end="url(#fl-a)"/>
-<line x1="600" y1="554" x2="600" y2="579" class="fl-ln" marker-end="url(#fl-a)"/>
-<line x1="600" y1="640" x2="600" y2="665" class="fl-ln" marker-end="url(#fl-a)"/>
-<line x1="600" y1="726" x2="600" y2="751" class="fl-ln" marker-end="url(#fl-a)"/>
+<line x1="600" y1="292" x2="600" y2="317" class="fl-ln" marker-end="url(#fl-a)"/>
+<text x="612" y="309" class="fl-el">确认 → 继续</text>
+<line x1="600" y1="378" x2="600" y2="403" class="fl-ln" marker-end="url(#fl-a)"/>
+<line x1="600" y1="464" x2="600" y2="489" class="fl-ln" marker-end="url(#fl-a)"/>
+<line x1="600" y1="550" x2="600" y2="575" class="fl-ln" marker-end="url(#fl-a)"/>
+<line x1="600" y1="636" x2="600" y2="661" class="fl-ln" marker-end="url(#fl-a)"/>
+<line x1="600" y1="722" x2="600" y2="747" class="fl-ln" marker-end="url(#fl-a)"/>
 <line x1="600" y1="808" x2="600" y2="833" class="fl-ln" marker-end="url(#fl-a)"/>
-<text x="612" y="825" class="fl-el">确认 → 继续</text>
-<path d="M330,352.0 H300 V266.0 H328" class="fl-lp" marker-end="url(#fl-a)"/>
-<text transform="translate(293,309.0) rotate(-90)" class="fl-lt">↩ 数字对不上 → 回成文</text>
-<path d="M330,524.0 H266 V266.0 H328" class="fl-lp" marker-end="url(#fl-a)"/>
-<text transform="translate(259,395.0) rotate(-90)" class="fl-lt">↩ REOPEN → 回成文（人定）</text>
-<path d="M330,780.0 H232 V266.0 H328" class="fl-lp" marker-end="url(#fl-a)"/>
-<text transform="translate(225,523.0) rotate(-90)" class="fl-lt">↩ ⑤ 不是金子 → 写意见打回成文</text>
+<line x1="600" y1="890" x2="600" y2="915" class="fl-ln" marker-end="url(#fl-a)"/>
+<text x="612" y="907" class="fl-el">确认 → 继续</text>
+<path d="M330,180.0 H300 V348.0 H328" class="fl-lp" marker-end="url(#fl-a)"/>
+<text transform="translate(293,264.0) rotate(-90)" class="fl-lt">↩ 写稿出现禁说 → 回成文</text>
+<path d="M330,434.0 H266 V348.0 H328" class="fl-lp" marker-end="url(#fl-a)"/>
+<text transform="translate(259,391.0) rotate(-90)" class="fl-lt">↩ 数字对不上 → 回成文</text>
+<path d="M330,606.0 H232 V348.0 H328" class="fl-lp" marker-end="url(#fl-a)"/>
+<text transform="translate(225,477.0) rotate(-90)" class="fl-lt">↩ REOPEN → 回成文（人定）</text>
+<path d="M330,862.0 H198 V348.0 H328" class="fl-lp" marker-end="url(#fl-a)"/>
+<text transform="translate(191,605.0) rotate(-90)" class="fl-lt">↩ ⑤ 不是金子 → 写意见打回成文</text>
 <rect x="330" y="64" width="540" height="60" rx="10" class="fl-box" style="stroke:var(--blue)"/>
 <circle cx="358" cy="94.0" r="16" class="fl-nc" style="stroke:var(--blue)"/><text x="358" y="98.0" class="fl-nn">19</text>
 <text x="614.0" y="89" class="fl-t">挂靠证据（可选）</text>
 <text x="614.0" y="109" class="fl-b">例子 / 反例 / 边界挂到每条 G</text>
 <text x="892" y="80" class="fl-g">闸门 check.py RUN_DIR paper OUT_PAPER</text>
 <text x="892" y="95" class="fl-r">判决 example / counter / bound / none</text>
-<rect x="330" y="150" width="540" height="60" rx="10" class="fl-box pl" style="stroke:var(--blue)"/>
-<circle cx="358" cy="180.0" r="16" class="fl-nc" style="stroke:var(--blue)"/><text x="358" y="184.0" class="fl-nn">🔭</text>
+<rect x="330" y="150" width="540" height="60" rx="10" class="fl-box" style="stroke:var(--blue)"/>
+<circle cx="358" cy="180.0" r="16" class="fl-nc" style="stroke:var(--blue)"/><text x="358" y="184.0" class="fl-nn">19b</text>
 <text x="614.0" y="175" class="fl-t">架构师三棱镜 + 禁说清单</text>
-<text x="614.0" y="195" class="fl-b">novelty / narrative / impact 三份骨架选一</text>
-<text x="892" y="166" class="fl-pn">🔭 规划中 · 蓝图 B5</text>
-<rect x="330" y="236" width="540" height="60" rx="10" class="fl-box" style="stroke:var(--blue)"/>
-<circle cx="358" cy="266.0" r="16" class="fl-nc" style="stroke:var(--blue)"/><text x="358" y="270.0" class="fl-nn">20</text>
-<text x="614.0" y="261" class="fl-t">成文</text>
-<text x="614.0" y="281" class="fl-b">05_write · 刘洋八股 + 凌杨写作守则</text>
-<text x="892" y="252" class="fl-g">闸门 check.py RUN_DIR paper PAPER</text>
-<text x="892" y="267" class="fl-r">判决 PASS / FAIL</text>
-<text x="892" y="282" class="fl-r">上界 正文到 §6 ≤ 6,800 词；摘要 ≤ 200 词</text>
-<rect x="330" y="322" width="540" height="60" rx="10" class="fl-box" style="stroke:var(--blue)"/>
-<circle cx="358" cy="352.0" r="16" class="fl-nc" style="stroke:var(--blue)"/><text x="358" y="356.0" class="fl-nn">20b</text>
-<text x="614.0" y="347" class="fl-t">全文数字机核</text>
-<text x="614.0" y="367" class="fl-b">正文每个数字 ↔ 来源指针（json/csv/md/脚本/推导），对不上即 FAIL</text>
-<text x="892" y="338" class="fl-g">闸门 check_numbers.py 退出码 0（无 MISMATCH / UNRE</text>
-<text x="892" y="353" class="fl-g">SOLVED / STALE；--strict 时 UNSOURCED 也算失败）</text>
-<text x="892" y="368" class="fl-r">判决 MATCH / MISMATCH / UNRESOLVED / STALE / UNSO</text>
-<rect x="330" y="408" width="540" height="60" rx="10" class="fl-box" style="stroke:var(--blue)"/>
-<circle cx="358" cy="438.0" r="16" class="fl-nc" style="stroke:var(--blue)"/><text x="358" y="442.0" class="fl-nn">21</text>
-<text x="614.0" y="433" class="fl-t">溯源</text>
-<text x="614.0" y="453" class="fl-b">抽查论断与出处 · 记错误率</text>
-<text x="892" y="424" class="fl-g">闸门 错误率写进 provenance_check.md</text>
-<rect x="330" y="494" width="540" height="60" rx="10" class="fl-box" style="stroke:var(--blue)"/>
-<circle cx="358" cy="524.0" r="16" class="fl-nc" style="stroke:var(--blue)"/><text x="358" y="528.0" class="fl-nn">21b</text>
-<text x="614.0" y="519" class="fl-t">5 角色新眼审稿</text>
-<text x="614.0" y="539" class="fl-b">方法学家 / 领域专家 / 怀疑者 / 实践者 / 写作编辑只读成稿与语料 → 一次修订只动被指段落 → 各自终审 ACCEPT / REOPEN</text>
-<text x="892" y="510" class="fl-g">闸门 review5_loop.py check：每条意见指到存在的段落</text>
-<text x="892" y="525" class="fl-g">且引文在该段；修订稿段落数与顺序不变、只改被指出的段…</text>
-<text x="892" y="540" class="fl-r">判决 ACCEPT / REOPEN</text>
-<rect x="330" y="580" width="540" height="60" rx="10" class="fl-box" style="stroke:var(--blue)"/>
-<circle cx="358" cy="610.0" r="16" class="fl-nc" style="stroke:var(--blue)"/><text x="358" y="614.0" class="fl-nn">22</text>
-<text x="614.0" y="605" class="fl-t">翻译（可选）</text>
-<text x="614.0" y="625" class="fl-b">中文版 + 术语表核对</text>
-<text x="892" y="596" class="fl-g">闸门 check_translation.py 输出 OK</text>
-<text x="892" y="611" class="fl-r">判决 PASS / FAIL</text>
-<rect x="330" y="666" width="540" height="60" rx="10" class="fl-box" style="stroke:var(--blue)"/>
-<circle cx="358" cy="696.0" r="16" class="fl-nc" style="stroke:var(--blue)"/><text x="358" y="700.0" class="fl-nn">23</text>
-<text x="614.0" y="691" class="fl-t">出 PDF（可选）</text>
-<text x="614.0" y="711" class="fl-b">make_pdf.sh 出中英文 PDF</text>
-<rect x="330" y="752" width="540" height="56" rx="10" class="fl-gate"/><circle cx="358" cy="780.0" r="14" class="fl-gc"/><text x="358" y="785.0" class="fl-gn">★</text>
-<text x="614.0" y="777" class="fl-t">【人工闸 ⑤】出 PDF</text>
-<text x="614.0" y="797" class="fl-b">只回答一个问题：「这篇是不是值得精读的金子？」</text>
-<rect x="330" y="834" width="540" height="60" rx="10" class="fl-box pl" style="stroke:var(--blue)"/>
-<circle cx="358" cy="864.0" r="16" class="fl-nc" style="stroke:var(--blue)"/><text x="358" y="868.0" class="fl-nn">🔭</text>
-<text x="614.0" y="859" class="fl-t">交付包 + 摘要回写</text>
-<text x="614.0" y="879" class="fl-b">PDF + 证据包 + 新读者重写摘要</text>
-<text x="892" y="850" class="fl-pn">🔭 规划中 · 蓝图 B8</text>
+<text x="614.0" y="195" class="fl-b">novelty / narrative / impact 三份骨架选一 + 允许 / 禁止的论断清单（脚本检查）</text>
+<text x="892" y="166" class="fl-g">闸门 architect_loop.py check：三份骨架都在，被选那</text>
+<text x="892" y="181" class="fl-g">份每条 G 都有 `### 3.x Gk (Lx):` 标题；PICK 是三…</text>
+<text x="892" y="196" class="fl-r">判决 PICK / FAIL</text>
+<rect x="330" y="236" width="540" height="56" rx="10" class="fl-gate"/><circle cx="358" cy="264.0" r="14" class="fl-gc"/><text x="358" y="269.0" class="fl-gn">★</text>
+<text x="614.0" y="261" class="fl-t">【人工闸 ⑥】架构师三棱镜 + 禁说清单</text>
+<text x="614.0" y="281" class="fl-b">只回答一个问题：「用哪份骨架写？」</text>
+<rect x="330" y="318" width="540" height="60" rx="10" class="fl-box" style="stroke:var(--blue)"/>
+<circle cx="358" cy="348.0" r="16" class="fl-nc" style="stroke:var(--blue)"/><text x="358" y="352.0" class="fl-nn">20</text>
+<text x="614.0" y="343" class="fl-t">成文</text>
+<text x="614.0" y="363" class="fl-b">05_write · 刘洋八股 + 凌杨写作守则</text>
+<text x="892" y="334" class="fl-g">闸门 check.py RUN_DIR paper PAPER</text>
+<text x="892" y="349" class="fl-r">判决 PASS / FAIL</text>
+<text x="892" y="364" class="fl-r">上界 正文到 §6 ≤ 6,800 词；摘要 ≤ 200 词</text>
+<rect x="330" y="404" width="540" height="60" rx="10" class="fl-box" style="stroke:var(--blue)"/>
+<circle cx="358" cy="434.0" r="16" class="fl-nc" style="stroke:var(--blue)"/><text x="358" y="438.0" class="fl-nn">20b</text>
+<text x="614.0" y="429" class="fl-t">全文数字机核</text>
+<text x="614.0" y="449" class="fl-b">正文每个数字 ↔ 来源指针（json/csv/md/脚本/推导），对不上即 FAIL</text>
+<text x="892" y="420" class="fl-g">闸门 check_numbers.py 退出码 0（无 MISMATCH / UNRE</text>
+<text x="892" y="435" class="fl-g">SOLVED / STALE；--strict 时 UNSOURCED 也算失败）</text>
+<text x="892" y="450" class="fl-r">判决 MATCH / MISMATCH / UNRESOLVED / STALE / UNSO</text>
+<rect x="330" y="490" width="540" height="60" rx="10" class="fl-box" style="stroke:var(--blue)"/>
+<circle cx="358" cy="520.0" r="16" class="fl-nc" style="stroke:var(--blue)"/><text x="358" y="524.0" class="fl-nn">21</text>
+<text x="614.0" y="515" class="fl-t">溯源</text>
+<text x="614.0" y="535" class="fl-b">抽查论断与出处 · 记错误率</text>
+<text x="892" y="506" class="fl-g">闸门 错误率写进 provenance_check.md</text>
+<rect x="330" y="576" width="540" height="60" rx="10" class="fl-box" style="stroke:var(--blue)"/>
+<circle cx="358" cy="606.0" r="16" class="fl-nc" style="stroke:var(--blue)"/><text x="358" y="610.0" class="fl-nn">21b</text>
+<text x="614.0" y="601" class="fl-t">5 角色新眼审稿</text>
+<text x="614.0" y="621" class="fl-b">方法学家 / 领域专家 / 怀疑者 / 实践者 / 写作编辑只读成稿与语料 → 一次修订只动被指段落 → 各自终审 ACCEPT / REOPEN</text>
+<text x="892" y="592" class="fl-g">闸门 review5_loop.py check：每条意见指到存在的段落</text>
+<text x="892" y="607" class="fl-g">且引文在该段；修订稿段落数与顺序不变、只改被指出的段…</text>
+<text x="892" y="622" class="fl-r">判决 ACCEPT / REOPEN</text>
+<rect x="330" y="662" width="540" height="60" rx="10" class="fl-box" style="stroke:var(--blue)"/>
+<circle cx="358" cy="692.0" r="16" class="fl-nc" style="stroke:var(--blue)"/><text x="358" y="696.0" class="fl-nn">22</text>
+<text x="614.0" y="687" class="fl-t">翻译（可选）</text>
+<text x="614.0" y="707" class="fl-b">中文版 + 术语表核对</text>
+<text x="892" y="678" class="fl-g">闸门 check_translation.py 输出 OK</text>
+<text x="892" y="693" class="fl-r">判决 PASS / FAIL</text>
+<rect x="330" y="748" width="540" height="60" rx="10" class="fl-box" style="stroke:var(--blue)"/>
+<circle cx="358" cy="778.0" r="16" class="fl-nc" style="stroke:var(--blue)"/><text x="358" y="782.0" class="fl-nn">23</text>
+<text x="614.0" y="773" class="fl-t">出 PDF（可选）</text>
+<text x="614.0" y="793" class="fl-b">make_pdf.sh 出中英文 PDF</text>
+<rect x="330" y="834" width="540" height="56" rx="10" class="fl-gate"/><circle cx="358" cy="862.0" r="14" class="fl-gc"/><text x="358" y="867.0" class="fl-gn">★</text>
+<text x="614.0" y="859" class="fl-t">【人工闸 ⑤】出 PDF</text>
+<text x="614.0" y="879" class="fl-b">只回答一个问题：「这篇是不是值得精读的金子？」</text>
+<rect x="330" y="916" width="540" height="60" rx="10" class="fl-box pl" style="stroke:var(--blue)"/>
+<circle cx="358" cy="946.0" r="16" class="fl-nc" style="stroke:var(--blue)"/><text x="358" y="950.0" class="fl-nn">🔭</text>
+<text x="614.0" y="941" class="fl-t">交付包 + 摘要回写</text>
+<text x="614.0" y="961" class="fl-b">PDF + 证据包 + 新读者重写摘要</text>
+<text x="892" y="932" class="fl-pn">🔭 规划中 · 蓝图 B8</text>
 </svg></div></details>
 <details class="fl-d" id="fl-m6"><summary>模块 6 · 构思与评估　<small>用巨人镜头出新设想卡，查重、勾选花钱；最后对照锁定答案评估（8 个阶段）</small></summary><div class="tw"><svg class="fl" viewBox="0 0 1220 928" role="img" aria-label="模块 6 构思与评估 细图" xmlns="http://www.w3.org/2000/svg">
 <rect x="12" y="10" width="1196" height="908" rx="14" style="fill:var(--teal-soft)" class="fl-band"/>
@@ -622,7 +632,7 @@ python3 pipeline/check.py RUN_DIR extract          # 全部批次抽完后过闸
 
 <!-- ========== 你在哪些点介入 ========== -->
 <section id="gates">
-<h2>你在哪些点介入 · 5 个闸<span class="tag">你的工作清单</span></h2>
+<h2>你在哪些点介入 · 6 个闸<span class="tag">你的工作清单</span></h2>
 <p>每个闸只需要你做一个选择，或写一句意见；不需要你写代码。</p>
 <h4>★ 闸① · 菜单拍板</h4>
 <p>定选题、读者、时间窗、纳入排除、锁定答案。这一步决定后面所有 agent 看到什么，跑起来以后不再改。只回答一个问题：「菜单这样定，跑起来后不再改，可以吗？」</p>
@@ -632,6 +642,8 @@ python3 pipeline/check.py RUN_DIR extract          # 全部批次抽完后过闸
 <p>审查后的 <code>synthesis/final_candidates.json</code> 加上打分。需要你定口径的分歧写在台账里，例如 2026-10-22 你定的「采样基线默认只认纯投票」。只回答一个问题：「每条 G 的边界你认不认？」</p>
 <h4>★ 闸④ · 出卡勾选与花钱</h4>
 <p>棋盘出卡后，打开 <code>chessboard/decision_page.html</code> 勾选，得到 <code>decisions.json</code>。凡是要调付费 API 的实验，先过 <code>13_preapproval</code> 跑前配置卡：本次配置、原论文配置、差异与理由、预算。等你同意才跑。只回答一个问题：「哪几张卡做？（花钱的先看配置卡）」</p>
+<h4>★ 闸⑥ · 用哪份骨架写（成文前）</h4>
+<p>打开 <code>synthesis/…/architecture/maps.html</code>，三份骨架并排，最上面是 decider 的选择和理由；<code>claim_calibration.md</code> 是每条 G 能说什么、不能说什么。同意就不用动；想换就跑 <code>architect_loop.py pick &lt;RUN_DIR&gt; &lt;prism&gt;</code>。只回答一个问题：「用哪份骨架写？」（编号按加入先后，时间上在闸⑤之前。）</p>
 <h4>★ 闸⑤ · 是不是真金</h4>
 <p>读终稿 PDF 和决策指南。只回答一个问题：「这篇是不是值得精读的金子？」改动意见写进 <code>paper/v3/changelog.md</code> 的下一版。</p>
 <div class="warn"><p><strong>和 TPL 的差距</strong>：TPL 的闸在 TUI 里弹清单、回车放行，还有全自动模式。我们的闸现在是主线程停下来问你，或者发你一个勾选页。统一闸门和全自动模式 <span class="st plan">🔭 B7</span>。</p></div>
@@ -670,6 +682,7 @@ python3 pipeline/check.py RUN_DIR extract          # 全部批次抽完后过闸
 │  ├─ candidates_R*.json、notes_R*.md   各提议者的候选与笔记
 │  ├─ review.md、final_candidates.json  ★ 审查与终稿
 │  ├─ v2/                         第二版审查、打分、稳健性、挂靠
+│  ├─ <v>/architecture/           B5 架构师（2026-10-24 起）：claim_rules*.json、claim_calibration.md 禁说清单、paper_map_{novelty,narrative,impact}.md、architecture_decision.md、★ maps.html（闸⑥）
 │  ├─ chef/                       各次零调用复核的结果
 │  ├─ catalyst_run/               构思出卡、查重、实验设计包
 │  └─ institution_run/            借古代制度看多智能体
