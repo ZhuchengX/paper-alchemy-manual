@@ -6,6 +6,12 @@
 
 ## 更新记录（新的在上）
 
+### 2026-10-24 16:42 · B8 交付包：解包即可复算全部数字
+
+- [它怎么思考](https://zhuchengx.github.io/paper-alchemy-manual/#think)：新增「最后一步打包交付」一段。交付包含正文、PDF、证据包、最终报告。在禁读原机器文件的沙箱里，包内脚本重新打分、逐条核对正文数字，全部 MATCH 才算通过。报告把数字分为「从 db 重新算出」和「读随包输入」两类。摘要可交没参与写作的 reader 重写，不许含数字。
+- [输出目录详解](https://zhuchengx.github.io/paper-alchemy-manual/#output)：目录树新增 `deliver/`，`traces/` 下新增编排器的 `state.json`。
+- [流程图模块 5](https://zhuchengx.github.io/paper-alchemy-manual/#fl-m5)：S23b 由规划中改为已实现。
+
 ### 2026-10-24 16:28 · B7 编排器：一条命令跑全流程
 
 - [跑第一轮](https://zhuchengx.github.io/paper-alchemy-manual/#first)「②」：新增 `orchestrate.py` 用法。它按阶段表逐个执行，每阶段过闸才往下；改了哪个模板或脚本，只重跑用到它的阶段。
