@@ -6,6 +6,24 @@
 
 ## 更新记录（新的在上）
 
+### 2026-10-27 · 第四批 4b + 说明书精简
+
+- 全篇压缩：每节只留要用的信息，重复说明删掉；模块细节在设计细节子页。
+- [全流程图](https://zhuchengx.github.io/paper-alchemy-manual/#flow)：改为竖排一张图，段 → 闸 → 段，手机上也能顺着看；每段的卡默认折叠，点段展开。
+- 新增 [case 现状](https://zhuchengx.github.io/paper-alchemy-manual/#cases)：每个 case 跑到哪、还差什么、台账几行。
+- [你在哪些点介入](https://zhuchengx.github.io/paper-alchemy-manual/#gates)：补上条件闸 ⑧（新眼终审要求重写）和 ⑨（中文稿出现禁用译法），各最多回 1 次。
+- 第 6 段新增中文阅读页（S23r）：每条结论按独立来源组数标强度（🟢 ≥7 组、🟡 4–6、🟠 1–3），进交付包根目录 `reader_zh.html`。
+- S22 翻译改为按本轮主题生成术语表（保留英文 / 禁用译法），中文稿出现禁用译法就停在 ⑨。
+- 数字机核不再把 `173.84M` 切成 173、把 `T-1` 读成 −1。
+
+### 2026-10-25 21:10 · 第四批 4a：正文不再被悄悄改、判决有去向
+
+- 正文每改一次留一版在 `traces/paper_versions/`（S20 / S21 / S21b），`paper/gold_paper.md` 始终是最新版；S21b 的修订稿自动并回正文。
+- 顺序改为 S20 成文 → S21 溯源 → S21b 新眼审稿 → S20b 数字机核（读正文的最后一站）→ S22 → S23b。
+- S21b 有 REOPEN 时停在条件闸 ⑧：`--answer ok` 接受，`--answer no:reopen` 回成文（最多 1 次）。
+- 闸号一律按展示号 ①–⑧；`--set` 会记进 run.json；已完成阶段要重跑时先列清单停下，加 `--rerun-stale` 才跑。
+- 新命令 `orchestrate.py accept RUN_DIR SID --reason "…"`：确认产物没问题时只重盖章、不重跑（旧运行目录用 `accept RUN_DIR --migrate` 迁到新指纹）。
+
 ### 2026-10-24 19:45 · 说明书瘦身：主页只留要用的，细节进子页
 
 - [这是什么](https://zhuchengx.github.io/paper-alchemy-manual/#what)：新增「进度表」（[直达](https://zhuchengx.github.io/paper-alchemy-manual/#progress)），一张表看 B0–B9 各做到哪、T1–T3 还在规划。
