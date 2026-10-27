@@ -586,7 +586,7 @@ python3 -I pipeline/orchestrate.py status RUN_DIR                 # 每个阶段
 </ul>
 <p>然后建运行目录：</p>
 <pre><code>python3 pipeline/init_run.py ~/runs/run4 --run-id run4_xxx --menu ~/runs/menu_run4.md \
-    --split 2025-07-01 --forbid ~/HITSZ/paper_alchemy_run3 --agent-models "claude-opus-5-5=2026-06"</code></pre>
+    --split 2025-07-01 --forbid /Users/xzc/HITSZ/PaperAlchemy/cases/run3 --agent-models "claude-opus-5-5=2026-06"</code></pre>
 <ul>
   <li>它会把 <code>scripts/*.py</code>（全部）、<code>config/schema.md</code>、<code>config/db_guide.md</code>、<code>config/model_prices*</code> 拷进运行目录，成为这一轮的冻结快照。</li>
   <li>它会写 <code>run.json</code>，后面所有提示词的占位符都从这里取。</li>

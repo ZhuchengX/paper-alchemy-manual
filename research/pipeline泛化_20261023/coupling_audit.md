@@ -1,7 +1,7 @@
 # 论文炼金 pipeline 主题耦合审计（只读诊断，2026-10-23）
 
-审计对象：`/Users/xzc/HITSZ/paper_alchemy/`（未改任何文件）。行号以 2026-10-23 14:20 的工作区为准。
-参照：`/Users/xzc/HITSZ/paper_alchemy_run3/chessboard/axes.json`（只看定轴方式）。
+审计对象：`/Users/xzc/HITSZ/PaperAlchemy/pipeline/`（未改任何文件）。行号以 2026-10-23 14:20 的工作区为准。
+参照：`/Users/xzc/HITSZ/PaperAlchemy/cases/run3/chessboard/axes.json`（只看定轴方式）。
 未读：`eval/`、answer_key*、alchemy_heldout、baseline、run2、~/.claude/projects、密钥。
 
 ---
