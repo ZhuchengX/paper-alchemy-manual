@@ -122,9 +122,15 @@ python3 -I pipeline/orchestrate.py status RUN_DIR                 # 每个阶段
       <li><strong>多投入调用，先发散</strong>：这一步用订阅额度并行多个 agent。验收看多样性：草稿去重后剩几份、覆盖了几个算子。</li>
       <li><strong>草稿不是正式卡</strong>：只用来启发。流程末尾的构思出卡（S25）照旧，正式卡仍要过撞车检查和信心打分。</li>
     </ul></li>
-  <li><strong>放在哪</strong>：单独的 <code>RUN_DIR/inspire/</code>：<code>papers.jsonl</code> 放启发论文，每篇记下是哪个算子、哪条检索词找到的；<code>drafts/</code> 放 idea 草稿，每份记下用了哪个或哪组算子。<strong>不进抽取和数据库</strong>，金子论文的统计数字只来自主题论文；启发池现在只交给提议者（S12）当镜头，构思出卡（S25）还没接上。</li>
+  <li><strong>放在哪</strong>：单独的 <code>RUN_DIR/inspire/</code>：<code>papers.jsonl</code> 放启发论文，每篇记下是哪个算子、哪条检索词找到的；<code>drafts/</code> 放 idea 草稿，每份记下用了哪个或哪组算子。<strong>不进抽取和数据库</strong>，金子论文的统计数字只来自主题论文；启发池交给提议者（S12）当镜头，也交给构思出卡（S25）当候选催化剂的起点；两处都只当启发、不当证据，卡用到哪份草稿要写出文件名。</li>
   <li><strong>怎么跑</strong>：编排器跑到 S00a 自动做完，一轮约 27 次 codex（13 份单算子 + 1 次挑组合 + 至多 13 份组合，组合上限用 <code>--set MAX_COMBOS=N</code> 调）。只找 <code>SPLIT</code> 之前的论文；菜单里留作检验的论文一篇都不许出现。跑完先看 <code>inspire/INDEX.md</code>（每份草稿的题目和找到几篇论文）和 <code>inspire/diversity.md</code>（去重后剩几份、覆盖几个算子、几成论文不在本轮语料里）。旧菜单没有「Central question」时用「Dish」代替并打出警告。</li>
-  <li><strong>还没做</strong> <span class="st plan">🔭 B9 另一半</span>：按菜单详略分三档、路线数随之变（3 / 4–5 / 6）。</li>
+  <!-- 旧（2026-10-27 前）：<li><strong>还没做</strong> <span class="st plan">🔭 B9 另一半</span>：按菜单详略分三档、路线数随之变（3 / 4–5 / 6）。</li> -->
+  <li><strong>按菜单详略定提议路数</strong> <span class="st ok">已实现 · 2026-10-27</span>：规则照 Team Paper Lite：方案完整 → 3 路，较模糊 → 4 路（一半照方案、一半探索），只给一句话 → 6 路（全部探索）。
+    <ul>
+      <li><strong>档位怎么定</strong>（<code>pipeline/anchor_echo.py</code>，写进 <code>config/anchors.json</code> 的 <code>tier</code>，闸①的锚回显里看得到）：菜单写了 <code>## Detail level</code>（首词 full / medium / sketch）就照写的；否则用一句话主题建的运行（<code>orchestrate.py new --topic</code>）→ sketch；否则菜单写了假设 / 分析维度 / 锁定答案 → full，只有中心问题 → medium。</li>
+      <li><strong>每档跑哪几路</strong>（<code>pipeline/angles.json</code> 的 <code>tiers</code>）：full = P1 P2 P3；medium = P1 P2 N1 N2；sketch = P1 P2 N1 N2 E1 E2。新加两路：E1 从启发池草稿出发、只留本轮语料测得了的；E2 从读者要做的决定倒推。R1–R4 只读 run3 的文件、C0 是闭卷对照，都不进任何档。</li>
+      <li><strong>手动改</strong>：<code>orchestrate.py run RUN_DIR --set ANGLES=P1,E1</code> 直接指定；S12 只合并本轮这几路的候选，之前档位留下的文件不混进来，少一路的输出就报错停下。</li>
+    </ul></li>
   <li><strong>别和「算子 DSL」混</strong>：这里的「构思算子」指 ScholarCatalyst 的构思动作；开头「② 中间侧」卡片和下文「它怎么思考」里的「算子程序 / 算子 DSL」（Gen / Comm / Agg…）是描述方法结构的记法，两者无关。</li>
 </ul></section>
 <section id="lens"><h2>巨人镜头</h2><h3>核心 idea ④ · 洞见来自巨人镜头</h3>
