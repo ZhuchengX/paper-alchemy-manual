@@ -5,11 +5,12 @@
 <!-- TOPNEWS_START -->
 **News**
 
+- **2026-10-28** 全流程图段 2 加上 S00r 语言证伪漏斗方框
 - **2026-10-28** 启发池出的草稿先由「杠精」逐份找反例，判 KILL / REVISE / PASS，再交给提议
-- **2026-10-28** 说明书页和两个仓库首页最上方加了 News：最近三次更新一行一条，更早的点开看
 
-<details><summary><b>2026-10-27</b> 维护者本机目录统一收进 PaperAlchemy/，示例路径已更新，流程和命令不变（点开看更早 22 次）</summary>
+<details><summary><b>2026-10-28</b> 说明书页和两个仓库首页最上方加了 News：最近三次更新一行一条，更早的点开看（点开看更早 23 次）</summary>
 
+- **2026-10-27** 维护者本机目录统一收进 PaperAlchemy/，示例路径已更新，流程和命令不变
 - **2026-10-27** 流程图每段卡最上面先写「目的」和「做完得到什么」
 - **2026-10-27** 提议路数按菜单详略自动定（3 / 4 / 6 路），启发池接上构思出卡
 - **2026-10-27** 全流程图改成一张完整图：色带分段、人工闸醒目、点段展开
@@ -40,13 +41,17 @@
 
 ## 更新记录（新的在上）
 
+### 2026-10-28 23:00 · 流程图补上 S00r
+
+- [全流程图](https://zhuchengx.github.io/paper-alchemy-manual/#flow)与[设计细节 · 契约图](设计细节.html#flow)：按 `stages.json` 重新生成，段 2 在启发池之后、采购之前多一个 S00r 方框，共 44 个阶段。
+
 ### 2026-10-28 22:40 · 启发池之后加语言证伪漏斗（S00r）
 
 - [进度表](https://zhuchengx.github.io/paper-alchemy-manual/#progress)：B9 加上 S00r 语言证伪漏斗（`pipeline/refute.py`、`templates/24_refute.md`）。每份草稿交一个独立的反驳者，只用语言、不做实验：写出默认前提、造反例、查自相矛盾、查跨域借鉴像不像、查能不能用现有数据检验。规则取自《逻辑学导论》，模板里带页码。
 - 判决只打标签，草稿不动：PASS 只表示「没被语言推翻」，不表示成立；提议（S12）读汇总表，KILL 的默认跳过。
 - [安装与准备](https://zhuchengx.github.io/paper-alchemy-manual/#install)：新增选装的 DeepSeek harness SDK（`run_agent.py --executor dsh`），S00r 默认用它。
 - [case 现状](https://zhuchengx.github.io/paper-alchemy-manual/#cases)：plan1_masbench 交付包已打；新增 stm_earlystop：19 份草稿首跑 KILL 0 / REVISE 19 / PASS 0，KILL 门槛下一轮用已知结论的老 idea 校准。
-- 流程图图形版的 S00r 方框待补，文字段卡已写。
+- [全流程图](https://zhuchengx.github.io/paper-alchemy-manual/#flow)：段 2 加上 S00r 方框（启发池之后、采购之前），图由 `stages.json` 重新生成，共 44 个阶段。
 
 ### 2026-10-28 00:30 · 页面顶部加 News
 
