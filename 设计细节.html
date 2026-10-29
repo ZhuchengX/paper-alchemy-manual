@@ -131,6 +131,18 @@ python3 -I pipeline/orchestrate.py status RUN_DIR                 # 每个阶段
       <li><strong>每档跑哪几路</strong>（<code>pipeline/angles.json</code> 的 <code>tiers</code>）：full = P1 P2 P3；medium = P1 P2 N1 N2；sketch = P1 P2 N1 N2 E1 E2。新加两路：E1 从启发池草稿出发、只留本轮语料测得了的；E2 从读者要做的决定倒推。R1–R4 只读 run3 的文件、C0 是闭卷对照，都不进任何档。</li>
       <li><strong>手动改</strong>：<code>orchestrate.py run RUN_DIR --set ANGLES=P1,E1</code> 直接指定；S12 只合并本轮这几路的候选，之前档位留下的文件不混进来，少一路的输出就报错停下。</li>
     </ul></li>
+  <li id="s00i"><strong>S00i 引言卡（v3，2026-10-30）</strong> <span class="st ok">已实现 · S00e 之后、S01 之前</span>：每份草稿一张英文「论文首页」（标题 / 摘要 / 引言），中英左右对照，给人挑 idea；只打标签，不打分、不淘汰。
+    <ul>
+      <li><strong>写作顺序</strong>（模板 <code>templates/25_inspire_intro.md</code>，dsh 一次写一张；JSON 键序 = 生成顺序）：（<code>INTRO_WEB=on</code> 时先联网检索，每条 query 记进 <code>web_hits</code>）→ <code>_plan</code> 架构（中心论点、G↔C 配对、最接近的工作、哪几条必改项进「不假设」）→ 引言四块 → 摘要四句（problem / propose / how / expect，每句 <code>from</code> 指回压缩了哪几个引言槽位）→ 标题最后定（改进型，<code>terms</code> = 主题词 + 工具词，不起方法名）→ 卡尾 <code>does_not_assume</code> / <code>nearest</code> / <code>web_hits</code> / <code>source_anchor</code>。页面仍按阅读顺序：标题 → 摘要 → 引言 → 不假设。</li>
+      <li><strong>引言四块</strong>：Background（本文对象 + baseline 的好处，首句论断）→ Related Work（总 → 分 → 传承 → 收束；传承句 <code>rw.inherit</code> 必填并点名借了哪篇）→ Research Gap（每条 gap 一句短主张 + 论证 + 证据引用）→ Contribution（我们的方法段在块开头：适配 → 前提 → 提出 → 机制 → 区别 → 预期，后接贡献列表，gap 与贡献一一对应，每条贡献只写定性预期 + 可证伪条件）。</li>
+      <li><strong>槽位注册表</strong> <code>pipeline/intro_slots.json</code>：24 个槽位（标题 1、摘要 4、引言 19），每个写明所属块、顺序、必填 / 条数、英文骨架、一行中文写法规则、字数、出处。模板、检查器（<code>intro_rules.py</code>、<code>check_writing.py</code>）、页面共用这一份。</li>
+      <li><strong>每个句子一个单元</strong> <code>{slot, en, zh}</code>：英文是正本，中文只译不增，引用 token 原样保留（<code>[id]</code>、<code>[web:n]</code>，资料袋 §5 里没有 id 的论文用 <code>[found:n]</code>，对应 <code>intro/in/&lt;u&gt;.found.json</code>）。</li>
+      <li><strong>左右对照页</strong> <code>intro_cards.html</code>：每个单元一行，英文在左、中文在右；每段先一行灰色写法规则（取注册表 <code>rule_zh</code>，可关），「▸槽位与出处」默认折叠；引用悬停显示标题、来源（近邻 / 草稿找到的论文 / 联网命中 / 必读）；窄屏改上英下中。</li>
+      <li><strong>闸门 C1–C9</strong>（<code>inspire.py intro-merge</code>，任一 FAIL → 进 <code>intro/todo.txt</code> 重写一次，idea 不淘汰）：C1 引用越界（id 只许来自资料袋近邻含必读、§5、联网命中）；C2 我方数字（去掉引用后无阿拉伯数字）；C3 预期标记；C4 v3 结构（必填槽位、摘要恰好 4 句、gap 与贡献等长一一对应、<code>nearest</code> 3–5 条）；C5 长度（摘要 ≤ 200 词、引言合计 ≤ 1000 词）；C6 逐单元中英镜像；C7 反驳必改项渗入方法（标定不达标则首轮降为 WARN）；C8 高危词（「首次 / for the first time」类主张一律 FAIL，「显著 / prove / state-of-the-art」FAIL）；C9 来源锚（草稿有来源论文时 <code>con.fit</code> 至少引其一）。其余写法信号（约 30 条）由 <code>intro_rules.json</code> 出 WARN / LABEL，不拦。</li>
+      <li><strong>必读近邻</strong> <code>RUN_DIR/config/must_read.tsv</code>（可选）：制表符分隔，表头按列名读；必填 <code>id</code>（按 id 认，防同名）、<code>title</code>、<code>scope</code>（<code>*</code> 或草稿 id 列表）、<code>why</code>（人写的推荐理由），可选 <code>snippet</code>（摘要原文前 ≤ 300 字符，只许粘贴）、<code>snippet_src</code>、<code>aliases</code>。intro-prep 把它注入资料袋 §9 最前面（「9a Must-read」小节），不占 20 篇近邻名额；与 <code>excluded_ids.txt</code> 冲突时跳过并记 ⚠。卡里漏引必读近邻只出 WARN MUSTREAD。</li>
+      <li><strong>预排与审查</strong>：<code>intro/prerank.json</code>（预排）与 <code>intro/audit.{json,md}</code>（审查）不是本阶段写的，由主线程另做；文件里的 <code>by</code> 字段标是谁做的，<code>source_sha256</code> 绑定当时的 <code>cards.jsonl</code>，对不上时页尾只显示一行「预排未更新（针对旧卡）」。</li>
+      <li><strong>v1 卡归档</strong>：<code>inspire.py intro-prep RUN_DIR --archive-as _v1</code> 一次性把 v1 卡和旧预排 / 审查件移到 <code>intro/_v1/</code>（只移动不删，已存在就报错）；之后常规重跑照旧移到 <code>intro/_prev_&lt;时间&gt;/</code>。</li>
+    </ul></li>
   <li><strong>别和「算子 DSL」混</strong>：这里的「构思算子」指 ScholarCatalyst 的构思动作；开头「② 中间侧」卡片和下文「它怎么思考」里的「算子程序 / 算子 DSL」（Gen / Comm / Agg…）是描述方法结构的记法，两者无关。</li>
 </ul></section>
 <section id="lens"><h2>巨人镜头</h2><h3>核心 idea ④ · 洞见来自巨人镜头</h3>
@@ -145,9 +157,9 @@ python3 -I pipeline/orchestrate.py status RUN_DIR                 # 每个阶段
 <section id="flow"><h2>全流程图 · 全部 41 个阶段（L2）</h2><p>给改 pipeline 的人看。跑一轮只需要说明书主页的 <a href="index.html#flow">L0 / L1</a>。</p>
 <!-- FLOW_START（由 python3 -I pipeline/check_stages.py --flow 生成，勿手改） -->
 <h3>全流程图 · 两层看</h3>
-<p>由 <code>pipeline/stages.json</code> 自动生成（<code>python3 -I pipeline/check_stages.py --flow</code>），和阶段契约表同源。<strong>第一层</strong>只看 6 个大模块：每个模块做什么、产出什么、有几个阶段、你在哪里介入、换领域要改几处。<strong>第二层</strong>是每个模块的拆解，点第一层的模块或下面的标题展开。全流程共 44 个阶段（34 个编排器能跑，即 <code>pipeline/flow.json</code> 有条目、可选的要 <code>--with</code>；10 个只能按 RUNBOOK 手跑；0 个 🔭 规划中）、9 个人工闸。核对口径：<code>python3 -I pipeline/check_stages.py --lint</code>。</p>
+<p>由 <code>pipeline/stages.json</code> 自动生成（<code>python3 -I pipeline/check_stages.py --flow</code>），和阶段契约表同源。<strong>第一层</strong>只看 6 个大模块：每个模块做什么、产出什么、有几个阶段、你在哪里介入、换领域要改几处。<strong>第二层</strong>是每个模块的拆解，点第一层的模块或下面的标题展开。全流程共 46 个阶段（36 个编排器能跑，即 <code>pipeline/flow.json</code> 有条目、可选的要 <code>--with</code>；10 个只能按 RUNBOOK 手跑；0 个 🔭 规划中）、9 个人工闸。核对口径：<code>python3 -I pipeline/check_stages.py --lint</code>。</p>
 <p><strong>谁沿着这张图跑</strong>：<code>pipeline/orchestrate.py</code>（蓝图 B7）按图上从左到右的顺序逐个执行阶段，每个阶段过闸才进下一个。interactive 模式停在每个琥珀 ★ 闸等你回答，auto 模式直接放行；虚线框 🔭 不跑，可选阶段要用 <code>--with</code> 点名。中途断了，再跑同一条命令，从断的阶段接着来（见「跑第一轮」②）。</p>
-<p>图例：实线框 = 已经能跑；虚线框 🔭 = 蓝图里规划、还没做；琥珀粗框 ★ = 你介入；橙线 = 回环（虚线是规划中的回环）；细图右栏写闸门、判决和上界。<strong>🧩 回答「科研大同小异」</strong>：模块和主干对任何领域都一样，带 🧩 的 16 个阶段是换领域时要换的部分（依据 <a href="research/pipeline泛化_20261023/coupling_audit.md">主题耦合审计</a> §1）。窄屏可左右滑动。</p>
+<p>图例：实线框 = 已经能跑；虚线框 🔭 = 蓝图里规划、还没做；琥珀粗框 ★ = 你介入；橙线 = 回环（虚线是规划中的回环）；细图右栏写闸门、判决和上界。<strong>🧩 回答「科研大同小异」</strong>：模块和主干对任何领域都一样，带 🧩 的 18 个阶段是换领域时要换的部分（依据 <a href="research/pipeline泛化_20261023/coupling_audit.md">主题耦合审计</a> §1）。窄屏可左右滑动。</p>
 
 <style>.fl{width:100%;min-width:760px;height:auto;display:block;font-family:-apple-system,"PingFang SC","Noto Sans CJK SC",sans-serif}.fl-band{opacity:.55}.fl-ph{fill:var(--bg);font-size:13px;font-weight:700}.fl-box{fill:var(--panel);stroke-width:1.6}.fl-box.pl{stroke-dasharray:6 4;opacity:.8}.fl-gate{fill:var(--amber-soft);stroke:var(--amber);stroke-width:2.6}.fl-io{fill:var(--panel);stroke:var(--fg);stroke-width:1.6}.fl-nc{fill:var(--panel);stroke-width:1.6}.fl-nn{text-anchor:middle;font-size:11.5px;font-weight:700;fill:var(--fg);font-family:ui-monospace,Menlo,monospace}.fl-gc{fill:var(--amber)}.fl-gn{text-anchor:middle;font-size:14px;fill:var(--bg)}.fl-t{text-anchor:middle;font-size:15px;font-weight:700;fill:var(--fg)}.fl-b{text-anchor:middle;font-size:12px;fill:var(--muted)}.fl-ln{stroke:var(--muted);stroke-width:1.4}.fl-ah{fill:var(--muted)}.fl-el{font-size:11px;fill:var(--muted)}.fl-lp{fill:none;stroke:var(--accent);stroke-width:1.4}.fl-lp.pl{stroke-dasharray:5 4;opacity:.75}.fl-lt{text-anchor:middle;font-size:11.5px;fill:var(--accent)}.fl-lx{font-size:12px;fill:var(--accent)}.fl-g{font-size:12px;fill:var(--fg)}.fl-r{font-size:11.5px;fill:var(--muted)}.fl-pn{font-size:11.5px;fill:var(--red)}.fl-dm{font-size:12px;font-weight:700;fill:var(--red)}.fl-dm.half{fill:var(--amber)}.fl-mod{fill:var(--panel);stroke-width:2}.fl-link:hover .fl-mod{fill:var(--accent-soft)}.fl-mn{text-anchor:middle;font-size:18px;font-weight:700;fill:var(--bg)}.fl-mt{font-size:19px;font-weight:700;fill:var(--fg)}.fl-mg{font-size:14px;fill:var(--fg)}.fl-mo{font-size:13px;fill:var(--muted)}.fl-mc{font-size:13px;font-weight:600;fill:var(--accent)}.fl-more{text-anchor:end;font-size:12.5px;fill:var(--accent)}details.fl-d{border:1px solid var(--line);border-radius:10px;margin:10px 0;background:var(--panel)}details.fl-d>summary{cursor:pointer;padding:10px 14px;font-weight:600}details.fl-d>summary small{font-weight:400;color:var(--muted)}details.fl-d .tw{margin:0 8px 10px}</style>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><marker id="fl-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" class="fl-ah"/></marker></defs></svg>
@@ -163,7 +175,7 @@ python3 -I pipeline/orchestrate.py status RUN_DIR                 # 每个阶段
 <path d="M300,628.0 H270 V478.0 H298" class="fl-lp" marker-end="url(#fl-a)"/><text transform="translate(262,553.0) rotate(-90)" class="fl-lt">↩ KILL → 扩语料或改菜单后重新提议</text>
 <path d="M300,928.0 H230 V328.0 H298" class="fl-lp" marker-end="url(#fl-a)"/><text transform="translate(222,628.0) rotate(-90)" class="fl-lt">↩ ④ 跑实验得新证据 → 回证据地基，开下一轮</text>
 <rect x="300" y="24" width="700" height="62" rx="10" class="fl-io"/><text x="650" y="50" class="fl-t">输入</text><text x="650" y="70" class="fl-b">一句话主题 ⟷ 完整菜单（假设 / 坐标轴 / 镜头）+ 一池 autoresearch 论文 · 另有启发池（S00a，B9）</text>
-<a href="#fl-m1" class="fl-link"><rect x="300" y="120" width="700" height="116" rx="12" class="fl-mod" style="stroke:var(--blue)"/><rect x="300" y="120" width="10" height="116" rx="5" style="fill:var(--blue)"/><circle cx="344" cy="160" r="20" style="fill:var(--blue)"/><text x="344" y="167" class="fl-mn">1</text><text x="380" y="154" class="fl-mt">下锚</text><text x="380" y="178" class="fl-mg">定选题、中心问题、时间窗和锁定答案，跑起来后不再改</text><text x="380" y="200" class="fl-mo">产物：run.json + 菜单</text><text x="380" y="223" class="fl-mc">4 个阶段　·　★ 人工闸 ①　·　🧩 3 处换领域要改</text><text x="982" y="154" class="fl-more">看细图 ↓</text></a>
+<a href="#fl-m1" class="fl-link"><rect x="300" y="120" width="700" height="116" rx="12" class="fl-mod" style="stroke:var(--blue)"/><rect x="300" y="120" width="10" height="116" rx="5" style="fill:var(--blue)"/><circle cx="344" cy="160" r="20" style="fill:var(--blue)"/><text x="344" y="167" class="fl-mn">1</text><text x="380" y="154" class="fl-mt">下锚</text><text x="380" y="178" class="fl-mg">定选题、中心问题、时间窗和锁定答案，跑起来后不再改</text><text x="380" y="200" class="fl-mo">产物：run.json + 菜单</text><text x="380" y="223" class="fl-mc">6 个阶段　·　★ 人工闸 ①　·　🧩 5 处换领域要改</text><text x="982" y="154" class="fl-more">看细图 ↓</text></a>
 <a href="#fl-m2" class="fl-link"><rect x="300" y="270" width="700" height="116" rx="12" class="fl-mod" style="stroke:var(--teal)"/><rect x="300" y="270" width="10" height="116" rx="5" style="fill:var(--teal)"/><circle cx="344" cy="310" r="20" style="fill:var(--teal)"/><text x="344" y="317" class="fl-mn">2</text><text x="380" y="304" class="fl-mt">证据地基</text><text x="380" y="328" class="fl-mg">把论文池筛成 solid 的核心集，逐篇抽成结构化事实，建成数据库</text><text x="380" y="350" class="fl-mo">产物：extract/*.json + db/*.csv</text><text x="380" y="373" class="fl-mc">12 个阶段　·　★ 人工闸 ②　·　🧩 7 处换领域要改</text><text x="982" y="304" class="fl-more">看细图 ↓</text></a>
 <a href="#fl-m3" class="fl-link"><rect x="300" y="420" width="700" height="116" rx="12" class="fl-mod" style="stroke:var(--green)"/><rect x="300" y="420" width="10" height="116" rx="5" style="fill:var(--green)"/><circle cx="344" cy="460" r="20" style="fill:var(--green)"/><text x="344" y="467" class="fl-mn">3</text><text x="380" y="454" class="fl-mt">候选通解轮</text><text x="380" y="478" class="fl-mg">多个提议者并行提出通解，独立审查后留下终稿结论 G</text><text x="380" y="500" class="fl-mo">产物：final_candidates.json + 打分</text><text x="380" y="523" class="fl-mc">4 个阶段　·　★ 人工闸 ③　·　🧩 3 处换领域要改　·　↻ 模块内回环 2</text><text x="982" y="454" class="fl-more">看细图 ↓</text></a>
 <a href="#fl-m4" class="fl-link"><rect x="300" y="570" width="700" height="116" rx="12" class="fl-mod" style="stroke:var(--accent)"/><rect x="300" y="570" width="10" height="116" rx="5" style="fill:var(--accent)"/><circle cx="344" cy="610" r="20" style="fill:var(--accent)"/><text x="344" y="617" class="fl-mn">4</text><text x="380" y="604" class="fl-mt">试味与扩展</text><text x="380" y="628" class="fl-mg">不花钱地反复敲打每条 G：稳健性、复用、复现价值、矛盾</text><text x="380" y="650" class="fl-mo">产物：robustness / 复核结果</text><text x="380" y="673" class="fl-mc">6 个阶段　·　★ 人工闸 ⑦　·　🧩 1 处换领域要改</text><text x="982" y="604" class="fl-more">看细图 ↓</text></a>
@@ -172,8 +184,8 @@ python3 -I pipeline/orchestrate.py status RUN_DIR                 # 每个阶段
 <rect x="300" y="1020" width="700" height="62" rx="10" class="fl-io"/><text x="650" y="1046" class="fl-t">交付物</text><text x="650" y="1066" class="fl-b">金子论文中英文 PDF + 决策指南 + 打分与稳健性证据 + 下一轮的卡</text>
 </svg></div>
 <h4>第二层 · 每个模块的拆解</h4>
-<details class="fl-d" id="fl-m1"><summary>模块 1 · 下锚　<small>定选题、中心问题、时间窗和锁定答案，跑起来后不再改（4 个阶段）</small></summary><div class="tw"><svg class="fl" viewBox="0 0 1220 584" role="img" aria-label="模块 1 下锚 细图" xmlns="http://www.w3.org/2000/svg">
-<rect x="12" y="10" width="1196" height="564" rx="14" style="fill:var(--blue-soft)" class="fl-band"/>
+<details class="fl-d" id="fl-m1"><summary>模块 1 · 下锚　<small>定选题、中心问题、时间窗和锁定答案，跑起来后不再改（6 个阶段）</small></summary><div class="tw"><svg class="fl" viewBox="0 0 1220 756" role="img" aria-label="模块 1 下锚 细图" xmlns="http://www.w3.org/2000/svg">
+<rect x="12" y="10" width="1196" height="736" rx="14" style="fill:var(--blue-soft)" class="fl-band"/>
 <rect x="24" y="20" width="98" height="26" rx="13" style="fill:var(--blue)"/><text x="38" y="38" class="fl-ph">模块 1 · 下锚</text>
 <line x1="600" y1="124" x2="600" y2="149" class="fl-ln" marker-end="url(#fl-a)"/>
 <line x1="600" y1="210" x2="600" y2="235" class="fl-ln" marker-end="url(#fl-a)"/>
@@ -181,6 +193,8 @@ python3 -I pipeline/orchestrate.py status RUN_DIR                 # 每个阶段
 <text x="612" y="309" class="fl-el">确认 → 继续</text>
 <line x1="600" y1="378" x2="600" y2="403" class="fl-ln" marker-end="url(#fl-a)"/>
 <line x1="600" y1="464" x2="600" y2="489" class="fl-ln" marker-end="url(#fl-a)"/>
+<line x1="600" y1="550" x2="600" y2="575" class="fl-ln" marker-end="url(#fl-a)"/>
+<line x1="600" y1="636" x2="600" y2="661" class="fl-ln" marker-end="url(#fl-a)"/>
 <rect x="330" y="64" width="540" height="60" rx="10" class="fl-io"/>
 <text x="614.0" y="89" class="fl-t">输入 · 一句话主题 ⟷ 完整菜单（假设 / 坐标轴 / 镜头）</text>
 <text x="614.0" y="109" class="fl-b">+ 一池 autoresearch 论文（时间窗、锁定答案写进菜单）· 另有启发池（S00a，B9）</text>
@@ -213,6 +227,20 @@ python3 -I pipeline/orchestrate.py status RUN_DIR                 # 每个阶段
 <text x="892" y="506" class="fl-dm half">🧩 半通用：部分要换</text>
 <text x="892" y="521" class="fl-g">闸门 refute.py merge：每份草稿都有 refute/&lt;u&gt;.json</text>
 <text x="892" y="536" class="fl-g">；判决只能 KILL / REVISE / PASS；前提 1–5 条、反例…</text>
+<rect x="330" y="576" width="540" height="60" rx="10" class="fl-box" style="stroke:var(--blue)"/>
+<circle cx="358" cy="606.0" r="16" class="fl-nc" style="stroke:var(--blue)"/><text x="358" y="610.0" class="fl-nn">00e</text>
+<text x="614.0" y="601" class="fl-t">启发池读者卡</text>
+<text x="614.0" y="621" class="fl-b">每份草稿一张中文读者卡：那边发现了什么、原理、为何我们这儿也成立、改成啥样、可能在哪失效</text>
+<text x="892" y="592" class="fl-dm half">🧩 半通用：部分要换</text>
+<text x="892" y="607" class="fl-g">闸门 inspire.py reader-merge：每份草稿都有 reader/</text>
+<text x="892" y="622" class="fl-g">&lt;u&gt;.json；领域 / 距离 / 结构与来源块一致（脚本复制…</text>
+<rect x="330" y="662" width="540" height="60" rx="10" class="fl-box" style="stroke:var(--blue)"/>
+<circle cx="358" cy="692.0" r="16" class="fl-nc" style="stroke:var(--blue)"/><text x="358" y="696.0" class="fl-nn">00i</text>
+<text x="614.0" y="687" class="fl-t">启发池引言卡</text>
+<text x="614.0" y="707" class="fl-b">每份草稿一张英文引言卡（中英左右对照）：先零调用查近邻（可联网补最新顶会、可注入人点名的必读近邻），再按槽位写引言四块 → 摘要四句 → 标题，gap 只许引查到的论文 · 只打标签，人挑</text>
+<text x="892" y="678" class="fl-dm half">🧩 半通用：部分要换</text>
+<text x="892" y="693" class="fl-g">闸门 inspire.py intro-merge：每份草稿都有 intro/&lt;u</text>
+<text x="892" y="708" class="fl-g">&gt;.json 且 schema = paper_alchemy.intro_card/v3、…</text>
 </svg></div></details>
 <details class="fl-d" id="fl-m2"><summary>模块 2 · 证据地基　<small>把论文池筛成 solid 的核心集，逐篇抽成结构化事实，建成数据库（12 个阶段）</small></summary><div class="tw"><svg class="fl" viewBox="0 0 1220 1186" role="img" aria-label="模块 2 证据地基 细图" xmlns="http://www.w3.org/2000/svg">
 <rect x="12" y="10" width="1196" height="1166" rx="14" style="fill:var(--teal-soft)" class="fl-band"/>
@@ -349,7 +377,7 @@ python3 -I pipeline/orchestrate.py status RUN_DIR                 # 每个阶段
 <text x="892" y="368" class="fl-r">判决 VALIDATED / REVISE / DROP / UNRESOLVED</text>
 <rect x="330" y="408" width="540" height="56" rx="10" class="fl-gate"/><circle cx="358" cy="436.0" r="14" class="fl-gc"/><text x="358" y="441.0" class="fl-gn">★</text>
 <text x="614.0" y="433" class="fl-t">【人工闸 ③】审查</text>
-<text x="614.0" y="453" class="fl-b">只回答一个问题：「每条 G 的边界你认不认？」</text>
+<text x="614.0" y="453" class="fl-b">只回答一个问题：「每条 G 的边界你认不认？（同时看 synthesis/g_priors.md 语料外近邻、synthesis/alignment.md 验收行逐子句对准：⚪ 子句接不接受不答）」</text>
 </svg></div></details>
 <details class="fl-d" id="fl-m4"><summary>模块 4 · 试味与扩展　<small>不花钱地反复敲打每条 G：稳健性、复用、复现价值、矛盾（6 个阶段）</small></summary><div class="tw"><svg class="fl" viewBox="0 0 1220 670" role="img" aria-label="模块 4 试味与扩展 细图" xmlns="http://www.w3.org/2000/svg">
 <rect x="12" y="10" width="1196" height="650" rx="14" style="fill:var(--accent-soft)" class="fl-band"/>
@@ -503,7 +531,7 @@ python3 -I pipeline/orchestrate.py status RUN_DIR                 # 每个阶段
 <text x="892" y="1130" class="fl-r">判决 PASS / FAIL</text>
 <rect x="330" y="1170" width="540" height="56" rx="10" class="fl-gate"/><circle cx="358" cy="1198.0" r="14" class="fl-gc"/><text x="358" y="1203.0" class="fl-gn">★</text>
 <text x="614.0" y="1195" class="fl-t">【人工闸 ⑤】交付包 + 摘要回写</text>
-<text x="614.0" y="1215" class="fl-b">只回答一个问题：「这篇是不是值得精读的金子？」</text>
+<text x="614.0" y="1215" class="fl-b">只回答一个问题：「这篇是不是值得精读的金子？（同时看 traces/alignment_final.md 与 traces/drift_ledger.md「问题」行：终稿中心句与菜单中心问题是 同 / 合法改写 / 漂移）」</text>
 </svg></div></details>
 <details class="fl-d" id="fl-m6"><summary>模块 6 · 构思与评估　<small>用巨人镜头出新设想卡，查重、勾选花钱；最后对照锁定答案评估（8 个阶段）</small></summary><div class="tw"><svg class="fl" viewBox="0 0 1220 928" role="img" aria-label="模块 6 构思与评估 细图" xmlns="http://www.w3.org/2000/svg">
 <rect x="12" y="10" width="1196" height="908" rx="14" style="fill:var(--teal-soft)" class="fl-band"/>
