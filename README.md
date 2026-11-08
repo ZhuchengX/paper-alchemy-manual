@@ -5,11 +5,13 @@
 <!-- TOPNEWS_START -->
 **News**
 
-- **2026-10-30** `accept … --adopt` 现在也能用在已经编排过的运行目录上：手动跑完的阶段按现有文件盖章，下次 run 不重跑
+- **2026-11-08** 启发池现在从取新文献一路跑到「前十张卡」：先初排切出 12 张深读，读完再终排，只给你看前十
+- **2026-10-30** 今后所有要调 LLM 的阶段默认交 DeepSeek V4.1 Flash（官方 harness），codex 仍可手动选
+
+<details><summary><b>2026-10-30</b> `accept … --adopt` 现在也能用在已经编排过的运行目录上：手动跑完的阶段按现有文件盖章，下次 run 不重跑（点开看更早 33 次）</summary>
+
 - **2026-10-30** 每个 idea 一张卡：标题、摘要四句、引言四块（背景 → 相关工作 → 研究空白 → 贡献），逐句英文配中文，按写作八股写
-
-<details><summary><b>2026-10-29</b> 读者卡「改成啥样」只写系统行为、不写省下的预算给谁；组合草稿自报和哪份单算子草稿是同一原理，只标 ≈ 不删（点开看更早 31 次）</summary>
-
+- **2026-10-29** 读者卡「改成啥样」只写系统行为、不写省下的预算给谁；组合草稿自报和哪份单算子草稿是同一原理，只标 ≈ 不删
 - **2026-10-29** 启发池草稿先写「那边的原理、为什么在我们这儿也成立」，数字一律留到最便宜的检验；读者卡单列 S00e 阶段
 - **2026-10-29** 启发池结果页每份草稿一张中文读者卡：别的领域发现了什么原理、为什么在我们这儿也成立、搬过来改成什么样
 - **2026-10-29** 来源标签精炼到再删一个字就歧义：领域 ≤ 16 字，原来解决、搬到这里各 ≤ 30 字
@@ -48,6 +50,17 @@
 这里只放说明书和它链接的调研页，由维护者从私密仓库 `ZhuchengX/paper-alchemy` 自动发布，不要直接改这里的文件。
 
 ## 更新记录（新的在上）
+
+### 2026-11-08 23:20 · 启发池一路跑到前十卡：文献更新、深读、终排
+
+- [流程图](https://zhuchengx.github.io/paper-alchemy-manual/#think)：启发池段新增 S00u 文献更新（DeepSeek 扩写检索词 → arXiv 关键词 + 引用 / 推荐取新文献，判过相关才进本 case）、S00m 方法节、S00s 读者卡对齐、S00q 排序、S00k 初排切分（默认 12 张，同组 ≤3）、S00d 卡片深读、S00t 终排（前十）、S00h 落地卡余量表（可选）。
+- [流程图](https://zhuchengx.github.io/paper-alchemy-manual/#think)：主干改写成 7 段 + 收尾，共 56 个阶段，每段从一个闸跑到下一个闸。
+- [人工闸](https://zhuchengx.github.io/paper-alchemy-manual/#gates)：逐候选审查判决改成四态 VALIDATED / ACCEPT_WITH_EDITS / REVISE / DROP，0 条通过时写 null_memo 并停。
+- [设计细节](设计细节.html)：补 B2 逐候选审查、按菜单详略定提议路数、S00k / S00t 的完整做法。
+
+### 2026-10-30 18:50 · pipeline 的 LLM 阶段默认改用 DeepSeek
+
+- [安装与准备](https://zhuchengx.github.io/paper-alchemy-manual/#install)：执行器默认从 codex 改为 dsh（DeepSeek 官方 harness，deepseek-flash = V4.1 Flash，effort max）；`--executor codex` 或 run.json `EXECUTOR=codex` 可换回。
 
 ### 2026-10-30 11:40 · 手动跑完的阶段可以让编排器接管
 
