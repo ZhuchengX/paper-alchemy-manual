@@ -5,11 +5,12 @@
 <!-- TOPNEWS_START -->
 **News**
 
+- **2026-11-13** 首页改讲启发池卡：素材交给强模型写成配置卡，pipeline 交回最多 10 张卡；安装、命令这些上手说明都折叠起来给 agent 看
 - **2026-11-13** 前十卡页改版：标题下紧跟 ELI5 图（一行四格），摘要 / 引言 / 方法 / 对比表四块展开，对比表改成论文里那种三线表（英文方法名可点、会议、首发年月、按类别分层）
-- **2026-11-09** 前十张卡每张前面多一块「带读」：先一张图讲清这张卡借了什么、改了哪一处，完整卡折叠在后面
 
-<details><summary><b>2026-11-08</b> 启发池现在从取新文献一路跑到「前十张卡」：先初排切出 12 张深读，读完再终排，只给你看前十（点开看更早 35 次）</summary>
+<details><summary><b>2026-11-09</b> 前十张卡每张前面多一块「带读」：先一张图讲清这张卡借了什么、改了哪一处，完整卡折叠在后面（点开看更早 36 次）</summary>
 
+- **2026-11-08** 启发池现在从取新文献一路跑到「前十张卡」：先初排切出 12 张深读，读完再终排，只给你看前十
 - **2026-10-30** 今后所有要调 LLM 的阶段默认交 DeepSeek V4.1 Flash（官方 harness），codex 仍可手动选
 - **2026-10-30** `accept … --adopt` 现在也能用在已经编排过的运行目录上：手动跑完的阶段按现有文件盖章，下次 run 不重跑
 - **2026-10-30** 每个 idea 一张卡：标题、摘要四句、引言四块（背景 → 相关工作 → 研究空白 → 贡献），逐句英文配中文，按写作八股写
@@ -52,6 +53,14 @@
 这里只放说明书和它链接的调研页，由维护者从私密仓库 `ZhuchengX/paper-alchemy` 自动发布，不要直接改这里的文件。
 
 ## 更新记录（新的在上）
+
+### 2026-11-13 15:38 · 说明书首页只留重点：这是什么、有什么用、你要做什么、流程图、进度表
+
+- [这是什么](https://zhuchengx.github.io/paper-alchemy-manual/#what)：主线改讲启发池卡；金子论文那条路收进折叠，原文照留。新增 [有什么用](https://zhuchengx.github.io/paper-alchemy-manual/#why)、[你要做什么](https://zhuchengx.github.io/paper-alchemy-manual/#how) 两节，只写人要做的四步，不放命令。
+- [流程图](https://zhuchengx.github.io/paper-alchemy-manual/#flow)：正文换成「启发池卡这条路」6 格横条，阶段号只在鼠标悬停和折叠里；原来的全流程图、命令、图例、每段的卡收进折叠「完整流程（含金子论文）」，「它怎么思考」四条原则也收进折叠。
+- [进度表](https://zhuchengx.github.io/paper-alchemy-manual/#progress)：只留 状态 / 模块 / 做什么 三列，模块一行、做什么一句；启发池拆成 4 行，补上合卡、卡页、理论预估；原表和每行的入口在表下折叠。
+- [case 现状](https://zhuchengx.github.io/paper-alchemy-manual/#cases)：只写日期和一句话，早期 case 表收进折叠。
+- [配置卡](https://zhuchengx.github.io/paper-alchemy-manual/#card)：新增从素材起跑的命令和写卡指南位置。[安装与准备](https://zhuchengx.github.io/paper-alchemy-manual/#install)、[跑第一轮](https://zhuchengx.github.io/paper-alchemy-manual/#first)、[你在哪些点介入](https://zhuchengx.github.io/paper-alchemy-manual/#gates)、[输出目录](https://zhuchengx.github.io/paper-alchemy-manual/#output)、[规则与红线](https://zhuchengx.github.io/paper-alchemy-manual/#rules)、[常见问题](https://zhuchengx.github.io/paper-alchemy-manual/#faq) 原文一字未删，收进「给 agent 的上手说明」折叠；那一节顶上写明现在 LLM 阶段只跑 grok，旧文里的 codex、DeepSeek 是历史做法。
 
 ### 2026-11-13 14:14 · 卡页新版式：一张对比表、ELI5 一行四格，写卡全程交给 grok
 
