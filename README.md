@@ -1,6 +1,8 @@
 # 论文炼金 · 使用说明书（网页版）
 
-在线阅读：https://zhuchengx.github.io/paper-alchemy-manual/
+**在线阅读：https://zhuchengx.github.io/paper-alchemy-manual/**
+
+把一堆素材（聊天记录、讨论纪要、碎碎念、论文）交给强模型写成一张配置卡，pipeline 读完相关论文，交回最多 10 张研究 idea 卡。
 
 <!-- TOPNEWS_START -->
 **News**
@@ -52,9 +54,20 @@
 </details>
 <!-- TOPNEWS_END -->
 
-这里只放说明书和它链接的调研页，由维护者从私密仓库 `ZhuchengX/paper-alchemy` 自动发布，不要直接改这里的文件。
+## 每张卡上有什么
 
-## 更新记录（新的在上）
+- 中英文标题，下面一张四格图讲清这个 idea
+- 摘要、引言、方法
+- 一张和最像的已有论文逐项对比的表
+- 先估一估：要花多少、成了有多大用
+- 先花小钱验一下：最便宜的一个推翻检查
+
+## 怎么用
+
+1. 打开上面的网页，看「这是什么」和流程图。
+2. 想自己跑：找维护者开私密仓库 `ZhuchengX/UM_Paper_Pipeline` 的权限，照仓库首页的步骤走。
+
+<details><summary>完整更新记录（共 41 次，新的在上）</summary>
 
 ### 2026-11-15 12:58 · 对比表凑不够 3 列的卡先回原文补核
 
@@ -297,3 +310,7 @@
 - 8 章：这是什么、安装与准备、跑第一轮、它怎么思考、你在哪些点介入、输出目录详解、规则与红线、常见问题。章节结构对照 Team Paper Lite 公开说明书。
 - [它怎么思考](https://zhuchengx.github.io/paper-alchemy-manual/#think)：两层流程图，由 `pipeline/stages.json` 自动生成。第一层 6 个模块，第二层每个模块折叠展开。
 - [你在哪些点介入](https://zhuchengx.github.io/paper-alchemy-manual/#gates)：5 个闸，每个只问一个问题。
+
+</details>
+
+这个仓库只放说明书网页，由维护者从私密仓库自动发布，不要直接改这里的文件。
